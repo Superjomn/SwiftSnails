@@ -1,0 +1,25 @@
+version=5.4.14
+language=Fortran 90
+compiler_env=VT_FC
+compiler_flags_env=VT_FCFLAGS
+compiler=
+compiler_flags=
+linker_flags=
+libs= -lotf  -lz     
+includedir=${includedir}
+libdir=${libdir}
+opari_bin=/Users/apple/project/SwiftSnails/third/openmpi-1.4.5/../local/openmpi/bin/opari
+opari_tab_compiler=gcc
+opari_tab_compiler_flags=-O3 -DNDEBUG -finline-functions -fno-strict-aliasing  -fvisibility=hidden
+pmpilib=
+fmpilib=-lvt.fmpi
+dynattlib=
+compiler_iflags_gnu=-g -finstrument-functions
+compiler_iflags_intel=-g -finstrument-functions
+compiler_iflags_pathscale=-g -finstrument-functions
+compiler_iflags_pgi=-Mprof=func
+compiler_iflags_sun=-O -Qoption f90comp -phat
+compiler_iflags_xl=-qdebug=function_trace
+compiler_iflags_ftrace=-ftrace
+inst_avail=manual pomp gnu
+inst_default=gnu

@@ -1,0 +1,3 @@
+libzmq_la-curve_client.lo: curve_client.cpp platform.hpp
+
+platform.hpp:
