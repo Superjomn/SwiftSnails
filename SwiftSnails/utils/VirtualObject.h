@@ -10,6 +10,7 @@
 #define SwiftSnails_VirtualObject_h
 namespace SwiftSnails {
 
+// can not be copied or assigned from other object 
 class VirtualObject {
     VirtualObject() = default;
     VirtualObject(const VirtualObject &) = delete;
