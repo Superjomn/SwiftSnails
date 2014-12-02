@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Chunwei. All rights reserved.
 //
 
-#ifndef SwiftSnails_VirtualObject_h
-#define SwiftSnails_VirtualObject_h
+#ifndef SwiftSnails_utils_VirtualObject_h
+#define SwiftSnails_utils_VirtualObject_h
 namespace swift_snails {
 
 // can not be copied or assigned from other object 
