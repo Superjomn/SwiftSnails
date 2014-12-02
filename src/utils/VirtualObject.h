@@ -8,7 +8,7 @@
 
 #ifndef SwiftSnails_VirtualObject_h
 #define SwiftSnails_VirtualObject_h
-namespace SwiftSnails {
+namespace swift_snails {
 
 // can not be copied or assigned from other object 
 class VirtualObject {
@@ -20,7 +20,7 @@ class VirtualObject {
 
 
 
-}; // end namespace SwiftSnails
+}; // end namespace swift_snails
 
 
 #endif
