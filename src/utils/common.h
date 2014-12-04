@@ -7,8 +7,13 @@
 //
 #ifndef SwiftSnails_utils_common_h
 #define SwiftSnails_utils_common_h
+
 #include "VirtualObject.h"
-#include "glog/glog.h"
+#include "glog/logging.h"
+#include <string>
+#include <map>
+#include <vector>
+#include <fstream>
 
 #endif
 
