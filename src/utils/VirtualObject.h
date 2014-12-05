@@ -12,6 +12,7 @@ namespace swift_snails {
 
 // can not be copied or assigned from other object 
 class VirtualObject {
+public:
     VirtualObject() = default;
     VirtualObject(const VirtualObject &) = delete;
     VirtualObject &operator= (const VirtualObject &) = delete;

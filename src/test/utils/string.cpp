@@ -43,6 +43,12 @@ void test_headswith()
     string a = "# comment";
     trim(a);
     CHECK(headswith(a, "#") == true);
+    CHECK(headswith(a, "df") == false);
+    string b = " import ../../path";
+    trim(b);
+    CHECK(headswith(b, "import"));
+    pair<string, string> kv = std::move(key_value_split(b, " "));
+    CHECK(kv.second == "../../path");
 }
 
 int main()
