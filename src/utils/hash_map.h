@@ -19,7 +19,7 @@ namespace swift_snails {
 
 // memory-saving version
 template<typename KeyType, typename ValueType, typename CmpObj>
-class SparseHashMap : VirtualObject {
+class SparseHashMap : public VirtualObject {
 public:
     explicit SparseHashMap() { }
 
@@ -30,7 +30,7 @@ private:
 
 // time-saving version
 template<typename KeyType, typename ValueType, typename CmpObj>
-class DenseHashMap : VirtualObject {
+class DenseHashMap : public VirtualObject {
 public:
     explicit DenseHashMap () { }
 
