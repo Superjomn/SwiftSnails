@@ -1,18 +1,22 @@
 CXX=g++
 CC=gcc
 BIN=./bin
-CXXFLAGS= -std=c++11 -pthread -Wall -g 
+CXXFLAGS= -std=c++11 -pthread -Wall -g -DHAVE_PCAP
 THIRD_INCPATH=-I../../third/local/glog/include \
 	-I../../third/local/openmpi/include \
 	-I../../third/local/zeromq/include
 
-THIRD_LIB=../../third/local/glog/lib/libglog.a 
+THIRD_LIB=../../third/local/glog/lib/libglog.a  \
+		-L /Users/apple/project/SwiftSnails/third/local/openmpi/lib \
+		-lmpi_cxx \
+		-lmpi
 
 .PHONY:all clean test
 
 all: $(BIN)/utils_string.out \
 	 $(BIN)/utils_ConfigParser.out  \
-	 $(BIN)/utils_HashFunction.out
+	 $(BIN)/utils_HashFunction.out \
+	 $(BIN)/utils_mpi.out 
 
 
 $(BIN)/utils_string.out : utils/string.cpp ../utils/string.h
@@ -23,3 +27,7 @@ $(BIN)/utils_ConfigParser.out : utils/ConfigParser.cpp ../utils/ConfigParser.h
 	
 $(BIN)/utils_HashFunction.out : utils/HashFunction.cpp ../utils/HashFunction.h
 	$(CXX) utils/HashFunction.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/utils_HashFunction.out
+
+
+$(BIN)/utils_mpi.out : utils/mpi.cpp ../utils/mpi.h
+	$(CXX) utils/mpi.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/utils_mpi.out
