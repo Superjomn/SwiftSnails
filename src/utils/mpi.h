@@ -34,6 +34,10 @@ public:
         CHECK(0 == MPI_Allgather(MPI_IN_PLACE, 0, MPI_BYTE, &_ip_table[0], IP_WIDTH, MPI_BYTE, comm()));
     }
 
+    ~GlobalMPI() {
+        MPI_Finalize();
+    }
+
     MPI_Comm comm() {
         return MPI_COMM_WORLD;
     }
