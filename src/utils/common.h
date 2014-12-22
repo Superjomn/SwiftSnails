@@ -15,11 +15,25 @@
 #include <vector>
 #include <fstream>
 
+namespace swift_snails {
 // common types
-typedef int             int32;
-typedef unsigned int    uint32;
-typedef long            int64;
-typedef unsigned long   uint64;
+typedef unsigned char   byte_t;
+typedef short           int16_t;
+typedef unsigned short  uint16_t;
+typedef int             int32_t;
+typedef unsigned int    uint32_t;
+typedef long            int64_t;
+typedef unsigned long   uint64_t;
+
+// for repeat patterns
+#define SS_REPEAT1(X) SS_REPEAT_PATTERN(X)
+#define SS_REPEAT2(X, args...) SS_REPEAT_PATTERN(X) SS_REPEAT1(args)
+#define SS_REPEAT3(X, args...) SS_REPEAT_PATTERN(X) SS_REPEAT2(args)
+#define SS_REPEAT4(X, args...) SS_REPEAT_PATTERN(X) SS_REPEAT3(args)
+#define SS_REPEAT5(X, args...) SS_REPEAT_PATTERN(X) SS_REPEAT4(args)
+#define SS_REPEAT6(X, args...) SS_REPEAT_PATTERN(X) SS_REPEAT5(args)
+
+};
 
 #endif
 
