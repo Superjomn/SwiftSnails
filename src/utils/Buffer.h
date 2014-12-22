@@ -72,6 +72,7 @@ public:
     }
 protected:
     void reserve(size_t newcap) {
+        LOG(WARNING) << "reserve new memory:\t" << newcap;
         if(newcap > capacity()) {
             char* newbuf;
             newbuf = new char[newcap];
@@ -79,7 +80,7 @@ protected:
                 memcpy(newbuf, buffer(), size());
             }
             _cursor = newbuf + (cursor() - buffer());
-            _end = _cursor + 1;
+            _end = newbuf + (end() - buffer());
             _capacity = newcap;
             free(); // free previous memory
             _buffer = newbuf;
@@ -96,10 +97,10 @@ protected:
         _end += size;
     }
 
-    void free() {
+    void free() {   // just free memory
         if(_buffer) {
             delete _buffer; 
-            clear();
+            //clear();
         }
     }
     // clear status
