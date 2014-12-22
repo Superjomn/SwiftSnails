@@ -16,6 +16,9 @@ namespace swift_snails {
 class BasicBuffer {
 public:
     explicit BasicBuffer() {
+        CHECK( capacity() > 0);
+        _buffer = new char[_capacity];
+        _cursor = _end = _buffer;
     }
     BasicBuffer(const BasicBuffer&) = delete;
     explicit BasicBuffer(BasicBuffer&& other) :
@@ -82,7 +85,7 @@ protected:
     // will change end and 
     // should not use in read mod
     void put_cursor_preceed(size_t size) {
-      CHECK(cursor() + size < end());
+      //CHECK(cursor() + size < end());
       _cursor += size;
       _end = _cursor + 1;
     }
@@ -105,7 +108,7 @@ private:
     char* _buffer = nullptr;
     char* _cursor = nullptr;
     char* _end = nullptr;   // the next byte of valid buffer's tail
-    size_t _capacity = 0;
+    size_t _capacity = 1024;
 };  // end class BasicBuffer
 
 // 二进制buffer管理
