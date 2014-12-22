@@ -44,7 +44,7 @@ public:
     size_t capacity() {
         return _capacity;
     }   
-    size_t size() const {
+    size_t size() {
         return end() - buffer();
     }
 
@@ -81,7 +81,7 @@ protected:
     // on put mod
     // will change end and 
     // should not use in read mod
-    void cursor_preceed(size_t size) {
+    void put_cursor_preceed(size_t size) {
       CHECK(cursor() + size < end());
       _cursor += size;
       _end = _cursor + 1;
@@ -139,16 +139,16 @@ protected:
     template<typename T>
     void get_raw(T& x) {
         CHECK(! read_finished());
-        memcpy(&x, _cursor, sizeof(T));
-        cursor_preceed(sizeof(T));
+        memcpy(&x, cursor(), sizeof(T));
+        put_cursor_preceed(sizeof(T));
     }
 
     template<typename T>
     T get_raw() {
         T x;
         CHECK(! read_finished());
-        memcpy(&x, _cursor, sizeof(T));
-        cursor_preceed(sizeof(T));
+        memcpy(&x, cursor(), sizeof(T));
+        put_cursor_preceed(sizeof(T));
         return std::move(x);
     }
 
@@ -159,7 +159,7 @@ protected:
             reserve(newcap);
         }
         memcpy(end(), &x, sizeof(T));
-        cursor_preceed(sizeof(T));
+        put_cursor_preceed(sizeof(T));
     }
 
 };  // end class BinaryBuffer
@@ -212,7 +212,7 @@ public:
             reserve(newcap);
         }
         memcpy(buffer(), x.c_str(), x.size());
-        cursor_preceed(x.size());
+        put_cursor_preceed(x.size());
         set_end(cursor() + 1);
         return *this;
     }
