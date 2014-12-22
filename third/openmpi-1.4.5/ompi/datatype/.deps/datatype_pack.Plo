@@ -1,7 +1,7 @@
 datatype_pack.lo: datatype_pack.c ../../ompi/include/ompi_config.h \
   ../../opal/include/opal_config.h \
   ../../opal/include/opal_config_bottom.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -13,8 +13,8 @@ datatype_pack.lo: datatype_pack.c ../../ompi/include/ompi_config.h \
   /usr/include/sys/_types/_intptr_t.h \
   /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h \
   /usr/include/_types/_uintmax_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -85,7 +85,7 @@ datatype_pack.lo: datatype_pack.c ../../ompi/include/ompi_config.h \
   ../../opal/include/opal/sys/architecture.h \
   ../../opal/include/opal/sys/amd64/atomic.h \
   ../../opal/include/opal/sys/atomic_impl.h ../../ompi/include/mpi.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   ../../ompi/datatype/convertor.h ../../opal/include/opal/prefetch.h \
   /usr/include/sys/uio.h /usr/include/sys/_types/_iovec_t.h \
   ../../ompi/datatype/datatype_internal.h /usr/include/string.h \
@@ -98,7 +98,7 @@ datatype_pack.lo: datatype_pack.c ../../ompi/include/ompi_config.h \
   /usr/include/sys/_select.h /usr/include/arpa/inet.h \
   /usr/include/netinet/in.h /usr/include/netinet6/in6.h \
   ../../opal/util/output.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   ../../orte/mca/rml/rml_types.h ../../ompi/datatype/datatype_checksum.h \
   ../../ompi/datatype/datatype_memcpy.h ../../opal/util/crc.h \
   ../../ompi/datatype/datatype_pack.h \
@@ -110,7 +110,7 @@ datatype_pack.lo: datatype_pack.c ../../ompi/include/ompi_config.h \
 
 ../../opal/include/opal_config_bottom.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -152,9 +152,9 @@ datatype_pack.lo: datatype_pack.c ../../ompi/include/ompi_config.h \
 
 /usr/include/_types/_uintmax_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -382,7 +382,7 @@ datatype_pack.lo: datatype_pack.c ../../ompi/include/ompi_config.h \
 
 ../../ompi/include/mpi.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 ../../ompi/datatype/convertor.h:
 
@@ -428,7 +428,7 @@ datatype_pack.lo: datatype_pack.c ../../ompi/include/ompi_config.h \
 
 ../../opal/util/output.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 ../../orte/mca/rml/rml_types.h:
 

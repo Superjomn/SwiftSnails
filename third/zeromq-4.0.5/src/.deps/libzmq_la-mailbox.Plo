@@ -1,5 +1,5 @@
 libzmq_la-mailbox.lo: mailbox.cpp mailbox.hpp \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   platform.hpp signaler.hpp /usr/include/unistd.h /usr/include/_types.h \
   /usr/include/sys/_types.h /usr/include/sys/cdefs.h \
   /usr/include/sys/_symbol_aliasing.h \
@@ -25,7 +25,7 @@ libzmq_la-mailbox.lo: mailbox.cpp mailbox.hpp \
   /usr/include/sys/_types/_dev_t.h /usr/include/sys/_types/_mode_t.h \
   /usr/include/sys/_types/_uuid_t.h /usr/include/gethostuuid.h fd.hpp \
   config.hpp command.hpp stdint.hpp \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -78,7 +78,7 @@ libzmq_la-mailbox.lo: mailbox.cpp mailbox.hpp \
 
 mailbox.hpp:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 platform.hpp:
 
@@ -178,7 +178,7 @@ command.hpp:
 
 stdint.hpp:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 

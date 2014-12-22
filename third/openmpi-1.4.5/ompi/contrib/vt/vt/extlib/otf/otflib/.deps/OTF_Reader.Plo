@@ -2,7 +2,7 @@ OTF_Reader.lo: OTF_Reader.c ../config.h /usr/include/assert.h \
   /usr/include/sys/cdefs.h /usr/include/sys/_symbol_aliasing.h \
   /usr/include/sys/_posix_availability.h OTF_Platform.h \
   OTF_Platform_unix.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   /usr/include/stdlib.h /usr/include/Availability.h \
   /usr/include/AvailabilityInternal.h /usr/include/_types.h \
   /usr/include/sys/_types.h /usr/include/machine/_types.h \
@@ -17,7 +17,7 @@ OTF_Reader.lo: OTF_Reader.c ../config.h /usr/include/assert.h \
   /usr/include/sys/_types/_ucontext.h \
   /usr/include/sys/_types/_sigset_t.h /usr/include/sys/_types/_size_t.h \
   /usr/include/sys/_types/_uid_t.h /usr/include/sys/resource.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -57,7 +57,7 @@ OTF_Platform.h:
 
 OTF_Platform_unix.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 /usr/include/stdlib.h:
 
@@ -109,7 +109,7 @@ OTF_Platform_unix.h:
 
 /usr/include/sys/resource.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 

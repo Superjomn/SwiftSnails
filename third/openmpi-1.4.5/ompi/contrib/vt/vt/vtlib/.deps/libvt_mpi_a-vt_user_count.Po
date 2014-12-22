@@ -12,7 +12,7 @@ libvt_mpi_a-vt_user_count.o: vt_user_count.c /usr/include/string.h \
   ../extlib/otf/otflib/OTF_FileManager.h \
   ../extlib/otf/otflib/OTF_inttypes.h \
   ../extlib/otf/otflib/OTF_inttypes_unix.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -47,9 +47,9 @@ libvt_mpi_a-vt_user_count.o: vt_user_count.c /usr/include/string.h \
   ../extlib/otf/otflib/OTF_RStream.h ../extlib/otf/otflib/OTF_Reader.h \
   vt_fbindings.h vt_inttypes.h ../config.h ../config_bottom.h \
   ../util/util.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   /usr/include/fnmatch.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -129,7 +129,7 @@ libvt_mpi_a-vt_user_count.o: vt_user_count.c /usr/include/string.h \
 
 ../extlib/otf/otflib/OTF_inttypes_unix.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -259,11 +259,11 @@ vt_inttypes.h:
 
 ../util/util.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 /usr/include/fnmatch.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 

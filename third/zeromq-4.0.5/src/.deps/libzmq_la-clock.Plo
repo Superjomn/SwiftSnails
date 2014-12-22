@@ -1,5 +1,5 @@
 libzmq_la-clock.lo: clock.cpp clock.hpp stdint.hpp platform.hpp \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -13,7 +13,7 @@ libzmq_la-clock.lo: clock.cpp clock.hpp stdint.hpp platform.hpp \
   /usr/include/_types/_uintmax_t.h likely.hpp config.hpp err.hpp \
   ../include/zmq.h /usr/include/errno.h /usr/include/sys/errno.h \
   /usr/include/sys/_types/_errno_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   /usr/include/stdio.h /usr/include/Availability.h \
   /usr/include/AvailabilityInternal.h /usr/include/_types.h \
   /usr/include/sys/_types/_va_list.h /usr/include/sys/_types/_size_t.h \
@@ -78,7 +78,7 @@ stdint.hpp:
 
 platform.hpp:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -134,7 +134,7 @@ err.hpp:
 
 /usr/include/sys/_types/_errno_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 /usr/include/stdio.h:
 

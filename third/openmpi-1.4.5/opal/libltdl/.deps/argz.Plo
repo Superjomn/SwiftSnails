@@ -14,7 +14,7 @@ argz.lo: argz.c config.h argz.h /usr/include/stdlib.h \
   /usr/include/sys/_types/_ucontext.h \
   /usr/include/sys/_types/_sigset_t.h /usr/include/sys/_types/_size_t.h \
   /usr/include/sys/_types/_uid_t.h /usr/include/sys/resource.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -58,7 +58,7 @@ argz.lo: argz.c config.h argz.h /usr/include/stdlib.h \
   /usr/include/sys/_types/_fsblkcnt_t.h \
   /usr/include/sys/_types/_fsfilcnt_t.h libltdl/lt__glibc.h \
   libltdl/slist.h libltdl/lt_system.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   /usr/include/assert.h /usr/include/string.h /usr/include/strings.h \
   /usr/include/secure/_string.h /usr/include/secure/_common.h
 
@@ -122,7 +122,7 @@ argz.h:
 
 /usr/include/sys/resource.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -262,7 +262,7 @@ libltdl/slist.h:
 
 libltdl/lt_system.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 /usr/include/assert.h:
 

@@ -14,7 +14,7 @@ otfcompress.o: otfcompress.c ../../config.h /usr/include/stdlib.h \
   /usr/include/sys/_types/_ucontext.h \
   /usr/include/sys/_types/_sigset_t.h /usr/include/sys/_types/_size_t.h \
   /usr/include/sys/_types/_uid_t.h /usr/include/sys/resource.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -68,7 +68,7 @@ otfcompress.o: otfcompress.c ../../config.h /usr/include/stdlib.h \
   /usr/include/sys/_types/_uuid_t.h /usr/include/gethostuuid.h \
   ../../otflib/OTF_inttypes.h ../../otflib/OTF_inttypes_unix.h \
   ../../otflib/OTF_Platform.h ../../otflib/OTF_Platform_unix.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   ../../otflib/OTF_Definitions.h
 
 ../../config.h:
@@ -129,7 +129,7 @@ otfcompress.o: otfcompress.c ../../config.h /usr/include/stdlib.h \
 
 /usr/include/sys/resource.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -311,6 +311,6 @@ otfcompress.o: otfcompress.c ../../config.h /usr/include/stdlib.h \
 
 ../../otflib/OTF_Platform_unix.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 ../../otflib/OTF_Definitions.h:

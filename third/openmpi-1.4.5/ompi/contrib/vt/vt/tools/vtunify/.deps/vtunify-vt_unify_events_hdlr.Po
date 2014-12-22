@@ -1,7 +1,7 @@
 vtunify-vt_unify_events_hdlr.o: vt_unify_events_hdlr.cc vt_unify_tkfac.h \
   ../../vtlib/vt_inttypes.h ../../config.h ../../config_bottom.h \
   ../../util/util.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   /usr/include/stdlib.h /usr/include/Availability.h \
   /usr/include/AvailabilityInternal.h /usr/include/_types.h \
   /usr/include/sys/_types.h /usr/include/sys/cdefs.h \
@@ -18,7 +18,7 @@ vtunify-vt_unify_events_hdlr.o: vt_unify_events_hdlr.cc vt_unify_tkfac.h \
   /usr/include/sys/_types/_ucontext.h \
   /usr/include/sys/_types/_sigset_t.h /usr/include/sys/_types/_size_t.h \
   /usr/include/sys/_types/_uid_t.h /usr/include/sys/resource.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -34,7 +34,7 @@ vtunify-vt_unify_events_hdlr.o: vt_unify_events_hdlr.cc vt_unify_tkfac.h \
   /usr/include/machine/types.h /usr/include/i386/types.h \
   /usr/include/sys/_types/_dev_t.h /usr/include/sys/_types/_mode_t.h \
   /usr/include/fnmatch.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -66,50 +66,50 @@ vtunify-vt_unify_events_hdlr.o: vt_unify_events_hdlr.cc vt_unify_tkfac.h \
   /usr/include/sys/_types/_fsblkcnt_t.h \
   /usr/include/sys/_types/_fsfilcnt_t.h /usr/include/machine/param.h \
   /usr/include/i386/param.h /usr/include/i386/_param.h \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/algorithm \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__config \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/initializer_list \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstddef \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/type_traits \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstring \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/algorithm \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__config \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/initializer_list \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstddef \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/type_traits \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstring \
   /usr/include/string.h /usr/include/strings.h \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/utility \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tuple \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tuple_03 \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/memory \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/typeinfo \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/exception \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstdint \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/new \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/limits \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__undef_min_max \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/iterator \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/iosfwd \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/utility \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__tuple \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__tuple_03 \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/typeinfo \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/exception \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstdint \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/new \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/limits \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__undef_min_max \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iosfwd \
   /usr/include/wchar.h /usr/include/sys/_types/_mbstate_t.h \
   /usr/include/stdio.h /usr/include/sys/_types/_va_list.h \
   /usr/include/sys/stdio.h /usr/include/time.h \
   /usr/include/sys/_types/_timespec.h /usr/include/_wctype.h \
   /usr/include/sys/_types/_wint_t.h /usr/include/_types/_wctype_t.h \
   /usr/include/ctype.h /usr/include/runetype.h \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_base \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_base_03 \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/tuple \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/map \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tree \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/stdexcept \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/functional \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_03 \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/string \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstdio \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cwchar \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cwctype \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cctype \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_base \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_base_03 \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/tuple \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/map \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__tree \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/stdexcept \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/functional \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_03 \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstdio \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cwchar \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cwctype \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cctype \
   /usr/include/wctype.h /usr/include/_types/_wctrans_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/vector \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__bit_reference \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/climits \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__split_buffer \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/vector \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__bit_reference \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/climits \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__split_buffer \
   vt_unify.h ../../extlib/otf/otflib/otf.h \
   ../../extlib/otf/otflib/OTF_Definitions.h \
   ../../extlib/otf/otflib/OTF_FileManager.h \
@@ -136,7 +136,7 @@ vt_unify_tkfac.h:
 
 ../../util/util.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 /usr/include/stdlib.h:
 
@@ -194,7 +194,7 @@ vt_unify_tkfac.h:
 
 /usr/include/sys/resource.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -254,7 +254,7 @@ vt_unify_tkfac.h:
 
 /usr/include/fnmatch.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -346,47 +346,47 @@ vt_unify_tkfac.h:
 
 /usr/include/i386/_param.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/algorithm:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/algorithm:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__config:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__config:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/initializer_list:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/initializer_list:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstddef:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstddef:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/type_traits:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/type_traits:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstring:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstring:
 
 /usr/include/string.h:
 
 /usr/include/strings.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/utility:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/utility:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tuple:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__tuple:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tuple_03:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__tuple_03:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/memory:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/typeinfo:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/typeinfo:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/exception:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/exception:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstdint:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstdint:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/new:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/new:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/limits:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/limits:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__undef_min_max:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__undef_min_max:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/iterator:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/iosfwd:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iosfwd:
 
 /usr/include/wchar.h:
 
@@ -412,43 +412,43 @@ vt_unify_tkfac.h:
 
 /usr/include/runetype.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_base:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_base:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_base_03:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_base_03:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/tuple:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/tuple:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/map:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/map:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tree:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__tree:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/stdexcept:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/stdexcept:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/functional:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/functional:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_03:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_03:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/string:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstdio:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstdio:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cwchar:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cwchar:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cwctype:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cwctype:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cctype:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cctype:
 
 /usr/include/wctype.h:
 
 /usr/include/_types/_wctrans_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/vector:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/vector:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__bit_reference:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__bit_reference:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/climits:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/climits:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__split_buffer:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__split_buffer:
 
 vt_unify.h:
 

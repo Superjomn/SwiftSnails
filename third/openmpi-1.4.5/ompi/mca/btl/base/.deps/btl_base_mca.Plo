@@ -2,7 +2,7 @@ base/btl_base_mca.lo: base/btl_base_mca.c \
   ../../../ompi/include/ompi_config.h \
   ../../../opal/include/opal_config.h \
   ../../../opal/include/opal_config_bottom.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -14,8 +14,8 @@ base/btl_base_mca.lo: base/btl_base_mca.c \
   /usr/include/sys/_types/_intptr_t.h \
   /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h \
   /usr/include/_types/_uintmax_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -95,13 +95,13 @@ base/btl_base_mca.lo: base/btl_base_mca.c \
   /usr/include/sys/_select.h /usr/include/arpa/inet.h \
   /usr/include/netinet/in.h /usr/include/netinet6/in6.h \
   ../../../opal/util/output.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   ../../../orte/mca/rml/rml_types.h \
   ../../../orte/include/orte/constants.h /usr/include/sys/uio.h \
   ../../../ompi/mca/btl/btl.h ../../../ompi/include/ompi/types.h \
   ../../../opal/include/opal/prefetch.h ../../../ompi/mca/mpool/mpool.h \
   ../../../ompi/info/info.h ../../../ompi/include/mpi.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   ../../../opal/util/strncpy.h ../../../opal/class/opal_pointer_array.h \
   ../../../ompi/class/ompi_free_list.h \
   ../../../opal/class/opal_atomic_lifo.h ../../../opal/threads/threads.h \
@@ -120,7 +120,7 @@ base/btl_base_mca.lo: base/btl_base_mca.c \
 
 ../../../opal/include/opal_config_bottom.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -162,9 +162,9 @@ base/btl_base_mca.lo: base/btl_base_mca.c \
 
 /usr/include/_types/_uintmax_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -428,7 +428,7 @@ base/btl_base_mca.lo: base/btl_base_mca.c \
 
 ../../../opal/util/output.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 ../../../orte/mca/rml/rml_types.h:
 
@@ -448,7 +448,7 @@ base/btl_base_mca.lo: base/btl_base_mca.c \
 
 ../../../ompi/include/mpi.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 ../../../opal/util/strncpy.h:
 

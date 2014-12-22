@@ -25,7 +25,7 @@ ad_write_nolock.lo: ad_write_nolock.c /usr/include/unistd.h \
   ../../adio/include/adio.h ../../adio/include/romioconf.h \
   ../../adio/include/romioconf-undefs.h \
   ../../../../../../../ompi/include/mpi.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/ompi/mca/io/romio/romio/include/mpio.h \
   /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/ompi/mca/io/romio/romio/include/io_romio_conv.h \
   /usr/include/fcntl.h /usr/include/sys/fcntl.h \
@@ -69,7 +69,7 @@ ad_write_nolock.lo: ad_write_nolock.c /usr/include/unistd.h \
   /usr/include/i386/_mcontext.h /usr/include/mach/i386/_structs.h \
   /usr/include/sys/_types/_sigaltstack.h \
   /usr/include/sys/_types/_ucontext.h /usr/include/sys/resource.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/_types/_uint8_t.h \
   /usr/include/_types/_uint16_t.h /usr/include/_types/_uint32_t.h \
   /usr/include/_types/_intmax_t.h /usr/include/_types/_uintmax_t.h \
@@ -174,7 +174,7 @@ ad_write_nolock.lo: ad_write_nolock.c /usr/include/unistd.h \
 
 ../../../../../../../ompi/include/mpi.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/ompi/mca/io/romio/romio/include/mpio.h:
 
@@ -306,7 +306,7 @@ ad_write_nolock.lo: ad_write_nolock.c /usr/include/unistd.h \
 
 /usr/include/sys/resource.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 

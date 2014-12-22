@@ -1,7 +1,7 @@
 btl_tcp_proc.lo: btl_tcp_proc.c ../../../../ompi/include/ompi_config.h \
   ../../../../opal/include/opal_config.h \
   ../../../../opal/include/opal_config_bottom.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -13,8 +13,8 @@ btl_tcp_proc.lo: btl_tcp_proc.c ../../../../ompi/include/ompi_config.h \
   /usr/include/sys/_types/_intptr_t.h \
   /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h \
   /usr/include/_types/_uintmax_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -85,7 +85,7 @@ btl_tcp_proc.lo: btl_tcp_proc.c ../../../../ompi/include/ompi_config.h \
   /usr/include/sys/_types/_timespec.h /usr/include/sys/_select.h \
   ../../../../orte/util/name_fns.h ../../../../orte/util/show_help.h \
   ../../../../opal/util/output.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   ../../../../orte/mca/rml/rml_types.h \
   ../../../../orte/include/orte/constants.h \
   ../../../../opal/include/opal/constants.h /usr/include/sys/uio.h \
@@ -116,7 +116,7 @@ btl_tcp_proc.lo: btl_tcp_proc.c ../../../../ompi/include/ompi_config.h \
   ../../../../orte/runtime/orte_wait.h ../../../../opal/dss/dss.h \
   ../../../../ompi/runtime/ompi_module_exchange.h \
   ../../../../opal/util/arch.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/float.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/float.h \
   ../../../../opal/util/argv.h ../../../../opal/util/if.h \
   ../../../../opal/util/net.h btl_tcp.h \
   ../../../../ompi/class/ompi_bitmap.h \
@@ -127,7 +127,7 @@ btl_tcp_proc.lo: btl_tcp_proc.c ../../../../ompi/include/ompi_config.h \
   ../../../../ompi/include/ompi/constants.h \
   ../../../../opal/include/opal/sys/cache.h \
   ../../../../ompi/mca/pml/pml.h ../../../../ompi/include/mpi.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   ../../../../ompi/mca/btl/btl.h ../../../../ompi/mca/mpool/mpool.h \
   ../../../../ompi/info/info.h ../../../../opal/util/strncpy.h \
   ../../../../opal/mca/crs/base/base.h \
@@ -142,7 +142,7 @@ btl_tcp_proc.lo: btl_tcp_proc.c ../../../../ompi/include/ompi_config.h \
 
 ../../../../opal/include/opal_config_bottom.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -184,9 +184,9 @@ btl_tcp_proc.lo: btl_tcp_proc.c ../../../../ompi/include/ompi_config.h \
 
 /usr/include/_types/_uintmax_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -414,7 +414,7 @@ btl_tcp_proc.lo: btl_tcp_proc.c ../../../../ompi/include/ompi_config.h \
 
 ../../../../opal/util/output.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 ../../../../orte/mca/rml/rml_types.h:
 
@@ -500,7 +500,7 @@ btl_tcp_proc.lo: btl_tcp_proc.c ../../../../ompi/include/ompi_config.h \
 
 ../../../../opal/util/arch.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/float.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/float.h:
 
 ../../../../opal/util/argv.h:
 
@@ -528,7 +528,7 @@ btl_tcp.h:
 
 ../../../../ompi/include/mpi.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 ../../../../ompi/mca/btl/btl.h:
 

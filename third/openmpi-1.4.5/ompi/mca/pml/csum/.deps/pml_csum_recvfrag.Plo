@@ -2,7 +2,7 @@ pml_csum_recvfrag.lo: pml_csum_recvfrag.c \
   ../../../../ompi/include/ompi_config.h \
   ../../../../opal/include/opal_config.h \
   ../../../../opal/include/opal_config_bottom.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -14,8 +14,8 @@ pml_csum_recvfrag.lo: pml_csum_recvfrag.c \
   /usr/include/sys/_types/_intptr_t.h \
   /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h \
   /usr/include/_types/_uintmax_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -76,7 +76,7 @@ pml_csum_recvfrag.lo: pml_csum_recvfrag.c \
   /usr/include/alloca.h /usr/include/sys/_types/_ct_rune_t.h \
   /usr/include/sys/_types/_rune_t.h ../../../../opal/class/opal_object.h \
   /usr/include/assert.h ../../../../opal/util/crc.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   ../../../../opal/threads/mutex.h ../../../../opal/threads/mutex_unix.h \
   /usr/include/pthread.h /usr/include/pthread/pthread_impl.h \
   /usr/include/pthread/sched.h /usr/include/time.h \
@@ -89,7 +89,7 @@ pml_csum_recvfrag.lo: pml_csum_recvfrag.c \
   ../../../../opal/include/opal/sys/atomic_impl.h \
   ../../../../opal/include/opal/prefetch.h \
   ../../../../opal/util/output.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   ../../../../orte/util/name_fns.h ../../../../orte/include/orte/types.h \
   ../../../../opal/dss/dss_types.h ../../../../opal/include/opal/types.h \
   /usr/include/sys/socket.h /usr/include/machine/_param.h \
@@ -151,7 +151,7 @@ pml_csum_recvfrag.lo: pml_csum_recvfrag.c \
   ../../../../ompi/mca/pml/base/pml_base_sendreq.h \
   ../../../../ompi/mca/btl/btl.h ../../../../ompi/mca/mpool/mpool.h \
   pml_csum_hdr.h ../../../../opal/util/arch.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/float.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/float.h \
   ../../../../ompi/mca/bml/base/base.h ../../../../ompi/mca/bml/bml.h \
   ../../../../ompi/mca/bml/base/bml_base_btl.h \
   ../../../../ompi/mca/allocator/base/base.h \
@@ -167,7 +167,7 @@ pml_csum_recvfrag.lo: pml_csum_recvfrag.c \
 
 ../../../../opal/include/opal_config_bottom.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -209,9 +209,9 @@ pml_csum_recvfrag.lo: pml_csum_recvfrag.c \
 
 /usr/include/_types/_uintmax_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -403,7 +403,7 @@ pml_csum_recvfrag.lo: pml_csum_recvfrag.c \
 
 ../../../../opal/util/crc.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 ../../../../opal/threads/mutex.h:
 
@@ -441,7 +441,7 @@ pml_csum_recvfrag.lo: pml_csum_recvfrag.c \
 
 ../../../../opal/util/output.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 ../../../../orte/util/name_fns.h:
 
@@ -625,7 +625,7 @@ pml_csum_hdr.h:
 
 ../../../../opal/util/arch.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/float.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/float.h:
 
 ../../../../ompi/mca/bml/base/base.h:
 

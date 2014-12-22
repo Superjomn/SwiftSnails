@@ -1,6 +1,6 @@
 runtime/opal_progress.lo: runtime/opal_progress.c \
   ../opal/include/opal_config.h ../opal/include/opal_config_bottom.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -12,8 +12,8 @@ runtime/opal_progress.lo: runtime/opal_progress.c \
   /usr/include/sys/_types/_intptr_t.h \
   /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h \
   /usr/include/_types/_uintmax_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -81,7 +81,7 @@ runtime/opal_progress.lo: runtime/opal_progress.c \
   ../opal/include/opal/sys/atomic_impl.h ../opal/event/event.h \
   ../opal/event/event_rename.h /usr/include/sys/time.h \
   /usr/include/sys/_select.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   ../opal/event/evutil.h ../opal/mca/base/mca_base_param.h \
   ../opal/class/opal_value_array.h /usr/include/string.h \
   /usr/include/strings.h /usr/include/secure/_string.h \
@@ -127,7 +127,7 @@ runtime/opal_progress.lo: runtime/opal_progress.c \
 
 ../opal/include/opal_config_bottom.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -169,9 +169,9 @@ runtime/opal_progress.lo: runtime/opal_progress.c \
 
 /usr/include/_types/_uintmax_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -393,7 +393,7 @@ runtime/opal_progress.lo: runtime/opal_progress.c \
 
 /usr/include/sys/_select.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 ../opal/event/evutil.h:
 

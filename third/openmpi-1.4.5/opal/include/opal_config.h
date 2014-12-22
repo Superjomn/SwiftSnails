@@ -1398,7 +1398,7 @@
 #define OPAL_MINOR_VERSION 4
 
 /* package/branding string for Open MPI */
-#define OPAL_PACKAGE_STRING "Open MPI Chunwei@appledeMacBook-Air.local Distribution"
+#define OPAL_PACKAGE_STRING "Open MPI Chunwei@appledeMacBook-Air-2.local Distribution"
 
 /* Release date of Open Portable Access Layer */
 #define OPAL_RELEASE_DATE "Feb 10, 2012"

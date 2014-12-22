@@ -2,7 +2,7 @@ base/btl_base_error.lo: base/btl_base_error.c \
   ../../../ompi/include/ompi_config.h \
   ../../../opal/include/opal_config.h \
   ../../../opal/include/opal_config_bottom.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -14,8 +14,8 @@ base/btl_base_error.lo: base/btl_base_error.c \
   /usr/include/sys/_types/_intptr_t.h \
   /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h \
   /usr/include/_types/_uintmax_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -67,7 +67,7 @@ base/btl_base_error.lo: base/btl_base_error.c \
   /usr/include/stdio.h /usr/include/sys/_types/_va_list.h \
   /usr/include/sys/stdio.h /usr/include/secure/_stdio.h \
   /usr/include/secure/_common.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   base/base.h ../../../opal/class/opal_list.h /usr/include/stdlib.h \
   /usr/include/sys/wait.h /usr/include/sys/resource.h \
   /usr/include/sys/_types/_timeval.h /usr/include/alloca.h \
@@ -94,7 +94,7 @@ base/btl_base_error.lo: base/btl_base_error.c \
   ../../../opal/include/opal/prefetch.h ../../../ompi/mca/mpool/mpool.h \
   ../../../ompi/info/info.h /usr/include/string.h /usr/include/strings.h \
   /usr/include/secure/_string.h ../../../ompi/include/mpi.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   ../../../opal/util/strncpy.h ../../../opal/class/opal_pointer_array.h \
   ../../../ompi/class/ompi_free_list.h \
   ../../../opal/class/opal_atomic_lifo.h ../../../opal/threads/threads.h \
@@ -125,7 +125,7 @@ base/btl_base_error.lo: base/btl_base_error.c \
 
 ../../../opal/include/opal_config_bottom.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -167,9 +167,9 @@ base/btl_base_error.lo: base/btl_base_error.c \
 
 /usr/include/_types/_uintmax_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -331,7 +331,7 @@ base/btl_base_error.lo: base/btl_base_error.c \
 
 /usr/include/secure/_common.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 base/base.h:
 
@@ -431,7 +431,7 @@ base/base.h:
 
 ../../../ompi/include/mpi.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 ../../../opal/util/strncpy.h:
 

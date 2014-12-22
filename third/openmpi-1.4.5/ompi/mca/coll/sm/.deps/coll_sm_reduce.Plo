@@ -2,7 +2,7 @@ coll_sm_reduce.lo: coll_sm_reduce.c \
   ../../../../ompi/include/ompi_config.h \
   ../../../../opal/include/opal_config.h \
   ../../../../opal/include/opal_config_bottom.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -14,8 +14,8 @@ coll_sm_reduce.lo: coll_sm_reduce.c \
   /usr/include/sys/_types/_intptr_t.h \
   /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h \
   /usr/include/_types/_uintmax_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -76,7 +76,7 @@ coll_sm_reduce.lo: coll_sm_reduce.c \
   /usr/include/sys/_types/_rune_t.h \
   ../../../../ompi/errhandler/errhandler.h \
   ../../../../ompi/include/mpi.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   ../../../../opal/include/opal/prefetch.h \
   ../../../../opal/class/opal_pointer_array.h \
   ../../../../opal/threads/mutex.h ../../../../opal/threads/mutex_unix.h \
@@ -116,7 +116,7 @@ coll_sm_reduce.lo: coll_sm_reduce.c \
   ../../../../opal/class/opal_value_array.h /usr/include/string.h \
   /usr/include/strings.h /usr/include/secure/_string.h \
   ../../../../opal/event/event.h ../../../../opal/event/event_rename.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   ../../../../opal/event/evutil.h ../../../../opal/util/output.h \
   ../../../../orte/mca/plm/plm_types.h ../../../../orte/util/proc_info.h \
   ../../../../orte/runtime/runtime.h \
@@ -142,7 +142,7 @@ coll_sm_reduce.lo: coll_sm_reduce.c \
 
 ../../../../opal/include/opal_config_bottom.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -184,9 +184,9 @@ coll_sm_reduce.lo: coll_sm_reduce.c \
 
 /usr/include/_types/_uintmax_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -370,7 +370,7 @@ coll_sm_reduce.lo: coll_sm_reduce.c \
 
 ../../../../ompi/include/mpi.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 ../../../../opal/include/opal/prefetch.h:
 
@@ -492,7 +492,7 @@ coll_sm_reduce.lo: coll_sm_reduce.c \
 
 ../../../../opal/event/event_rename.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 ../../../../opal/event/evutil.h:
 

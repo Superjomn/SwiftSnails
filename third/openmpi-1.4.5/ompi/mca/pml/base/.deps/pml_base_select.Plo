@@ -2,7 +2,7 @@ base/pml_base_select.lo: base/pml_base_select.c \
   ../../../ompi/include/ompi_config.h \
   ../../../opal/include/opal_config.h \
   ../../../opal/include/opal_config_bottom.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -14,8 +14,8 @@ base/pml_base_select.lo: base/pml_base_select.c \
   /usr/include/sys/_types/_intptr_t.h \
   /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h \
   /usr/include/_types/_uintmax_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -81,7 +81,7 @@ base/pml_base_select.lo: base/pml_base_select.c \
   /usr/include/sys/_types/_timespec.h /usr/include/sys/_select.h \
   /usr/include/arpa/inet.h /usr/include/netinet/in.h \
   /usr/include/netinet6/in6.h ../../../opal/util/output.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   ../../../orte/mca/rml/rml_types.h \
   ../../../orte/include/orte/constants.h \
   ../../../opal/include/opal/constants.h /usr/include/sys/uio.h \
@@ -111,7 +111,7 @@ base/pml_base_select.lo: base/pml_base_select.c \
   ../../../orte/runtime/orte_wait.h ../../../opal/dss/dss.h \
   ../../../ompi/include/ompi/constants.h ../../../ompi/mca/pml/pml.h \
   ../../../ompi/include/mpi.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   ../../../ompi/mca/pml/base/base.h ../../../ompi/proc/proc.h \
   ../../../ompi/include/ompi/types.h \
   ../../../ompi/runtime/ompi_module_exchange.h
@@ -122,7 +122,7 @@ base/pml_base_select.lo: base/pml_base_select.c \
 
 ../../../opal/include/opal_config_bottom.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -164,9 +164,9 @@ base/pml_base_select.lo: base/pml_base_select.c \
 
 /usr/include/_types/_uintmax_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -382,7 +382,7 @@ base/pml_base_select.lo: base/pml_base_select.c \
 
 ../../../opal/util/output.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 ../../../orte/mca/rml/rml_types.h:
 
@@ -484,7 +484,7 @@ base/pml_base_select.lo: base/pml_base_select.c \
 
 ../../../ompi/include/mpi.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 ../../../ompi/mca/pml/base/base.h:
 

@@ -33,7 +33,7 @@ libltdlc_la-lt__alloc.lo: lt__alloc.c libltdl/lt__private.h config.h \
   /usr/include/sys/_types/_dev_t.h /usr/include/sys/_types/_mode_t.h \
   /usr/include/sys/_types/_uuid_t.h /usr/include/gethostuuid.h \
   libltdl/lt__alloc.h libltdl/lt_system.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   /usr/include/stdlib.h /usr/include/sys/wait.h \
   /usr/include/sys/_types/_id_t.h /usr/include/sys/signal.h \
   /usr/include/machine/signal.h /usr/include/i386/signal.h \
@@ -42,7 +42,7 @@ libltdlc_la-lt__alloc.lo: lt__alloc.c libltdl/lt__private.h config.h \
   /usr/include/sys/_pthread/_pthread_attr_t.h \
   /usr/include/sys/_types/_sigaltstack.h \
   /usr/include/sys/_types/_ucontext.h /usr/include/sys/resource.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -206,7 +206,7 @@ libltdl/lt__alloc.h:
 
 libltdl/lt_system.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 /usr/include/stdlib.h:
 
@@ -234,7 +234,7 @@ libltdl/lt_system.h:
 
 /usr/include/sys/resource.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 

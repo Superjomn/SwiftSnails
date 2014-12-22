@@ -1,7 +1,7 @@
 ad_fstype.lo: ad_fstype.c ../../adio/include/adio.h \
   ../../adio/include/romioconf.h ../../adio/include/romioconf-undefs.h \
   ../../../../../../../ompi/include/mpi.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/ompi/mca/io/romio/romio/include/mpio.h \
   /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/ompi/mca/io/romio/romio/include/io_romio_conv.h \
   /usr/include/fcntl.h /usr/include/sys/fcntl.h \
@@ -64,7 +64,7 @@ ad_fstype.lo: ad_fstype.c ../../adio/include/adio.h \
   /usr/include/sys/_types/_sigaltstack.h \
   /usr/include/sys/_types/_ucontext.h \
   /usr/include/sys/_types/_sigset_t.h /usr/include/sys/resource.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/_types/_uint8_t.h \
   /usr/include/_types/_uint16_t.h /usr/include/_types/_uint32_t.h \
   /usr/include/_types/_uint64_t.h /usr/include/_types/_intmax_t.h \
@@ -81,7 +81,7 @@ ad_fstype.lo: ad_fstype.c ../../adio/include/adio.h \
   /usr/include/sys/param.h /usr/include/sys/syslimits.h \
   /usr/include/machine/param.h /usr/include/i386/param.h \
   /usr/include/i386/_param.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/statvfs.h /usr/include/sys/mount.h \
@@ -102,7 +102,7 @@ ad_fstype.lo: ad_fstype.c ../../adio/include/adio.h \
 
 ../../../../../../../ompi/include/mpi.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/ompi/mca/io/romio/romio/include/mpio.h:
 
@@ -302,7 +302,7 @@ ad_fstype.lo: ad_fstype.c ../../adio/include/adio.h \
 
 /usr/include/sys/resource.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -366,7 +366,7 @@ ad_fstype.lo: ad_fstype.c ../../adio/include/adio.h \
 
 /usr/include/i386/_param.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 

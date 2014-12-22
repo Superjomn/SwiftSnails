@@ -13,7 +13,7 @@
 
 namespace swift_snails {
 
-inline uint64 get_hash_code(uint64 x) {
+inline uint64_t get_hash_code(uint64_t x) {
    // copy from MurmurHash3
    x ^= x >> 33;
    x *= 0xff51afd7ed558ccd;

@@ -5,7 +5,7 @@ using namespace swift_snails;
 using namespace std;
 
 void test_hash() {
-    for(uint64 a = 0; a < 1000; a++) {
+    for(uint64_t a = 0; a < 1000; a++) {
         cout << a << "\t" << get_hash_code(a) << endl;
     }
 }

@@ -14,7 +14,7 @@ OTF_FileManager.lo: OTF_FileManager.c /usr/include/stdlib.h \
   /usr/include/sys/_types/_ucontext.h \
   /usr/include/sys/_types/_sigset_t.h /usr/include/sys/_types/_size_t.h \
   /usr/include/sys/_types/_uid_t.h /usr/include/sys/resource.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -36,7 +36,7 @@ OTF_FileManager.lo: OTF_FileManager.c /usr/include/stdlib.h \
   /usr/include/sys/_types/_rsize_t.h /usr/include/sys/_types/_errno_t.h \
   /usr/include/strings.h /usr/include/secure/_string.h OTF_Platform.h \
   OTF_Platform_unix.h ../config.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   OTF_FileManager.h OTF_inttypes.h OTF_inttypes_unix.h OTF_File.h \
   OTF_Filenames.h OTF_Definitions.h
 
@@ -96,7 +96,7 @@ OTF_FileManager.lo: OTF_FileManager.c /usr/include/stdlib.h \
 
 /usr/include/sys/resource.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -184,7 +184,7 @@ OTF_Platform_unix.h:
 
 ../config.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 OTF_FileManager.h:
 

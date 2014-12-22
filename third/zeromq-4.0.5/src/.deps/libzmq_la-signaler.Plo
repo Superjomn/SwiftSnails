@@ -25,7 +25,7 @@ libzmq_la-signaler.lo: signaler.cpp platform.hpp /usr/include/poll.h \
   /usr/include/sys/_types/_dev_t.h /usr/include/sys/_types/_mode_t.h \
   /usr/include/sys/_types/_uuid_t.h /usr/include/gethostuuid.h fd.hpp \
   likely.hpp stdint.hpp \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -34,7 +34,7 @@ libzmq_la-signaler.lo: signaler.cpp platform.hpp /usr/include/poll.h \
   /usr/include/_types/_uintmax_t.h config.hpp err.hpp ../include/zmq.h \
   /usr/include/errno.h /usr/include/sys/errno.h \
   /usr/include/sys/_types/_errno_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   /usr/include/stdio.h /usr/include/sys/_types/_va_list.h \
   /usr/include/sys/stdio.h /usr/include/assert.h /usr/include/stdlib.h \
   /usr/include/sys/wait.h /usr/include/sys/_types/_id_t.h \
@@ -71,39 +71,39 @@ libzmq_la-signaler.lo: signaler.cpp platform.hpp /usr/include/poll.h \
   /usr/include/sys/_types/_fsfilcnt_t.h /usr/include/machine/_param.h \
   /usr/include/i386/_param.h /usr/include/sys/_types/_sa_family_t.h \
   /usr/include/sys/_types/_iovec_t.h /usr/include/netinet6/in6.h ip.hpp \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/string \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__config \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/iosfwd \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__config \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iosfwd \
   /usr/include/wchar.h /usr/include/sys/_types/_mbstate_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   /usr/include/time.h /usr/include/_wctype.h \
   /usr/include/sys/_types/_wint_t.h /usr/include/_types/_wctype_t.h \
   /usr/include/ctype.h /usr/include/runetype.h \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstring \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstdio \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cwchar \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cwctype \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cctype \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstring \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstdio \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cwchar \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cwctype \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cctype \
   /usr/include/wctype.h /usr/include/_types/_wctrans_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/algorithm \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/initializer_list \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstddef \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/type_traits \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/utility \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tuple \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tuple_03 \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/memory \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/typeinfo \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/exception \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstdint \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/new \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/limits \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__undef_min_max \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/iterator \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_base \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_base_03 \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/tuple \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/stdexcept \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/algorithm \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/initializer_list \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstddef \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/type_traits \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/utility \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__tuple \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__tuple_03 \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/typeinfo \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/exception \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstdint \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/new \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/limits \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__undef_min_max \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_base \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_base_03 \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/tuple \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/stdexcept \
   /usr/include/netinet/tcp.h
 
 platform.hpp:
@@ -206,7 +206,7 @@ likely.hpp:
 
 stdint.hpp:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -242,7 +242,7 @@ err.hpp:
 
 /usr/include/sys/_types/_errno_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 /usr/include/stdio.h:
 
@@ -368,17 +368,17 @@ err.hpp:
 
 ip.hpp:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/string:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__config:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__config:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/iosfwd:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iosfwd:
 
 /usr/include/wchar.h:
 
 /usr/include/sys/_types/_mbstate_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 /usr/include/time.h:
 
@@ -392,56 +392,56 @@ ip.hpp:
 
 /usr/include/runetype.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstring:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstring:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstdio:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstdio:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cwchar:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cwchar:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cwctype:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cwctype:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cctype:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cctype:
 
 /usr/include/wctype.h:
 
 /usr/include/_types/_wctrans_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/algorithm:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/algorithm:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/initializer_list:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/initializer_list:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstddef:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstddef:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/type_traits:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/type_traits:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/utility:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/utility:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tuple:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__tuple:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tuple_03:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__tuple_03:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/memory:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/typeinfo:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/typeinfo:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/exception:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/exception:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstdint:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cstdint:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/new:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/new:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/limits:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/limits:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__undef_min_max:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__undef_min_max:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/iterator:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_base:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_base:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_base_03:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_base_03:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/tuple:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/tuple:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/stdexcept:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/stdexcept:
 
 /usr/include/netinet/tcp.h:

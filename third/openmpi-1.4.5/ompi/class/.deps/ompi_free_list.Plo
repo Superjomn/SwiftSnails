@@ -1,7 +1,7 @@
 class/ompi_free_list.lo: class/ompi_free_list.c \
   ../ompi/include/ompi_config.h ../opal/include/opal_config.h \
   ../opal/include/opal_config_bottom.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -13,8 +13,8 @@ class/ompi_free_list.lo: class/ompi_free_list.c \
   /usr/include/sys/_types/_intptr_t.h \
   /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h \
   /usr/include/_types/_uintmax_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -91,7 +91,7 @@ class/ompi_free_list.lo: class/ompi_free_list.c \
   /usr/include/secure/_string.h ../opal/include/opal/constants.h \
   ../opal/class/opal_hash_table.h ../opal/event/event.h \
   ../opal/event/event_rename.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   ../opal/event/evutil.h ../opal/util/output.h \
   ../ompi/include/ompi/constants.h ../orte/include/orte/constants.h \
   ../orte/include/orte_config.h ../opal/include/opal/sys/cache.h \
@@ -105,7 +105,7 @@ class/ompi_free_list.lo: class/ompi_free_list.c \
   /usr/include/netinet6/in6.h ../orte/mca/rml/rml_types.h \
   /usr/include/sys/uio.h ../ompi/mca/mpool/mpool.h ../ompi/info/info.h \
   ../ompi/include/mpi.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   ../opal/util/strncpy.h ../opal/class/opal_pointer_array.h \
   ../opal/mca/crs/base/base.h ../opal/util/opal_environ.h \
   /usr/include/crt_externs.h
@@ -116,7 +116,7 @@ class/ompi_free_list.lo: class/ompi_free_list.c \
 
 ../opal/include/opal_config_bottom.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -158,9 +158,9 @@ class/ompi_free_list.lo: class/ompi_free_list.c \
 
 /usr/include/_types/_uintmax_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -418,7 +418,7 @@ class/ompi_free_list.lo: class/ompi_free_list.c \
 
 ../opal/event/event_rename.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 ../opal/event/evutil.h:
 
@@ -470,7 +470,7 @@ class/ompi_free_list.lo: class/ompi_free_list.c \
 
 ../ompi/include/mpi.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 ../opal/util/strncpy.h:
 

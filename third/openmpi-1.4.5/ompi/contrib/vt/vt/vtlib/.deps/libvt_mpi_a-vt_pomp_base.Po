@@ -19,7 +19,7 @@ libvt_mpi_a-vt_pomp_base.o: vt_pomp_base.c /usr/include/stdio.h \
   /usr/include/sys/_types/_ucontext.h \
   /usr/include/sys/_types/_sigset_t.h /usr/include/sys/_types/_uid_t.h \
   /usr/include/sys/resource.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -38,12 +38,12 @@ libvt_mpi_a-vt_pomp_base.o: vt_pomp_base.c /usr/include/stdio.h \
   /usr/include/strings.h /usr/include/secure/_string.h \
   /usr/include/libgen.h ../tools/opari/lib/pomp_lib.h \
   ../tools/opari/lib/opari_omp.h vt_defs.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h vt_inttypes.h ../config.h \
   ../config_bottom.h ../util/util.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   /usr/include/fnmatch.h /usr/include/sys/param.h \
   /usr/include/sys/types.h /usr/include/sys/_types/_blkcnt_t.h \
   /usr/include/sys/_types/_blksize_t.h /usr/include/sys/_types/_gid_t.h \
@@ -145,7 +145,7 @@ libvt_mpi_a-vt_pomp_base.o: vt_pomp_base.c /usr/include/stdio.h \
 
 /usr/include/sys/resource.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -219,7 +219,7 @@ libvt_mpi_a-vt_pomp_base.o: vt_pomp_base.c /usr/include/stdio.h \
 
 vt_defs.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -239,7 +239,7 @@ vt_inttypes.h:
 
 ../util/util.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 /usr/include/fnmatch.h:
 

@@ -3,7 +3,7 @@ mca_vprotocol_pessimist_la-vprotocol_pessimist_probe.lo: \
   ../../../../../../../ompi/include/ompi_config.h \
   ../../../../../../../opal/include/opal_config.h \
   ../../../../../../../opal/include/opal_config_bottom.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -15,8 +15,8 @@ mca_vprotocol_pessimist_la-vprotocol_pessimist_probe.lo: \
   /usr/include/sys/_types/_intptr_t.h \
   /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h \
   /usr/include/_types/_uintmax_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -67,7 +67,7 @@ mca_vprotocol_pessimist_la-vprotocol_pessimist_probe.lo: \
   /usr/include/_types.h /usr/include/sys/_types/_wchar_t.h \
   ../../../../../../../ompi/request/request.h \
   ../../../../../../../ompi/include/mpi.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   ../../../../../../../ompi/class/ompi_free_list.h \
   ../../../../../../../opal/class/opal_atomic_lifo.h \
   ../../../../../../../opal/class/opal_list.h /usr/include/stdio.h \
@@ -106,7 +106,7 @@ mca_vprotocol_pessimist_la-vprotocol_pessimist_probe.lo: \
   ../../../../../../../opal/class/opal_hash_table.h \
   ../../../../../../../opal/event/event.h \
   ../../../../../../../opal/event/event_rename.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   ../../../../../../../opal/event/evutil.h \
   ../../../../../../../opal/util/output.h \
   ../../../../../../../ompi/include/ompi/constants.h \
@@ -172,7 +172,7 @@ mca_vprotocol_pessimist_la-vprotocol_pessimist_probe.lo: \
 
 ../../../../../../../opal/include/opal_config_bottom.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -214,9 +214,9 @@ mca_vprotocol_pessimist_la-vprotocol_pessimist_probe.lo: \
 
 /usr/include/_types/_uintmax_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -372,7 +372,7 @@ mca_vprotocol_pessimist_la-vprotocol_pessimist_probe.lo: \
 
 ../../../../../../../ompi/include/mpi.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 ../../../../../../../ompi/class/ompi_free_list.h:
 
@@ -480,7 +480,7 @@ mca_vprotocol_pessimist_la-vprotocol_pessimist_probe.lo: \
 
 ../../../../../../../opal/event/event_rename.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 ../../../../../../../opal/event/evutil.h:
 

@@ -2,7 +2,7 @@ src/io_romio_file_open.lo: src/io_romio_file_open.c \
   ../../../../ompi/include/ompi_config.h \
   ../../../../opal/include/opal_config.h \
   ../../../../opal/include/opal_config_bottom.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -14,8 +14,8 @@ src/io_romio_file_open.lo: src/io_romio_file_open.c \
   /usr/include/sys/_types/_intptr_t.h \
   /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h \
   /usr/include/_types/_uintmax_t.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h \
   /usr/include/limits.h /usr/include/machine/limits.h \
   /usr/include/i386/limits.h /usr/include/i386/_limits.h \
   /usr/include/sys/syslimits.h /usr/include/sys/param.h \
@@ -72,7 +72,7 @@ src/io_romio_file_open.lo: src/io_romio_file_open.c \
   /usr/include/sys/_types/_rune_t.h \
   /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/ompi/errhandler/errhandler.h \
   ../../../../ompi/include/mpi.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   ../../../../opal/include/opal/prefetch.h \
   /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/opal/class/opal_pointer_array.h \
   /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/opal/threads/mutex.h \
@@ -122,7 +122,7 @@ src/io_romio_file_open.lo: src/io_romio_file_open.c \
   /usr/include/secure/_string.h \
   /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/opal/event/event.h \
   /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/opal/event/event_rename.h \
-  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
   /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/opal/event/evutil.h \
   /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/opal/util/output.h \
   /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/orte/mca/plm/plm_types.h \
@@ -162,7 +162,7 @@ src/io_romio_file_open.lo: src/io_romio_file_open.c \
 
 ../../../../opal/include/opal_config_bottom.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -204,9 +204,9 @@ src/io_romio_file_open.lo: src/io_romio_file_open.c \
 
 /usr/include/_types/_uintmax_t.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdbool.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdbool.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/limits.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -382,7 +382,7 @@ src/io_romio_file_open.lo: src/io_romio_file_open.c \
 
 ../../../../ompi/include/mpi.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 ../../../../opal/include/opal/prefetch.h:
 
@@ -512,7 +512,7 @@ src/io_romio_file_open.lo: src/io_romio_file_open.c \
 
 /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/opal/event/event_rename.h:
 
-/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 /Users/apple/project/SwiftSnails/third/openmpi-1.4.5/opal/event/evutil.h:
 
