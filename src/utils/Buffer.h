@@ -12,6 +12,10 @@ namespace swift_snails {
 /*
  * 将对象序列化，便于网络传输
  * 管理动态分配内存
+ *
+ * 先传入数据
+ * 由于共享cursor，因此在传入数据之后，
+ * 要读出数据，必须reset_cursor来重新设置cursor
  */
 class BasicBuffer {
 public:
@@ -81,13 +85,15 @@ protected:
             _buffer = newbuf;
         }
     }
-    // on put mod
-    // will change end and 
-    // should not use in read mod
-    void put_cursor_preceed(size_t size) {
+    // used in read mod
+    void cursor_preceed(size_t size) {
       //CHECK(cursor() + size < end());
       _cursor += size;
-      _end = _cursor + 1;
+      //_end = _cursor + 1;
+    }
+    // used in write mod
+    void end_preceed(size_t size) {
+        _end += size;
     }
 
     void free() {
@@ -105,9 +111,9 @@ protected:
     }
 
 private:
-    char* _buffer = nullptr;
-    char* _cursor = nullptr;
-    char* _end = nullptr;   // the next byte of valid buffer's tail
+    char* _buffer = nullptr;    // memory address
+    char* _cursor = nullptr;    // read cursor
+    char* _end = nullptr;       // the next byte of valid buffer's tail
     size_t _capacity = 1024;
 };  // end class BasicBuffer
 
@@ -143,7 +149,8 @@ protected:
     void get_raw(T& x) {
         CHECK(! read_finished());
         memcpy(&x, cursor(), sizeof(T));
-        put_cursor_preceed(sizeof(T));
+        cursor_preceed(sizeof(T));
+        //set_cursor(cursor() + sizeof(T));
     }
 
     template<typename T>
@@ -151,7 +158,8 @@ protected:
         T x;
         CHECK(! read_finished());
         memcpy(&x, cursor(), sizeof(T));
-        put_cursor_preceed(sizeof(T));
+        //set_cursor(cursor() + sizeof(T));
+        cursor_preceed(sizeof(T));
         return std::move(x);
     }
 
@@ -162,7 +170,9 @@ protected:
             reserve(newcap);
         }
         memcpy(end(), &x, sizeof(T));
-        put_cursor_preceed(sizeof(T));
+        end_preceed(sizeof(T));
+        //_end += sizeof(T);
+        //put_cursor_preceed(sizeof(T));
     }
 
 };  // end class BinaryBuffer
@@ -215,8 +225,10 @@ public:
             reserve(newcap);
         }
         memcpy(buffer(), x.c_str(), x.size());
-        put_cursor_preceed(x.size());
-        set_end(cursor() + 1);
+        //_end += x.size();
+        end_preceed(x.size());
+        //put_cursor_preceed(x.size());
+        //set_end(cursor() + 1);
         return *this;
     }
     #define SS_REPEAT_PATTERN(T) \
