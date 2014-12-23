@@ -1,3 +1,7 @@
+#ifndef SwiftSnails_SwiftSnails_Message_h_
+#define SwiftSnails_SwiftSnails_Message_h_
+#include "../utils/Buffer.h"
+
 namespace swift_snails {
 
 struct MessageMeta {
@@ -17,6 +21,10 @@ public:
         PCHECK(0 == zmq_msg_init_size(&_zmg, size));
         memcpy(buffer(), buf, size);
     }
+
+    Message(BasicBuffer &b) : 
+        Message(b.buffer(), b.length())
+    {}
 
     ~Message() {
         PCHECK(0 == zmq_msg_close(&_zmg));
@@ -58,3 +66,4 @@ private:
 };  // end class Message
 
 };  // end namespace swift_snails
+#endif
