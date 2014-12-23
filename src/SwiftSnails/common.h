@@ -23,5 +23,19 @@ inline void zmq_bind_random_port(const std::string& ip, void* socket, std::strin
     }
 }
 
+template<class FUNC, class... ARGS>
+auto ignore_signal_call(FUNC func, ARGS&&... args) 
+    -> typename std::result_of<FUNC(ARGS...)>::type 
+{
+    while (true) {
+        auto err = func(args...);
+        if (err < 0 && errno == EINTR) {
+            LOG(INFO) << "Stop signal is caught. Ignored";
+            continue;
+        }
+        return err;
+    }
+}
+
 };  // end namespace swift_snails
 #endif
