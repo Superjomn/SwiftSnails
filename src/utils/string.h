@@ -49,6 +49,17 @@ bool headswith(const std::string &s, const std::string &head) {
     return s.substr(0, head.size()) == head;
 }
 
+template<typename... ARGS>
+void format_string(std::string& s, const char* format, ARGS... args) {
+    // get target size
+    int len = snprintf(NULL, 0, format, args...);
+    CHECK(len >= 0);
+    size_t oldlen = s.length();
+    s.resize(oldlen + len + 1);
+    CHECK(snprintf(&s[oldlen], (size_t)len+1, format, args...) == len);
+    s.resize(oldlen + len);
+}
+
 }; // end namespace swift_snails
 
 #endif 

@@ -51,12 +51,21 @@ void test_headswith()
     CHECK(kv.second == "../../path");
 }
 
+void test_format_string()
+{
+    LOG(INFO) << "<test_format_string>";
+    string a = "hello world";
+    format_string(a, "\tname:%s\tage:%d", "superjom", 25);
+    LOG(INFO) << "a:\t" << a;
+}
+
 int main()
 {
     test_trim();
     test_split();
     test_key_value_split();
     test_headswith();
+    test_format_string();
 
     return 0;
 }
