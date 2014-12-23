@@ -12,13 +12,6 @@
 #include "../../utils/SpinLock.h"
 
 namespace swift_snails {
-
-
-struct MessageMeta {
-    uint64_t message_class; // server-side function
-    uint64_t message_id;    // used for client's response
-    int client_id;          // to send response
-};
 /*
  * basic server deal with the network connections
  * it has following functions:
