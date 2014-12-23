@@ -27,7 +27,7 @@ public:
     void register_message_class(index_t id, CallBack_t&& callback) {
         _spinlock.lock();
         CHECK(message_classes.count(id) == 0) << 
-                "callback should be registerd only once;
+                "callback should be registerd only once";
         message_classes.insert(
             std::map<index_t, CallBack>::value_type(id, std::move(callback)));
         _spinlock.unlock();
