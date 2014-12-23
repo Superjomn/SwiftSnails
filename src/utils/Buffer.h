@@ -184,13 +184,12 @@ protected:
  */
 class TextBuffer    : public BasicBuffer {
 public:
-    static const std::string delimiter;
-    static const std::string cendl;
+    static const std::string delimiter;     // to split numbers
+    static const std::string cendl;         // to split records
 
     template<typename T>
     void put_math(T& x) {   // just copy data's string to buffer
         std::string x_ = std::to_string(x);
-        //std::cout << "string:\t" << x_ << std::endl;
         *this << x_;
     }
     // ints
