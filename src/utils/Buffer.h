@@ -184,9 +184,13 @@ protected:
  */
 class TextBuffer    : public BasicBuffer {
 public:
+    static const std::string delimiter;
+    static const std::string cendl;
+
     template<typename T>
     void put_math(T& x) {   // just copy data's string to buffer
         std::string x_ = std::to_string(x);
+        //std::cout << "string:\t" << x_ << std::endl;
         *this << x_;
     }
     // ints
@@ -225,18 +229,18 @@ public:
             size_t newcap = 2 * capacity();
             reserve(newcap);
         }
-        memcpy(buffer(), x.c_str(), x.size());
-        //_end += x.size();
+        std::cout << "x:\t" << x << std::endl;
+        strncpy(end(), x.c_str(), x.size());
         end_preceed(x.size());
         //put_cursor_preceed(x.size());
         //set_end(cursor() + 1);
         return *this;
     }
+    // do not insert the delimiter automatically
+    // user should insert one manually
     #define SS_REPEAT_PATTERN(T) \
     TextBuffer &operator<< (T x) { \
-        std::string x_ = std::to_string(x); \
-        x_ += " "; \
-        *this << x_; \
+        put_math(x); \
         return *this; \
     } 
     SS_REPEAT6(int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t)
@@ -252,6 +256,16 @@ public:
     SS_REPEAT3(bool, double, float)
     #undef SS_REPEAT_PATTERN
 
+    std::string getline() {
+        char *pos = cursor();
+        for(; !std::isspace(*pos); ++pos){};
+        std::string tmps(cursor(), pos-cursor());
+        set_cursor(pos);
+        return std::move(tmps);
+    }
+
 };  // end class TextBuffer
+const std::string TextBuffer::delimiter = " ";
+const std::string TextBuffer::cendl = "\n";
 
 };
