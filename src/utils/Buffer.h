@@ -5,6 +5,8 @@
 //  Created by Chunwei on 12/22/14.
 //  Copyright (c) 2014 Chunwei. All rights reserved.
 //
+#ifndef SwiftSnails_utils_Buffer_h_
+#define SwiftSnails_utils_Buffer_h_
 #include "common.h"
 #include "string.h"
 namespace swift_snails {
@@ -267,4 +269,5 @@ public:
 const std::string TextBuffer::delimiter = " ";
 const std::string TextBuffer::cendl = "\n";
 
-};
+};  // end namespace swift_snails
+#endif
