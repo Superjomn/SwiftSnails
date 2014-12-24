@@ -7,45 +7,62 @@
 //
 #ifndef SwiftSnails_SwiftSnails_ThreadPool_h_
 #define SwiftSnails_SwiftSnails_ThreadPool_h_
-#include "../utils/queue.h"
+#include "BasicChannel.h"
 
 namespace swift_snails {
 
-template<typename Func_t>
+template<typename T>
 class ThreadGroup : public VirtualObject {
 public:
     /*
      * @nthreads: number of threads
      * @queue:    threadsafe task queue 
      */
-    explicit ThreadPool(int nthreads, thread_guard<Func_t>& queue) :
-        _nthreads(nthreads), 
-        _queue(queue)
+    explicit ThreadPool() { }
+    explicit ThreadPool(int num_thread) :
+        _thread_num(num_thread)
     { }
-
-    void start() {  // TODO queue to exit
-        CHECK(nthreads > 0);
-        for( int i = 0 ; i < nthreads; i++) {
-            std::thread t([this]() {
+    /*
+     * @func: threads belong to the threadpool will run the same func
+     * 
+     * pop data from channel, if threadpool.close() or channel.close() 
+     * then, threads in the threadpool will exit
+     */
+    void start(Func_t &&func) {  // TODO queue to exit
+        CHECK(thread_num() > 0);
+        for(int i = 0 ; i < thread_num(); i++) {
+            std::thread t([this, func]() {
                 while(true) {
-                    if(_closed) break;
-                    Func_t func;   
-                    _queue.wait_and_pop(func);
-                    func();
+                    // close threadpool?
+                    if(_closed) return; 
+                    T data;
+                    bool valid = _queue.pop(data);
+                    if (!valid) {
+                        LOG(INFO) << "channel is closed, one ThreadPool thread exit!";
+                        break;
+                    }  
+                    func(data);
                 }
             });
-            _threads.push_back(thread_guard(t));
+            _threads.emplace_back(std::move(t));
         }
     }
 
     void close() {
-        _close = true;
+        _closed = true;
+        channel.close();
+    }
+    int thread_num() const {
+        return _thread_num;
+    }
+    void closed() {
+        return _closed;
     } 
 
 private:
-    int _nthreads;
+    int _thread_num = 0;
     std::vector<thread_guard> _threads;
-    threadsafe_queue<Func_t> &_queue;
+    BasicChannel<T> channel;
     bool _closed = false;
 };
 
