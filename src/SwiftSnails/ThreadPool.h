@@ -11,22 +11,8 @@
 
 namespace swift_snails {
 
-// ensure thread to exit nomally
-class thread_guard {
-    std::thread& _t;
-public:
-    explicit thread_guard(std::thread& t) :
-        _t(t)
-    { }
-    thread_guard(thread_guard const&) = delete;
-    thread_guard& operator=(thread_guard const&) = delete;
-    ~thread_guard() {
-        if(_t.joinable()) _t.join();
-    }
-};
-
 template<typename Func_t>
-class ThreadPool {
+class ThreadGroup : public VirtualObject {
 public:
     /*
      * @nthreads: number of threads

@@ -37,5 +37,21 @@ auto ignore_signal_call(FUNC func, ARGS&&... args)
     }
 }
 
+// ensure thread to exit nomally
+class thread_guard {
+    std::thread& _t;
+public:
+    explicit thread_guard(std::thread& t) :
+        _t(t)
+    { }
+    thread_guard(thread_guard const&) = delete;
+    thread_guard& operator=(thread_guard const&) = delete;
+    ~thread_guard() {
+        if(_t.joinable()) _t.join();
+    }
+};
+
+
+
 };  // end namespace swift_snails
 #endif
