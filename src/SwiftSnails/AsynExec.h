@@ -21,21 +21,24 @@ public:
     explicit AsynExec() {}
 
     shared_ptr<channel_t> open() {
+
         for(int i = 0; i < thread_num(); i++) {
             shared_ptr<MultiWorker> workder = make_shared<MultiWorker>();
+
             for(int i = 0; i < thread_num(); i++) {
                 workder->threads.emplace_back(
                     std::thread([worker]() {
-                        worker->run();
+                        worker->start();
                     }))
             } // for
         }
-        return {&worker->channel, [worker](channel_t*) {
-            worker->channel.close();
-            for (auto& t : worker->threads) {
-                t.join();
-            }
-        }};
+        return { &worker->channel, 
+            [worker](channel_t*) {
+                worker->channel.close();
+                for (auto& t : worker->threads) {
+                    t.join();
+                }
+            }};
     }
 
     void set_thread_num(int x) {
@@ -54,7 +57,13 @@ private:
         channel_t channel;
         void start() {
             task_t func;
-            while (channel.pop(func)) {
+            bool valid;
+
+            while (valid = channel.pop(func)) {
+                if(!valid) {
+                    LOG(INFO) << "AsynExec thread exit";
+                    break; // to exit thread
+                }
                 func();
             }
         }
