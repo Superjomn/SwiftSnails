@@ -15,12 +15,12 @@ namespace swift_snails {
 template<typename T>
 class threadsafe_queue
 {
-private:
+protected:
     mutable std::mutex mut;
     std::queue<std::shared_ptr<T>> data_queue;
     std::condition_variable data_cond;
 public:
-    threadsafe_queue() {}
+    explicit threadsafe_queue() {}
 
     void wait_and_pop(T& value) {
         std::unique_lock<std::mutex> lk(mut);
