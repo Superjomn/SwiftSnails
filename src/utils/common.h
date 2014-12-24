@@ -13,6 +13,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <memory>
 #include <fstream>
 
 namespace swift_snails {
@@ -24,6 +25,8 @@ typedef int             int32_t;
 typedef unsigned int    uint32_t;
 typedef long long       int64_t;
 typedef unsigned long long   uint64_t;
+
+typedef uint32_t        index_t;
 
 // for repeat patterns
 #define SS_REPEAT1(X) SS_REPEAT_PATTERN(X)
