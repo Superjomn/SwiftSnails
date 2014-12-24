@@ -16,6 +16,28 @@
 
 namespace swift_snails {
 
+/*
+ * function:
+ *  receive message (message_meta + content_message)
+ *  and call parse_message(virtual function) to process the message
+ *
+ *  @MetaMsg_t: meta message type
+ *      Meta Message should contain some meta infomation, so it should
+ *      be treated as binary buffer;
+ *      When it is received, the receiver can deserialize it, and read
+ *      the meta info.
+ *
+ *  @Msg_t: content-message's type
+ *      this may be set to char
+ *
+ *  @CallBack_t: type of callback function
+ *      user should register each callback with `message_class` in server before
+ *
+ *      When Meta Message's content is parsed
+ *      the receiver will get the `message_class` field
+ *      this field will specify which callback to call to process this message
+ *      in server-side.
+ */
 template<typename MetaMsg_t, typename Msg_t, typename CallBack_t>
 class FunctionBasicServer : public BasicServer {
 public:
@@ -54,12 +76,12 @@ public:
             CHECK(zmq_msg_more(meta_msg.zmg()));
             // receive content-message later
             PCHECK(ignore_signal_call(zmq_msg_recv, cont_msg.zmg(), receiver(), 0) >= 0);
-            parse_message( (MetaMsg_t*) meta_msg.buffer(), 
+            process_message( (MetaMsg_t*) meta_msg.buffer(), 
                            (Msg_t*) cont_msg.buffer() );
         }
     }
 
-    virtual void parse_message(MetaMsg_t *meta_msg, Msg_t *cont_msg) = 0;
+    virtual void process_message(MetaMsg_t *meta_msg, Msg_t *cont_msg) = 0;
 
 private:
     std::map<index_t, CallBack> message_classes;
