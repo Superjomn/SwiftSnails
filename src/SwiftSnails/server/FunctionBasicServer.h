@@ -81,10 +81,14 @@ public:
         }
     }
 
+    /*
+     * get message's meta and content
+     * process the message and send the result back to client
+     */
     virtual void process_message(MetaMsg_t *meta_msg, Msg_t *cont_msg) = 0;
 
 private:
-    std::map<index_t, CallBack> message_classes;
+    std::map<index_t, CallBack_t> message_classes;
     SpinLock _spinlock;
 }; // end class FunctionBasicServer
 
