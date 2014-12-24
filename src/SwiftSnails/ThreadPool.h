@@ -14,21 +14,21 @@ namespace swift_snails {
 template<typename T>
 class ThreadGroup : public VirtualObject {
 public:
-    /*
-     * @nthreads: number of threads
-     * @queue:    threadsafe task queue 
-     */
+    typedef BasicChannel<T> channel_t;
+
     explicit ThreadPool() { }
     explicit ThreadPool(int num_thread) :
         _thread_num(num_thread)
     { }
     /*
      * @func: threads belong to the threadpool will run the same func
+     * @return: pointer to the channel
+     *          user can modify the channel by pop()/push() or close()
      * 
      * pop data from channel, if threadpool.close() or channel.close() 
      * then, threads in the threadpool will exit
      */
-    void start(Func_t &&func) {  // TODO queue to exit
+    shared_ptr<channel_t> start(Func_t &&func) {  // TODO queue to exit
         CHECK(thread_num() > 0);
         for(int i = 0 ; i < thread_num(); i++) {
             std::thread t([this, func]() {
@@ -46,6 +46,14 @@ public:
             });
             _threads.emplace_back(std::move(t));
         }
+
+        return { &channel,
+            [this](channel_t*) {
+                channel.close();
+                for (auto& t : threads) {
+                    t.join();
+                } 
+            }};
     }
 
     void close() {
