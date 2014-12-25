@@ -8,13 +8,15 @@
 #ifndef SwiftSnails_utils_common_h
 #define SwiftSnails_utils_common_h
 
-#include "VirtualObject.h"
-#include "glog/logging.h"
+#include <iostream>
+#include <cstdio>
 #include <string>
 #include <map>
 #include <vector>
 #include <memory>
 #include <fstream>
+#include "VirtualObject.h"
+#include "glog/logging.h"
 
 namespace swift_snails {
 // common types
@@ -35,6 +37,22 @@ typedef uint32_t        index_t;
 #define SS_REPEAT4(X, args...) SS_REPEAT_PATTERN(X) SS_REPEAT3(args)
 #define SS_REPEAT5(X, args...) SS_REPEAT_PATTERN(X) SS_REPEAT4(args)
 #define SS_REPEAT6(X, args...) SS_REPEAT_PATTERN(X) SS_REPEAT5(args)
+
+inline std::mutex& global_fork_mutex() {
+    static std::mutex mutex;
+    return mutex;
+}
+
+// threadsafe popen pclose
+inline FILE* guarded_popen(const char* command, const char* type) {
+    std::lock_guard<std::mutex> lock(global_fork_mutex());
+    return popen(commond, type);
+}
+
+inline int guarded_pclose(FILE* stream) {
+    std::lock_guard<std::mutex> lock(global_fork_mutex());
+    return pclose(stream);
+}
 
 };
 
