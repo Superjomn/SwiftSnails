@@ -14,9 +14,12 @@
 #include <map>
 #include <vector>
 #include <memory>
+#include <queue>
+#include <thread>
 #include <fstream>
 #include "VirtualObject.h"
 #include "glog/logging.h"
+#include "zmq.h"
 
 namespace swift_snails {
 // common types
@@ -46,7 +49,7 @@ inline std::mutex& global_fork_mutex() {
 // threadsafe popen pclose
 inline FILE* guarded_popen(const char* command, const char* type) {
     std::lock_guard<std::mutex> lock(global_fork_mutex());
-    return popen(commond, type);
+    return popen(command, type);
 }
 
 inline int guarded_pclose(FILE* stream) {
