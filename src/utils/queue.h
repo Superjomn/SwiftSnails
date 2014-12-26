@@ -61,7 +61,7 @@ public:
             std::make_shared<T>(std::move(new_value)));
         std::lock_guard<std::mutex> lk(mut);
         data_queue.push(data);
-        data_queue.notify_one();
+        data_cond.notify_one();
     }
 
     bool empty() const {
