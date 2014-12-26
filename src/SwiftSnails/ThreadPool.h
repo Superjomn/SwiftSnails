@@ -11,8 +11,8 @@
 
 namespace swift_snails {
 
-template<typename T>
-class ThreadGroup : public VirtualObject {
+template<typename T, typename Func>
+class ThreadPool : public VirtualObject {
 public:
     typedef BasicChannel<T> channel_t;
 
@@ -20,6 +20,11 @@ public:
     explicit ThreadPool(int num_thread) :
         _thread_num(num_thread)
     { }
+    ~ThreadPool() {
+        for (auto &t : _threads) {
+            if(t.joinable()) t.join();
+        }
+    }
     /*
      * @func: threads belong to the threadpool will run the same func
      * @return: pointer to the channel
@@ -28,29 +33,26 @@ public:
      * pop data from channel, if threadpool.close() or channel.close() 
      * then, threads in the threadpool will exit
      */
-    shared_ptr<channel_t> start(Func_t &&func) {  // TODO queue to exit
+    std::shared_ptr<channel_t> start(Func &&func) {  // TODO queue to exit
         CHECK(thread_num() > 0);
         for(int i = 0 ; i < thread_num(); i++) {
-            std::thread t([this, func]() {
-                while(true) {
+            _threads.emplace_back([this, func]() {
+                bool valid;
+                T data;
+                LOG(INFO) << "thread " << std::this_thread::get_id() << " started";
+                while((valid = _channel.pop(data))) {
                     // close threadpool?
-                    if(_closed) return; 
-                    T data;
-                    bool valid = _queue.pop(data);
-                    if (!valid) {
-                        LOG(INFO) << "channel is closed, one ThreadPool thread exit!";
-                        break;
-                    }  
+                    if(_closed) break; 
                     func(data);
                 }
+                LOG(INFO) << "thread " << std::this_thread::get_id() << " exit";
             });
-            _threads.emplace_back(std::move(t));
         }
 
-        return { &channel,
+        return { &_channel,
             [this](channel_t*) {
-                channel.close();
-                for (auto& t : threads) {
+                LOG(INFO) << "ThreadPool channel close, threads to exit";
+                for (auto& t : _threads) {
                     t.join();
                 } 
             }};
@@ -58,7 +60,7 @@ public:
 
     void close() {
         _closed = true;
-        channel.close();
+        _channel.close();
     }
     int thread_num() const {
         return _thread_num;
@@ -69,8 +71,8 @@ public:
 
 private:
     int _thread_num = 0;
-    std::vector<thread_guard> _threads;
-    BasicChannel<T> channel;
+    std::vector<std::thread> _threads;
+    BasicChannel<T> _channel;
     bool _closed = false;
 };
 

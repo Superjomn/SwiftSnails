@@ -13,7 +13,9 @@ THIRD_LIB=../../third/local/glog/lib/libglog.a
 all: $(BIN)/utils_string.out \
 	 $(BIN)/utils_ConfigParser.out  \
 	 $(BIN)/utils_HashFunction.out \
-	 $(BIN)/utils_buffer.out
+	 $(BIN)/utils_buffer.out \
+	 $(BIN)/swiftsnails_asyn_exec.out \
+	 $(BIN)/swiftsnails_threadpool.out
 
 
 $(BIN)/utils_string.out : utils/string.cpp ../utils/string.h
@@ -31,6 +33,12 @@ $(BIN)/utils_mpi.out : utils/mpi.cpp ../utils/mpi.h
 
 $(BIN)/utils_buffer.out : utils/Buffer.cpp ../utils/Buffer.h
 	$(CXX) utils/Buffer.cpp  $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/utils_buffer.out
+
+$(BIN)/swiftsnails_asyn_exec.out : SwiftSnails/AsynExec.cpp ../SwiftSnails/AsynExec.h ../SwiftSnails/BasicChannel.h
+	$(CXX) SwiftSnails/AsynExec.cpp  $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_asyn_exec.out
+	
+$(BIN)/swiftsnails_threadpool.out : SwiftSnails/ThreadPool.cpp ../SwiftSnails/ThreadPool.h 
+	$(CXX) SwiftSnails/ThreadPool.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_threadpool.out
 
 clean:
 	rm $(BIN)/*.out
