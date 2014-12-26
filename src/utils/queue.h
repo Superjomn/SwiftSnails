@@ -15,7 +15,7 @@ namespace swift_snails {
 template<typename T>
 class threadsafe_queue
 {
-protected:
+private:
     mutable std::mutex mut;
     std::queue<std::shared_ptr<T>> data_queue;
     std::condition_variable data_cond;
@@ -40,7 +40,7 @@ public:
 
     std::shared_ptr<T> wait_and_pop() {
         std::unique_lock<std::mutex> lk(mut);
-        data_cond.wait(lk, [this] {return !data_queue.empty()});
+        data_cond.wait(lk, [this] {return !data_queue.empty();});
         std::shared_ptr<T> res = data_queue.front();
         data_queue.pop();
         return res;
