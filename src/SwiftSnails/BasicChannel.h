@@ -8,6 +8,7 @@
 #ifndef SwiftSnails_SwiftSnails_BasicChannel_h_
 #define SwiftSnails_SwiftSnails_BasicChannel_h_
 #include "../utils/common.h"
+#include "../utils/queue.h"
 
 namespace swift_snails {
 
@@ -26,10 +27,11 @@ public:
      * the thread pool will exit if channel is closed
     */
     bool pop(T& value) {
+        LOG(INFO) << std::this_thread::get_id() << " pop job " << _closed;
         if(_closed) return false;
-        std::lock_guard<std::mutex> lk(mut);
+        std::unique_lock<std::mutex> lk(mut);
         data_cond.wait(
-                lk, [this] { return !data_queue.empty() || _closed});
+                lk, [this] { return !data_queue.empty() || _closed; });
         if(_closed) return false;
         value = std::move(*data_queue.front());
         data_queue.pop();
@@ -40,26 +42,39 @@ public:
      * the waiting threads will exit
      */
     std::shared_ptr<T> pop() {
+        LOG(INFO) << std::this_thread::get_id() << " pop job";
         if(_closed) return std::shared_ptr<T>();
         std::unique_lock<std::mutex> lk(mut);
         data_cond.wait(
-                lk, [this] { return !data_queue.empty() || _closed});
+                lk, [this] { return !data_queue.empty() || _closed; });
         if(_closed) return std::shared_ptr<T>();
         std::shared_ptr<T> res = data_queue.front();
         data_queue.pop();
         return res;
+    }
+    void push(T new_value) {
+        std::shared_ptr<T> data (
+            std::make_shared<T>(std::move(new_value)));
+        std::lock_guard<std::mutex> lk(mut);
+        data_queue.push(data);
+        data_cond.notify_one();
     }
     /*
      * close the channel and tell all the 
      * waiting threads to exit
      */
     void close() {
+        LOG(INFO) << "channel is closed";
         std::lock_guard<std::mutex> lk(mut);
         _closed = true;
         data_cond.notify_all(); // notify all waiting threads to exit
+        LOG(INFO) << "notify all threads to exit";
     }
 private:
     bool _closed = false;
+    mutable std::mutex mut;
+    std::queue<std::shared_ptr<T>> data_queue;
+    std::condition_variable data_cond;
 };
 
 };  // end namespace swift_snails

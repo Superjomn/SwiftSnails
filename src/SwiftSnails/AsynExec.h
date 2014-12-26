@@ -20,21 +20,27 @@ public:
 
     explicit AsynExec() {}
 
-    shared_ptr<channel_t> open() {
+    explicit AsynExec(int thread_num) : 
+        _thread_num(thread_num)
+    { }
+
+    std::shared_ptr<channel_t> open() {
+
+        std::shared_ptr<MultiWorker> worker = std::make_shared<MultiWorker>();
 
         for(int i = 0; i < thread_num(); i++) {
-            shared_ptr<MultiWorker> workder = make_shared<MultiWorker>();
 
-            for(int i = 0; i < thread_num(); i++) {
-                workder->threads.emplace_back(
-                    std::thread([worker]() {
-                        worker->start();
-                    }))
-            } // for
-        }
+            worker->threads.emplace_back(
+                [worker]() {
+                    worker->start();
+                }
+            );
+        } // for
+
         return { &worker->channel, 
             [worker](channel_t*) {
                 worker->channel.close();
+                LOG(INFO) << "channel to destroy, worker threads join";
                 for (auto& t : worker->threads) {
                     t.join();
                 }
@@ -50,21 +56,26 @@ public:
     }
 private:
     int _thread_num = 0;
-    std::vector<thread_guard> _threads;
+    std::vector<std::thread> _threads;
 
     struct MultiWorker {
-        std::vector<thread_guard> threads;
+        std::vector<std::thread> threads;
         channel_t channel;
+
         void start() {
             task_t func;
             bool valid;
 
-            while (valid = channel.pop(func)) {
-                if(!valid) {
-                    LOG(INFO) << "AsynExec thread exit";
-                    break; // to exit thread
-                }
+            LOG(INFO) << "thread " << std::this_thread::get_id() << " started";
+            while ((valid = channel.pop(func))) {
+                //LOG(INFO) << std::this_thread::get_id() << " job's valid: " << valid;
                 func();
+            }
+            LOG(INFO) << "thread " << std::this_thread::get_id() << " exit";
+        }
+        ~MultiWorker() {
+            for( auto &t : threads) {
+                if(t.joinable()) t.join();
             }
         }
     }; // end struct MultiWorker
