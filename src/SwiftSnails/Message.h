@@ -4,11 +4,13 @@
 
 namespace swift_snails {
 
-struct MessageMeta {
-    uint64_t message_class; // server-side function
-    uint64_t message_id;    // used for client's response
-    int client_id;          // to send response
+typedef std::function<void(int shared_id, BinaryBuffer& ibb, BinaryBuffer& obb)> ShardCallBack;
+
+// every MessageMeta should have a message_class
+struct MessageMetaBase {
+    index_t message_class; // server-side function
 };
+
 
 class Message {
 public:
@@ -39,7 +41,7 @@ public:
     }
 
     size_t length() {
-        return zmq_msg_size(&_zmsg);
+        return zmq_msg_size(&_zmg);
     }
 
     void reset() {
@@ -59,6 +61,10 @@ public:
 
     char* buffer() {
         return (char*)zmq_msg_data(&_zmg);
+    }
+
+    zmq_msg_t& zmg() {
+        return _zmg;
     }
 
 private:

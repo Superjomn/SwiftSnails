@@ -81,6 +81,7 @@ private:
     }; // end struct MultiWorker
 }; // class AsynExec
 
+
 }; // end namespace swift_snails
 
 #endif

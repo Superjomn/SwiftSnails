@@ -8,6 +8,7 @@
 
 #ifndef SwiftSnails_SwiftSnails_server_BasicServer_h_
 #define SwiftSnails_SwiftSnails_server_BasicServer_h_
+#include <map>
 #include "../../utils/common.h"
 #include "../../utils/SpinLock.h"
 
@@ -44,7 +45,8 @@ public:
         _send_addrs[id] = addr;
     }
 
-    int listen() {
+    int listen(const std::string &addr) {
+        _recv_addr = addr;
         zmq_bind_random_port(_receiver, _recv_addr, _recv_port);
         return _recv_port;
     }
@@ -56,6 +58,16 @@ public:
         for(auto sender : _senders) {
             connect(sender.first);
         }
+    }
+
+    void* receiver() {
+        return _receiver;
+    }
+    std::map<index_t, void*>& senders() {
+        return _senders;
+    }
+    std::map<index_t, std::string>& send_addrs() {
+        return _send_addrs;
     }
 
 protected:

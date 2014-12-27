@@ -31,10 +31,34 @@ void test_BinaryBuffer() {
     cout << "size:\t" << bb.size() << endl;
 }
 
+void test_TextBuffer() {
+    TextBuffer bb;
+    bb << (int32_t)324;
+    bb << (string)"  ";
+    bb << (double) 3.143;
+    int32_t a;
+    double b;
+
+    bb >> a;
+    bb >> b;
+    cout << "a:\t" << a << "\n";
+    cout << "b:\t" << b << "\n";
+
+    bb << string("hello world") << TextBuffer::cendl;
+    bb << string("yes a line") << TextBuffer::cendl;
+
+    cout << "buffer:\t" << (char*)bb.buffer() << endl;
+
+    cout << "line:\t" << bb.getline();
+    cout << "line:\t" << bb.getline();
+
+}
+
 
 int main()
 {
     test_BasicBuffer();
     test_BinaryBuffer();
+    test_TextBuffer();
     return 0;
 }
