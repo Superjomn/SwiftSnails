@@ -8,6 +8,7 @@
 
 #ifndef SwiftSnails_SwiftSnails_common_h_
 #define SwiftSnails_SwiftSnails_common_h_
+#include <sstream>
 #include "../utils/common.h"
 #include "../utils/string.h"
 namespace swift_snails {
@@ -64,6 +65,69 @@ public:
     }
 };
 
+std::string get_local_ip() {
+    int sockfd;
+    char buf[512];
+    struct ifconf ifconf;
+    struct ifreq* ifreq;
+
+    ifconf.ifc_len = 512;
+    ifconf.ifc_buf = buf;
+    PCHECK((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) >= 0);
+    PCHECK(ioctl(sockfd, SIOCGIFCONF, &ifconf) >= 0);
+    PCHECK(0 == close(sockfd));
+
+    ifreq = (struct ifreq*)buf;
+    for (int i = 0; i < int(ifconf.ifc_len / sizeof(struct ifreq)); i++) {
+        std::string ip;
+        ip = inet_ntoa(((struct sockaddr_in*)&ifreq->ifr_addr)->sin_addr);
+        if (ip != "127.0.0.1") {
+            return ip;
+        }
+        ifreq++;
+    }
+    LOG(FATAL) << "IP not found";
+    return "";
+}
+
+struct IP {
+    uint16_t addr[4];
+    uint16_t port;
+
+    IP(const std::string &ip) {
+        from_string(ip);
+    }
+    std::string to_string() const {
+        std::stringstream ss;
+        ss << addr[0];
+        for(int i = 1; i < 4; i++) {
+            ss << "." << addr[i];
+        }
+        ss << ":" << port;
+        return std::move(ss.str());
+    }
+    void from_string(const std::string &ip) {
+        char* begin = &(ip.c_str()[0]);
+        char* end; 
+        for(int i = 0; i < 4; i++) {
+            addr[i] = (uint16_t) std::strtoul(begin, &end, 10);
+            begin = end;
+        }
+        port = (uint16_t) std::strtoul(begin, &end, 10);
+    }
+    friend BinaryBuffer& operator<<(BinaryBuffer& bb, const IP& ip) {
+        for(int i = 0; i < 4; i++) {
+            bb << ip[i];
+        }
+        bb << port;
+    }
+    friend BinaryBuffer& operator>>(BinaryBuffer& bb, IP& ip) {
+        for(int i = 0; i < 4; i++) {
+            bb >> ip.addr[i];
+        }
+        bb >> ip.port;
+    }
+}；
 
 
 };  // end namespace swift_snails

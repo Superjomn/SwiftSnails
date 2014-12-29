@@ -7,8 +7,14 @@ namespace swift_snails {
 typedef std::function<void(int shared_id, BinaryBuffer& ibb, BinaryBuffer& obb)> ShardCallBack;
 
 // every MessageMeta should have a message_class
-struct MessageMetaBase {
-    index_t message_class; // server-side function
+struct BasicMetaMessage {
+    index_t message_class = 0; // server-side function
+};
+
+// meta message of MasterServer and MasterClient
+struct MetaMessage : public BasicMetaMessage {
+    index_t client_id = 0;
+    index_t message_id = 0;
 };
 
 

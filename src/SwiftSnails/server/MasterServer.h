@@ -27,7 +27,7 @@ struct MetaMessage : public MessageMetaBase {
  *          will be text
  * obb: output text buffer(the response)
  */
-typedef std::function<void(BinaryBuffer& meta_msg, TextBuffer& cont_msg, TextBuffer& obb)> MetaCallBack;
+typedef std::function<void(BinaryBuffer& meta_msg, TextBuffer& cont_msg, TextBuffer& obb)> MasterCallBack;
 
 /*
  * basic function:
@@ -35,18 +35,41 @@ typedef std::function<void(BinaryBuffer& meta_msg, TextBuffer& cont_msg, TextBuf
  * messages in the queue will be processed by a thread-pool
  * the result will be sent to sender
  */
-class BasicMasterServer : public FunctionBasicServer<MetaMessage, char, MetaCallBack> {
+class MasterServer : public FunctionBasicServer<MetaMessage, char, MetaCallBack> {
 public:
     /*
      * local_addr: ip address of current node (meta server node)
      * // both metanode's ip and port should be specified manually
      */
+    typedef MetaMessage MetaMsg_t;
+    typedef char Msg_t;
+
     BasicMasterServer(const std::string &local_addr, int port) {
         listen(local_addr);
     }
-private:
+
+    void process_message(MetaMsg_t *meta_msg, Msg_t *cont_msg) {
+        index_t message_id = meta_msg->message_id;
+        (MetaCallBack) (message_class[message_id]) (meta_msg, cont_msg);
+    }
+
+    std::map<index_t, IP> &cluster_ip_table() {
+        return _cluster_ip_table;
+    }
+
+private: 
+    std::map<index_t, IP> _cluster_ip_table;
 
 };  // end class MetaServer
+
+
+/*
+ * only the real Master server will return Master
+ */
+MasterServer& global_master_server() {
+    static MasterServer ms;
+    return ms;
+}
 
 }; // end namespace swift_snails
 

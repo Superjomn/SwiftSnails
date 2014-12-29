@@ -69,6 +69,9 @@ public:
     std::map<index_t, std::string>& send_addrs() {
         return _send_addrs;
     }
+    const std::string &send_addr(index_t id) const {
+        return _send_addrs[id];
+    }
 
 protected:
     void connect(index_t id) {

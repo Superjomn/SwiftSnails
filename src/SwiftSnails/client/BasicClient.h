@@ -10,6 +10,7 @@
 #define SwiftSnails_SwiftSnails_client_BasicClient_h_
 #include "../../utils/common.h"
 #include "../common.h"
+#include "../Message.h"
 namespace swift_snails {
 
 class BasicClient : public VirtualObject {
@@ -44,6 +45,9 @@ public:
     }
     int thread_num() {
         return _thread_num;
+    }
+    int recv_port() {
+        return _recv_port;
     }
 protected:
     // senders should be registered before

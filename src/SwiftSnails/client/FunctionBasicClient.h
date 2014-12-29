@@ -99,7 +99,7 @@ public:
         _client_id = client_id;
     }
 
-private:
+protected:
     int _msg_id_counter = 0;
     std::unordered_map<int64_t, ResponseCallback> _msg_handlers;
     int _client_id;
