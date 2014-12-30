@@ -65,7 +65,7 @@ public:
     int thread_num() const {
         return _thread_num;
     }
-    void closed() {
+    bool closed() {
         return _closed;
     } 
 
