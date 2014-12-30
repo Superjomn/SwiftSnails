@@ -9,6 +9,15 @@
 #ifndef SwiftSnails_SwiftSnails_common_h_
 #define SwiftSnails_SwiftSnails_common_h_
 #include <sstream>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h> /* for strncpy */
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#include <arpa/inet.h>
 #include "../utils/common.h"
 #include "../utils/string.h"
 namespace swift_snails {
@@ -40,7 +49,7 @@ auto ignore_signal_call(FUNC func, ARGS&&... args)
     }
 }
 
-// ensure thread to exit nomally
+// ensure thread to exit normally
 class thread_guard {
     std::thread& _t;
 public:
@@ -127,8 +136,7 @@ struct IP {
         }
         bb >> ip.port;
     }
-}；
-
+}; // struct IP
 
 };  // end namespace swift_snails
 #endif
