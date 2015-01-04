@@ -8,6 +8,7 @@
 
 #ifndef SwiftSnails_utils_SpinLock_h
 #define SwiftSnails_utils_SpinLock_h
+#include "common.h"
 #include "pthread.h"
 
 namespace swift_snails {
@@ -21,10 +22,10 @@ public:
     ~SpinLock() {
         PCHECK( 0 == pthread_spin_destroy(&_spin));
     }
-    lock() {
+    void lock() {
         PCHECK( 0 == pthread_spin_lock(&_spin));
     }
-    unlock() {
+    void unlock() {
         PCHECK( 0 == pthread_spin_unlock(&_spin));
     }
 

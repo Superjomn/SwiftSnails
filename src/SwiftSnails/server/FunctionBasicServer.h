@@ -22,7 +22,7 @@ namespace swift_snails {
  *  and call parse_message(virtual function) to process the message
  *
  *  @MetaMsg_t: meta message type
- *      Meta Message should contain some meta infomation, so it should
+ *      Meta Message should contain some meta information, so it should
  *      be treated as binary buffer;
  *      When it is received, the receiver can deserialize it, and read
  *      the meta info.
@@ -43,7 +43,7 @@ class FunctionBasicServer : public BasicServer {
 public:
     explicit FunctionBasicServer() {
     }
-    ~FunctionBasicServer() {
+    virtual ~FunctionBasicServer() {
     }
 
     void register_message_class(index_t id, CallBack_t&& callback) {
@@ -51,7 +51,7 @@ public:
         CHECK(message_classes.count(id) == 0) << 
                 "callback should be registerd only once";
         message_classes.insert(
-            std::map<index_t, CallBack>::value_type(id, std::move(callback)));
+            std::map<index_t, CallBack_t>::value_type(id, std::move(callback)));
         _spinlock.unlock();
     }
 
@@ -73,7 +73,7 @@ public:
             PCHECK(ignore_signal_call(zmq_msg_recv, meta_msg.zmg(), receiver(), 0) >= 0);
             if(meta_msg.length() == 0) return; // exit server 
             CHECK(meta_msg.length() == sizeof(MetaMsg_t));
-            CHECK(zmq_msg_more(meta_msg.zmg()));
+            CHECK(zmq_msg_more((zmq_msg_t*)meta_msg.zmg()));
             // receive content-message later
             PCHECK(ignore_signal_call(zmq_msg_recv, cont_msg.zmg(), receiver(), 0) >= 0);
             process_message( (MetaMsg_t*) meta_msg.buffer(), 

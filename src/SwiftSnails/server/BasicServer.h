@@ -9,7 +9,9 @@
 #ifndef SwiftSnails_SwiftSnails_server_BasicServer_h_
 #define SwiftSnails_SwiftSnails_server_BasicServer_h_
 #include <map>
+#include "zmq.h"
 #include "../../utils/common.h"
+#include "common.h"
 #include "../../utils/SpinLock.h"
 
 namespace swift_snails {
@@ -75,7 +77,7 @@ public:
 
 protected:
     void connect(index_t id) {
-        PCHECK(0 == ignore_signal_call(zmq_connect, _senders[id], send_addrs[id].c_str()));
+        PCHECK(0 == ignore_signal_call(zmq_connect, _senders[id], _send_addrs[id].c_str()));
     }
 
 private:

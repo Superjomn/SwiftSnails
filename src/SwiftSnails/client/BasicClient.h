@@ -59,7 +59,7 @@ protected:
     void* _zmq_ctx = NULL;
     int _thread_num = 1;
     std::string _recv_addr;
-    int _recv_port;
+    int _recv_port = 0;
     void* _receiver = NULL;
     std::map<index_t, void*> _senders;
     std::map<index_t, std::string> _send_addrs;

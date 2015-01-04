@@ -20,6 +20,7 @@
 #include <arpa/inet.h>
 #include "../utils/common.h"
 #include "../utils/string.h"
+#include "../utils/buffer.h"
 namespace swift_snails {
 
 inline void zmq_bind_random_port(const std::string& ip, void* socket, std::string& addr, int& port) {
@@ -116,7 +117,7 @@ struct IP {
         return std::move(ss.str());
     }
     void from_string(const std::string &ip) {
-        char* begin = &(ip.c_str()[0]);
+        char* begin = &ip[0];
         char* end; 
         for(int i = 0; i < 4; i++) {
             addr[i] = (uint16_t) std::strtoul(begin, &end, 10);

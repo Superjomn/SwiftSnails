@@ -11,32 +11,20 @@
 #include "common.h"
 #include <iostream>
 #include <sparsehash/sparse_hash_map>
+#include <iostream>
+#include <sparsehash/dense_hash_map>
 #include "../utils/common.h"
+using std::hash; 
 using google::sparse_hash_map;
 using google::dense_hash_map;
 
 namespace swift_snails {
 
-// memory-saving version
-template<typename KeyType, typename ValueType, typename CmpObj>
-class SparseHashMap : public VirtualObject {
-public:
-    explicit SparseHashMap() { }
+template<typename KeyType, typename ValueType>
+using SparseHashMap = sparse_hash_map<KeyType, ValueType, hash<KeyType>>;
 
-private:
-    sparse_hash_map<KeyType, ValueType, hash<KeyType>, CmpObj> _dic;
-}; // end class SparseTable
-
-
-// time-saving version
-template<typename KeyType, typename ValueType, typename CmpObj>
-class DenseHashMap : public VirtualObject {
-public:
-    explicit DenseHashMap () { }
-
-private:
-    dense_hash_map<KeyType, ValueType, hash<KeyType>, CmpObj> dic;
-}; // end class DenseHashMap
+template<typename KeyType, typename ValueType>
+using DenseHashMap = dense_hash_map<KeyType, ValueType, hash<KeyType>>;
 
 }; // end namespace swift_snails
 #endif

@@ -13,12 +13,6 @@
 
 namespace swift_snails {
 
-struct MetaMessage : public MessageMetaBase {
-    index_t message_id;     // used for client's response
-    index_t client_id;      // to send response
-    index_t shard_id;
-};
-
 /*
  * meta_msg: Meta Message (binary type)
  *          contain some meta infomation
@@ -35,7 +29,7 @@ typedef std::function<void(BinaryBuffer& meta_msg, TextBuffer& cont_msg, TextBuf
  * messages in the queue will be processed by a thread-pool
  * the result will be sent to sender
  */
-class MasterServer : public FunctionBasicServer<MetaMessage, char, MetaCallBack> {
+class MasterServer : public FunctionBasicServer<MetaMessage, char, MasterCallBack> {
 public:
     /*
      * local_addr: ip address of current node (meta server node)
@@ -44,13 +38,13 @@ public:
     typedef MetaMessage MetaMsg_t;
     typedef char Msg_t;
 
-    BasicMasterServer(const std::string &local_addr, int port) {
+    MasterServer(const std::string &local_addr, int port) {
         listen(local_addr);
     }
 
     void process_message(MetaMsg_t *meta_msg, Msg_t *cont_msg) {
         index_t message_id = meta_msg->message_id;
-        (MetaCallBack) (message_class[message_id]) (meta_msg, cont_msg);
+        (MasterCallBack) (message_class[message_id]) (meta_msg, cont_msg);
     }
 
     std::map<index_t, IP> &cluster_ip_table() {
