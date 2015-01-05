@@ -22,7 +22,7 @@ public:
     }
 
     int listen() {
-        zmq_bind_random_port(_receiver, _recv_addr, _recv_port);
+        zmq_bind_random_port(_recv_ip, _receiver,  _recv_addr, _recv_port);
         return _recv_port;
     }
 
@@ -34,8 +34,9 @@ public:
     
     void register_node(int id, const std::string addr) {
         _send_addrs.emplace(id, addr);
-        _send_mutexes.emplace(id, std::mutex());
-        _senders.emplace(id, zmq_socket(_zmq_ctx, ZMQ_PULL));
+        _send_mutexes.emplace(id, std::unique_ptr<std::mutex>(new std::mutex));
+        void *sender = zmq_socket(_zmq_ctx, ZMQ_PULL);
+        _senders.emplace(id, sender);
     }
     void set_recv_addr(const std::string addr) {
         _recv_addr = addr;
@@ -53,18 +54,19 @@ public:
 protected:
     // senders should be registered before
     void connect(index_t id) {
-        PCHECK(0 == ignore_signal_call(zmq_connect, _senders[id], _send_addrs[id]));
+        PCHECK(0 == ignore_signal_call(zmq_connect, _senders[id], _send_addrs[id].c_str()));
     }
 
 protected:
     void* _zmq_ctx = NULL;
     int _thread_num = 1;
     std::string _recv_addr;
+    std::string _recv_ip;
     int _recv_port = 0;
     void* _receiver = NULL;
     std::map<index_t, void*> _senders;
     std::map<index_t, std::string> _send_addrs;
-    std::map<index_t, std::mutex> _send_mutexes;
+    std::map<index_t, std::unique_ptr<std::mutex> > _send_mutexes;
 }; // class BasicClient
 
 

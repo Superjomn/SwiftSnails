@@ -8,6 +8,7 @@
 #ifndef SwiftSnails_SwiftSnails_client_FunctionBasicClient_h_
 #define SwiftSnails_SwiftSnails_client_FunctionBasicClient_h_
 #include "BasicClient.h"
+#include "../utils/SpinLock.h"
 namespace swift_snails {
 
 template<typename ResponseCallback>
@@ -48,10 +49,10 @@ public:
         // message content
         Message msg = obb;
         // send message to dest
-        _sender_mutexs[dest_id].lock();
+        _send_mutexes[dest_id].lock();
         PCHECK(ignore_signal_call(zmq_msg_send, meta.zmg(), _senders[dest_id], ZMQ_SNDMORE) >= 0);
-        PCHECK(ignore_signal_call(zmq_msg_send, msg.zmg(), _senders[dest_id], 0) >= 0);
-        _sender_mutexs[dest_id].unlock();
+        PCHECK(ignore_signal_call(zmq_msg_send, &msg.zmg(), _senders[dest_id], 0) >= 0);
+        _send_mutexes[dest_id].unlock();
     }
 
     void main_loop() {
@@ -103,6 +104,8 @@ protected:
     int _msg_id_counter = 0;
     std::unordered_map<int64_t, ResponseCallback> _msg_handlers;
     int _client_id;
+    SpinLock _spinlock;
+    std::mutex _receiver_mutex;
 
 }; // class FunctionBasicClient
 

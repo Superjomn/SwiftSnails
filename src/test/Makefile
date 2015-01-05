@@ -7,7 +7,7 @@ THIRD_INCPATH=-I../../third/local/glog/include \
 	-I../../third/local/zeromq/include \
 	-I/usr/local/Cellar/google-sparsehash/2.0.2/include
 
-THIRD_LIB=../../third/local/glog/lib/libglog.a  
+THIRD_LIB=../../third/local/glog/lib/libglog.a  ../../third/local/zeromq/lib/libzmq.a
 
 .PHONY:all clean test
 
@@ -19,7 +19,8 @@ all: $(BIN)/utils_string.out \
 	 $(BIN)/swiftsnails_threadpool.out \
 	 $(BIN)/swiftsnails_asyn_exec.out \
 	 $(BIN)/utils_hash_map.out \
-	 $(BIN)/swiftsnails_common.out
+	 $(BIN)/swiftsnails_common.out \
+	 $(BIN)/swiftsnails_client_basicclient.out
 
 
 $(BIN)/utils_string.out : utils/string.cpp ../utils/string.h
@@ -49,6 +50,9 @@ $(BIN)/utils_hash_map.out : utils/hash_map.cpp
 
 $(BIN)/swiftsnails_common.out: SwiftSnails/common.cpp ../SwiftSnails/common.h ../utils/common.h
 	$(CXX) SwiftSnails/common.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_common.out
+
+$(BIN)/swiftsnails_client_basicclient.out : SwiftSnails/client/BasicClient.cpp ../SwiftSnails/client/BasicClient.h ../SwiftSnails/common.h ../utils/common.h
+	$(CXX) SwiftSnails/client/BasicClient.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_client_basicclient.out
 
 clean:
 	rm $(BIN)/*.out
