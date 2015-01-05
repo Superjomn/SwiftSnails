@@ -41,20 +41,30 @@ public:
         free();
     }
 
-    char* buffer() {
+    char* buffer() const {
         return _buffer;
     }
-    char* cursor() {
+    char* cursor() const {
         return _cursor;
     }
-    char* end() {
+    char* end() const {
         return _end;
     }
-    size_t capacity() {
+    size_t capacity() const {
         return _capacity;
     }   
-    size_t size() {
+    size_t size() const {
         return end() - buffer();
+    }
+    std::string status () const {
+    	std::stringstream os;
+        os << "BinaryBuffer Status" << std::endl;
+        os << "buffer:\t" << buffer() << std::endl;
+        os << "cursor:\t" << cursor() << std::endl;
+        os << "size:\t" << size() << std::endl;
+        os << "capacity:\t" << capacity() << std::endl;
+        os << "end:\t" << end() << std::endl;
+        return std::move(os.str());
     }
 
     void set_cursor(char* x) {

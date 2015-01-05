@@ -18,7 +18,8 @@ all: $(BIN)/utils_string.out \
 	 $(BIN)/utils_buffer.out \
 	 $(BIN)/swiftsnails_threadpool.out \
 	 $(BIN)/swiftsnails_asyn_exec.out \
-	 $(BIN)/utils_hash_map.out
+	 $(BIN)/utils_hash_map.out \
+	 $(BIN)/swiftsnails_common.out
 
 
 $(BIN)/utils_string.out : utils/string.cpp ../utils/string.h
@@ -45,6 +46,9 @@ $(BIN)/swiftsnails_threadpool.out : SwiftSnails/ThreadPool.cpp ../SwiftSnails/Th
 
 $(BIN)/utils_hash_map.out : utils/hash_map.cpp
 	$(CXX) utils/hash_map.cpp $(CXXFLAGS) $(THIRD_INCPATH)  -o $(BIN)/utils_hash_map.out
+
+$(BIN)/swiftsnails_common.out: SwiftSnails/common.cpp ../SwiftSnails/common.h ../utils/common.h
+	$(CXX) SwiftSnails/common.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_common.out
 
 clean:
 	rm $(BIN)/*.out

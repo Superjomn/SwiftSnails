@@ -9,6 +9,7 @@
 #ifndef SwiftSnails_SwiftSnails_client_BasicClient_h_
 #define SwiftSnails_SwiftSnails_client_BasicClient_h_
 #include "../../utils/common.h"
+#include "zmq.h"
 #include "../common.h"
 #include "../Message.h"
 namespace swift_snails {
@@ -34,7 +35,7 @@ public:
     void register_node(int id, const std::string addr) {
         _send_addrs.emplace(id, addr);
         _send_mutexes.emplace(id, std::mutex());
-        _senders.emplace(zmq_socket(_zmq_ctx, ZMQ_PULL));
+        _senders.emplace(id, zmq_socket(_zmq_ctx, ZMQ_PULL));
     }
     void set_recv_addr(const std::string addr) {
         _recv_addr = addr;

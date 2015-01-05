@@ -18,6 +18,7 @@
 #include <queue>
 #include <thread>
 #include <fstream>
+#include <sstream>
 #include "VirtualObject.h"
 #include "glog/logging.h"
 #include "zmq.h"

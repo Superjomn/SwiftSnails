@@ -101,8 +101,11 @@ std::string get_local_ip() {
 }
 
 struct IP {
-    uint16_t addr[4];
-    uint16_t port;
+    uint16_t addr[4] = {0};
+    uint16_t port = 0;
+
+    IP() {
+    }
 
     IP(const std::string &ip) {
         from_string(ip);
@@ -117,25 +120,28 @@ struct IP {
         return std::move(ss.str());
     }
     void from_string(const std::string &ip) {
-        char* begin = &ip[0];
+        const char* begin = &ip[0];
         char* end; 
         for(int i = 0; i < 4; i++) {
+            //LOG(INFO) << i << "begin:" << begin;
             addr[i] = (uint16_t) std::strtoul(begin, &end, 10);
-            begin = end;
+            begin = end+1;
         }
         port = (uint16_t) std::strtoul(begin, &end, 10);
     }
     friend BinaryBuffer& operator<<(BinaryBuffer& bb, const IP& ip) {
         for(int i = 0; i < 4; i++) {
-            bb << ip[i];
+            bb << ip.addr[i];
         }
-        bb << port;
+        bb << ip.port;
+        return bb;
     }
     friend BinaryBuffer& operator>>(BinaryBuffer& bb, IP& ip) {
         for(int i = 0; i < 4; i++) {
             bb >> ip.addr[i];
         }
         bb >> ip.port;
+        return bb;
     }
 }; // struct IP
 
