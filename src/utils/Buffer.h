@@ -11,6 +11,8 @@
 #include "string.h"
 namespace swift_snails {
 
+
+extern class Message;
 /*
  * 将对象序列化，便于网络传输
  * 管理动态分配内存
@@ -35,6 +37,25 @@ public:
     {
         // clear other's pointer
         other.clear();
+    }
+
+    BasicBuffer& operator=(const BasicBuffer&) = delete;
+    BasicBuffer& operator=(BasicBuffer&& other) {
+        if (this != &other) {
+            free();     // clean original buffer
+            _buffer = other._buffer;
+            _cursor = other._cursor;
+            _end = other._end;
+        }
+        return *this;
+    }
+    BasicBuffer& operator=(Message&& m) {
+    	CHECK(m.zmg());
+    	free();
+    	_buffer = &m.zmg();
+    	_cursor = buffer();
+    	_end = buffer() + m.size();
+    	return *this;
     }
 
     ~BasicBuffer() {

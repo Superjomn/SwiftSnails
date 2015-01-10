@@ -82,6 +82,17 @@ private:
 }; // class AsynExec
 
 
+/*
+ * a global async channel with fixed number of threads
+ */
+// TODO should be changed in future
+const num_async_threads = 4;
+
+std::shared_ptr<AsynExec::channel_t> global_async_channel() {
+    static AsynExec global_async(num_async_threads);
+    return global_async.open();
+}
+
 }; // end namespace swift_snails
 
 #endif

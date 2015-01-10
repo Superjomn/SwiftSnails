@@ -16,6 +16,19 @@ struct BasicMetaMessage {
 struct MetaMessage : public BasicMetaMessage {
     index_t client_id = 0;
     index_t message_id = 0;
+
+    MetaMessage(const MetaMessage &other) {
+    	message_class = other.message_class;
+    	client_id = other.client_id;
+    	message_id = other.message_id;
+    }
+
+    MetaMessage& operator= (const MetaMessage &other) {
+    	message_class = other.message_class;
+    	client_id = other.client_id;
+    	message_id = other.message_id;
+    	return *this;
+    }
 };
 
 
@@ -48,8 +61,12 @@ public:
         return *this;
     }
 
-    size_t length() {
+    size_t size() {
         return zmq_msg_size(&_zmg);
+    }
+
+    bool empty() {
+        return size() <= 0;
     }
 
     void reset() {
