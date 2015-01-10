@@ -13,45 +13,6 @@
 #include "../AsynExec.h"
 namespace swift_snails {
 
-/*
- * zmq network package
- */
-struct Request;
-
-struct Package : public VirtualObject {
-    Package(Request& request) {
-        meta.assign((char*)&request.meta, sizeof(MetaMessage));
-        cont.assign(request.cont.buffer(), request.cont.size());
-    }
-
-    Message meta;
-    Message cont;
-};
-/*
- * higher level message package
- */
-struct Request : public VirtualObject {
-    typedef std::function<void(Response&)> ResponseCallBack;
-    // datas
-    MetaMessage meta;
-    BinaryBuffer cont;
-    std::function<void(Response&)> call_back_handler;
-};
-
-struct Response : public VirtualObject {
-    Response(Package &&pkg) {
-        // copy meta 
-        CHECK(pkg.meta.size() == sizeof(MetaMessage));
-        memcpy(&meta, &pkg.meta.zmg(), sizeof(MetaMessage));
-        // copy content
-        cont = pkg.cont;
-    }
-
-	MetaMessage meta;
-	BinaryBuffer cont;
-};
-
-
 template<typename ResponseCallBack>
 class BasicClient : public VirtualObject {
 public:
@@ -181,8 +142,6 @@ protected:
     void connect(index_t id) {
         PCHECK(0 == ignore_signal_call(zmq_connect, _senders[id], _send_addrs[id].c_str()));
     }
-
-
 
 private:
     void* _zmq_ctx = NULL;
