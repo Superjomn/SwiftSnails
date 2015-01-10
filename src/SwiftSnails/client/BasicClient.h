@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Chunwei. All rights reserved.
 //
 
-#ifndef SwiftSnails_SwiftSnails_Basic_h_
-#define SwiftSnails_SwiftSnails_Basic_h_
+#ifndef SwiftSnails_SwiftSnails_BasicClient_h_
+#define SwiftSnails_SwiftSnails_BasicClient_h_
 #include "../../utils/common.h"
 #include "../common.h"
 #include "../AsynExec.h"
@@ -19,6 +19,15 @@ public:
     explicit BasicClient() {
         _zmq_ctx = zmq_ctx_new();
         PCHECK(_receiver = zmq_socket(_zmq_ctx, ZMQ_PULL));
+    }
+
+    ~BasicClient() {
+        LOG(WARNING) << "client out";
+        PCHECK(0 == zmq_close(_receiver));
+        for( auto& sender : _senders) {
+            PCHECK(0 == zmq_close(sender.second));
+        }
+        PCHECK(0 == zmq_ctx_destroy(_zmq_ctx));
     }
     /*
      * listen to a random port
@@ -97,7 +106,7 @@ public:
                 handler = std::move(it->second);
                 _msg_handlers.erase(it);
             }
-            _async_channel.push(
+            _async_channel->push(
                 []{handler(response);});
         }
     }
