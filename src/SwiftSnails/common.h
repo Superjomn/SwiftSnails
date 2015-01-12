@@ -37,17 +37,14 @@ auto ignore_signal_call(FUNC func, ARGS&&... args)
     }
 }
 
-
 inline void zmq_bind_random_port(const std::string& ip, void* socket, std::string& addr, int& port) {
-    const int nturns2try = 10000;
-    for(int i = 0; i < nturns2try; i++) {
+    for(;;) {
         port = 1024 + rand() % (65536 - 1024);
         format_string(addr, "tcp://%s:%d", ip.c_str(), port);
-        int res;
+        int res = 0;
         PCHECK((res = zmq_bind(socket, addr.c_str()), 
                 res == 0 || errno == EADDRINUSE));  // port is already in use
         if(res == 0) break;
-        CHECK(i < nturns2try-1) << "can not bind port";
     }
 }
 

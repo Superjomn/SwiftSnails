@@ -34,7 +34,7 @@ public:
      */
     int listen() {
         zmq_bind_random_port(_recv_ip, _receiver,  _recv_addr, _recv_port);
-        LOG(INFO) << "client listen to port:\t" << _recv_port;
+        LOG(INFO) << "client listen to address:\t" << _recv_addr;
         return _recv_port;
     }
     /*
@@ -92,7 +92,8 @@ public:
             { 
                 std::lock_guard<std::mutex> lock(_receiver_mutex);
                 PCHECK(ignore_signal_call(zmq_msg_recv, &pkg.meta.zmg(), _receiver, 0) >= 0);
-                CHECK(!zmq_msg_more(&pkg.meta.zmg()));
+                if(pkg.meta.size() == 0) break;
+                CHECK(zmq_msg_more(&pkg.meta.zmg()));
                 PCHECK(ignore_signal_call(zmq_msg_recv, &pkg.cont.zmg(), _receiver, 0) >= 0);
                 CHECK(!zmq_msg_more(&pkg.cont.zmg()));
             } // unlock mutex
