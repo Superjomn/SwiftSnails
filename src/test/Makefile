@@ -1,15 +1,16 @@
 CXX=g++
 CC=gcc
 BIN=./bin
-CXXFLAGS= -std=c++11 -pthread -Wall -g -DHAVE_PCAP 
+CXXFLAGS= -std=c++11 -pthread -lpthread -Wall -g -DHAVE_PCAP 
 THIRD_INCPATH=-I../../third/local/glog/include \
 	-I../../third/local/openmpi/include \
 	-I../../third/local/zeromq/include \
-	-I/usr/local/Cellar/google-sparsehash/2.0.2/include
+	-I/usr/local/Cellar/google-sparsehash/2.0.2/include \
+	-I/usr/include/pthread
 
 THIRD_LIB=../../third/local/glog/lib/libglog.a  ../../third/local/zeromq/lib/libzmq.a
 
-.PHONY:all clean test
+.PHONY:all clean test cur
 
 
 all: $(BIN)/utils_string.out \
@@ -20,8 +21,10 @@ all: $(BIN)/utils_string.out \
 	 $(BIN)/swiftsnails_asyn_exec.out \
 	 $(BIN)/utils_hash_map.out \
 	 $(BIN)/swiftsnails_common.out \
-	 $(BIN)/swiftsnails_client_basicclient.out
+	 $(BIN)/utils_spinlock.out \
+	$(BIN)/swiftsnails_client_basicclient.out \
 
+cur: $(BIN)/utils_spinlock.out
 
 $(BIN)/utils_string.out : utils/string.cpp ../utils/string.h
 	$(CXX) utils/string.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/utils_string.out 
@@ -31,7 +34,6 @@ $(BIN)/utils_ConfigParser.out : utils/ConfigParser.cpp ../utils/ConfigParser.h
 	
 $(BIN)/utils_HashFunction.out : utils/HashFunction.cpp ../utils/HashFunction.h
 	$(CXX) utils/HashFunction.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/utils_HashFunction.out
-
 
 $(BIN)/utils_mpi.out : utils/mpi.cpp ../utils/mpi.h
 	$(CXX) utils/mpi.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/utils_mpi.out
@@ -53,6 +55,9 @@ $(BIN)/swiftsnails_common.out: SwiftSnails/common.cpp ../SwiftSnails/common.h ..
 
 $(BIN)/swiftsnails_client_basicclient.out : SwiftSnails/client/BasicClient.cpp ../SwiftSnails/client/BasicClient.h ../SwiftSnails/common.h ../utils/common.h
 	$(CXX) SwiftSnails/client/BasicClient.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_client_basicclient.out
+
+$(BIN)/utils_spinlock.out : utils/Spinlock.cpp ../utils/SpinLock.h
+	$(CXX) utils/Spinlock.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/utils_spinlock.out
 
 clean:
 	rm $(BIN)/*.out

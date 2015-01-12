@@ -9,10 +9,9 @@
 #define SwiftSnails_utils_Buffer_h_
 #include "common.h"
 #include "string.h"
+//#include "../SwiftSnails/Message.h"
 namespace swift_snails {
 
-
-extern class Message;
 /*
  * 将对象序列化，便于网络传输
  * 管理动态分配内存
@@ -49,6 +48,7 @@ public:
         }
         return *this;
     }
+    /*
     BasicBuffer& operator=(Message&& m) {
     	CHECK(m.zmg());
     	free();
@@ -57,7 +57,7 @@ public:
     	_end = buffer() + m.size();
     	return *this;
     }
-
+    */
     ~BasicBuffer() {
         free();
     }
@@ -87,7 +87,10 @@ public:
         os << "end:\t" << end() << std::endl;
         return std::move(os.str());
     }
-
+    
+    void set_buffer(char* x) {
+        _buffer = x;
+    }
     void set_cursor(char* x) {
         CHECK(_cursor < end());
         _cursor = x;
@@ -102,6 +105,13 @@ public:
     bool read_finished() {
         CHECK(cursor() <= end());
         return cursor() == end();
+    }
+
+    void free() {   // just free memory
+        if(_buffer) {
+            delete _buffer; 
+            //clear();
+        }
     }
 protected:
     void reserve(size_t newcap) {
@@ -130,12 +140,6 @@ protected:
         _end += size;
     }
 
-    void free() {   // just free memory
-        if(_buffer) {
-            delete _buffer; 
-            //clear();
-        }
-    }
     // clear status
     void clear() {
         _buffer = nullptr;  // should move or delete content of _buffer before

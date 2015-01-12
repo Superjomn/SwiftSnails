@@ -9,10 +9,14 @@
 #ifndef SwiftSnails_utils_SpinLock_h
 #define SwiftSnails_utils_SpinLock_h
 #include "common.h"
-#include "pthread.h"
+#include <unistd.h>
+#include <sys/syscall.h>
+#include <atomic>
+#include <pthread.h>
 
 namespace swift_snails {
 
+/*
 // 封装pthread_spinlock
 class SpinLock : public VirtualObject {
 public:
@@ -32,6 +36,27 @@ public:
 private:
     pthread_spinlock_t _spin;
 };
+
+*/
+ 
+class SpinLock
+{
+public:
+    void lock()
+    {
+        while(lck.test_and_set(std::memory_order_acquire))
+        {}
+    }
+ 
+    void unlock()
+    {
+        lck.clear(std::memory_order_release);
+    }
+ 
+private:
+    std::atomic_flag lck = ATOMIC_FLAG_INIT;
+};
+
 
 }; // end namespace swift_snails
 

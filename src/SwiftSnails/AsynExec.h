@@ -22,7 +22,9 @@ public:
 
     explicit AsynExec(int thread_num) : 
         _thread_num(thread_num)
-    { }
+    { 
+        _channel = open();
+    }
 
     std::shared_ptr<channel_t> open() {
 
@@ -54,9 +56,13 @@ public:
     int thread_num() const {
         return _thread_num;
     }
+    std::shared_ptr<channel_t> channel() {
+        return _channel;
+    }
 private:
     int _thread_num = 0;
     std::vector<std::thread> _threads;
+    std::shared_ptr<channel_t> _channel;
 
     struct MultiWorker {
         std::vector<std::thread> threads;
@@ -86,11 +92,11 @@ private:
  * a global async channel with fixed number of threads
  */
 // TODO should be changed in future
-const num_async_threads = 4;
+const int num_async_threads = 4;
 
 std::shared_ptr<AsynExec::channel_t> global_async_channel() {
     static AsynExec global_async(num_async_threads);
-    return global_async.open();
+    return global_async.channel();
 }
 
 }; // end namespace swift_snails

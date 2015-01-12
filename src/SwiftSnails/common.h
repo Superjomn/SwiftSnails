@@ -21,7 +21,22 @@
 #include "../utils/common.h"
 #include "../utils/string.h"
 #include "../utils/buffer.h"
+#include "Message.h"
 namespace swift_snails {
+
+template<class FUNC, class... ARGS>
+auto ignore_signal_call(FUNC func, ARGS&&... args) 
+    -> typename std::result_of<FUNC(ARGS...)>::type {
+    for (;;) {
+        auto err = func(args...);
+        if (err < 0 && errno == EINTR) {
+            LOG(INFO) << "Signal is caught. Ignored.";
+            continue;
+        }
+        return err;
+    }
+}
+
 
 inline void zmq_bind_random_port(const std::string& ip, void* socket, std::string& addr, int& port) {
     const int nturns2try = 10000;
@@ -36,17 +51,12 @@ inline void zmq_bind_random_port(const std::string& ip, void* socket, std::strin
     }
 }
 
-template<class FUNC, class... ARGS>
-auto ignore_signal_call(FUNC func, ARGS&&... args) 
-    -> typename std::result_of<FUNC(ARGS...)>::type {
-    for (;;) {
-        auto err = func(args...);
-        if (err < 0 && errno == EINTR) {
-            LOG(INFO) << "Signal is caught. Ignored.";
-            continue;
-        }
-        return err;
-    }
+inline void zmq_send_push_once(void* zmq_ctx, zmq_msg_t* zmg, const std::string& addr) {
+    void* sender = nullptr;
+    PCHECK(sender = zmq_socket(zmq_ctx, ZMQ_PUSH));
+    PCHECK(0 == ignore_signal_call(zmq_connect, sender, addr.c_str()));
+    PCHECK(ignore_signal_call(zmq_msg_send, zmg, sender, 0) >= 0);
+    PCHECK(0 == zmq_close(sender));
 }
 
 // ensure thread to exit normally
@@ -144,28 +154,16 @@ struct IP {
     }
 }; // struct IP
 /*
- * zmq network package
+ * higher level message package
  */
+
 struct Request;
 
 struct Package : public VirtualObject {
-    Package(Request& request) {
-        meta.assign((char*)&request.meta, sizeof(MetaMessage));
-        cont.assign(request.cont.buffer(), request.cont.size());
-    }
-
+    explicit Package() { };
+    Package(Request&);
     Message meta;
     Message cont;
-};
-/*
- * higher level message package
- */
-struct Request : public VirtualObject {
-    typedef std::function<void(Response&)> ResponseCallBack;
-    // datas
-    MetaMessage meta;
-    BinaryBuffer cont;
-    std::function<void(Response&)> call_back_handler;
 };
 
 struct Response : public VirtualObject {
@@ -174,16 +172,29 @@ struct Response : public VirtualObject {
         CHECK(pkg.meta.size() == sizeof(MetaMessage));
         memcpy(&meta, &pkg.meta.zmg(), sizeof(MetaMessage));
         // copy content
-        cont = pkg.cont;
+        pkg.cont.moveTo(cont);
+        //cont = pkg.cont;
     }
 
 	MetaMessage meta;
 	BinaryBuffer cont;
 };
 
+struct Request : public VirtualObject {
+    typedef std::function<void(Response&)> ResponseCallBack;
+    // datas
+    MetaMessage meta;
+    BinaryBuffer cont;
+    ResponseCallBack call_back_handler;
+};
 
-
-
+/*
+ * zmq network package
+ */
+Package::Package(Request& request) {
+    meta.assign((char*)&request.meta, sizeof(MetaMessage));
+    cont.assign(request.cont.buffer(), request.cont.size());
+}
 
 
 };  // end namespace swift_snails

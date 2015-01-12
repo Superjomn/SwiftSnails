@@ -17,6 +17,8 @@ struct MetaMessage : public BasicMetaMessage {
     index_t client_id = 0;
     index_t message_id = 0;
 
+    explicit MetaMessage() { }
+
     MetaMessage(const MetaMessage &other) {
     	message_class = other.message_class;
     	client_id = other.client_id;
@@ -90,6 +92,15 @@ public:
 
     zmq_msg_t& zmg() {
         return _zmg;
+    }
+
+    BasicBuffer& moveTo(BasicBuffer &bb) {
+        CHECK(&zmg());
+        bb.free();
+        bb.set_buffer((char*)&zmg());
+        bb.set_cursor(bb.buffer());
+        bb.set_end(bb.buffer() + size());
+        return bb;
     }
 
 private:
