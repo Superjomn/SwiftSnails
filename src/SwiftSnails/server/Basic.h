@@ -48,6 +48,7 @@ public:
      * @addr:   like: tcp://127.0.0.1:80801
      */
     void listen(const std::string &addr) {
+        LOG(INFO) << "server listen to " << addr;
         _recv_addr = addr;
         int res;
         PCHECK((res = zmq_bind(_receiver, addr.c_str()), res == 0));
@@ -63,6 +64,7 @@ public:
     }
 
     void register_message_class(index_t id, Handler&& handler) {
+        LOG(INFO) << "register message class: " << id;
         std::lock_guard<SpinLock> lock(_spinlock);
         CHECK(_message_classes.count(id) == 0) <<
                 "callback should be registerd only once";
@@ -108,6 +110,48 @@ public:
         LOG(WARNING) << "server terminated!";
     }
 
+    /* 
+     * multi listen threads
+     */ 
+    void set_listen_thread_num(int x) {
+        CHECK(x > 0);
+        _thread_num = x;
+    }
+    int thread_num() const {
+        return _thread_num;
+    }   
+    // init threads
+    void initialize() {
+        LOG(INFO) << "initialize " << thread_num() << " threads";
+        CHECK(_thread_num > 0);
+        _threads.resize(thread_num());
+        for(int i = 0; i < thread_num(); i++) {
+            _threads[i] = std::thread(
+                [this]() {
+                    main_loop();
+                });
+            /*
+            _threads.emplace_back(
+                [this] () {
+                    main_loop()
+                });
+            */
+        }
+    }
+    // terminate all threads
+    void finalize() {
+        LOG(WARNING) << "client exit!";
+        CHECK(!_threads.empty());
+        // terminate all threads
+        for (int i = 0; i < thread_num(); i++) {
+            zmq_send_push_once(_zmq_ctx, &Message().zmg(), _recv_addr);
+        }
+        for (int i = 0; i < thread_num(); i++) {
+            _threads[i].join();
+        }
+        _threads.clear();
+    }
+
 protected:
     void connect(index_t id) {
         PCHECK(0 == ignore_signal_call(zmq_connect, _senders[id], _send_addrs[id].c_str()));
@@ -119,6 +163,8 @@ private:
     std::mutex  _receiver_mutex;
     std::string _recv_addr;
     //std::string _recv_ip;
+    int _thread_num;
+    std::vector<std::thread> _threads;
     //int         _recv_port = -1;
     std::map<index_t, void*>        _senders;
     std::map<index_t, std::string>  _send_addrs;   // with port
