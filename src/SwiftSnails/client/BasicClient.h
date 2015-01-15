@@ -33,6 +33,7 @@ public:
      * listen to a random port
      */
     int listen() {
+        //LOG(INFO) << "client try to listen to address:\t" << _recv_addr;
         zmq_bind_random_port(_recv_ip, _receiver,  _recv_addr, _recv_port);
         LOG(INFO) << "client listen to address:\t" << _recv_addr;
         return _recv_port;
@@ -132,8 +133,7 @@ public:
     void set_async_channel(std::shared_ptr<AsynExec::channel_t> channel) {
         _async_channel = channel;
     }
-
-    void set_thread_num(int x) {
+    void set_listen_thread_num(int x) {
         CHECK(x > 0);
         _thread_num = x;
     }
