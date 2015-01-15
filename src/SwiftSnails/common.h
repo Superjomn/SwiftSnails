@@ -14,9 +14,9 @@
 #include <string.h> /* for strncpy */
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <netinet/in.h>
-#include <net/if.h>
+#include <ifaddrs.h>
+#include <netinet/in.h> 
+#include <string.h> 
 #include <arpa/inet.h>
 #include "../utils/common.h"
 #include "../utils/string.h"
@@ -41,6 +41,7 @@ inline void zmq_bind_random_port(const std::string& ip, void* socket, std::strin
     for(;;) {
         port = 1024 + rand() % (65536 - 1024);
         format_string(addr, "tcp://%s:%d", ip.c_str(), port);
+        //LOG(INFO) << "try addr: " << addr;
         int res = 0;
         PCHECK((res = zmq_bind(socket, addr.c_str()), 
                 res == 0 || errno == EADDRINUSE));  // port is already in use
@@ -80,7 +81,7 @@ public:
         if(_t.joinable()) _t.join();
     }
 };
-
+/*
 std::string get_local_ip() {
     int sockfd;
     char buf[512];
@@ -97,6 +98,7 @@ std::string get_local_ip() {
     for (int i = 0; i < int(ifconf.ifc_len / sizeof(struct ifreq)); i++) {
         std::string ip;
         ip = inet_ntoa(((struct sockaddr_in*)&ifreq->ifr_addr)->sin_addr);
+        LOG(INFO) << "get_local_ip: " << ip;
         if (ip != "127.0.0.1") {
             return ip;
         }
@@ -104,6 +106,33 @@ std::string get_local_ip() {
     }
     LOG(FATAL) << "IP not found";
     return "";
+}
+*/
+std::string get_local_ip() {
+    struct ifaddrs * ifAddrStruct=NULL;
+    struct ifaddrs * ifa=NULL;
+    void * tmpAddrPtr=NULL;
+    std::string ip;
+
+    getifaddrs(&ifAddrStruct);
+
+    for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
+        if (!ifa->ifa_addr) {
+            continue;
+        }
+        if (ifa->ifa_addr->sa_family == AF_INET) { // check it is IP4
+            // is a valid IP4 Address
+            tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+            char addressBuffer[INET_ADDRSTRLEN];
+            inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+            if(strcmp(addressBuffer, "127.0.0.1") != 0) {
+                ip = addressBuffer;
+            }
+            //printf("%s IP Address %s\n", ifa->ifa_name, addressBuffer); 
+        } 
+    }
+    if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
+    return std::move(ip);
 }
 
 struct IP {
@@ -178,6 +207,12 @@ struct Response : public VirtualObject {
 };
 
 struct Request : public VirtualObject {
+    Request(Package &&pkg) {
+        CHECK(pkg.meta.size() == sizeof(MetaMessage));
+        memcpy(&meta, &pkg.meta.zmg(), sizeof(MetaMessage));
+        // copy content
+        pkg.cont.moveTo(cont);
+    }
     typedef std::function<void(Response&)> ResponseCallBack;
     // datas
     MetaMessage meta;
