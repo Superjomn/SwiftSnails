@@ -1,5 +1,5 @@
 #include "../../../SwiftSnails/client/BasicClient.h"
-#include "../../../SwiftSnails/server/Basic.h"
+#include "../../../SwiftSnails/server/BasicServer.h"
 using namespace std;
 using namespace swift_snails;
 
