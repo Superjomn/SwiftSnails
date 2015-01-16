@@ -93,15 +93,21 @@ public:
     zmq_msg_t& zmg() {
         return _zmg;
     }
-
+    /*
     BasicBuffer& moveTo(BasicBuffer &bb) {
         CHECK(&zmg());
         bb.free();
-        bb.set_buffer((char*)&zmg());
-        bb.set_cursor(bb.buffer());
+        bb.reserve(size());
+        // copy from zmg
+        memcpy(bb.buffer(), &zmg(), size());
+        LOG(INFO) << "bb.buffer:\t" << (char*)bb.buffer();
+        LOG(INFO) << "bb.buffer()[1]:\t" << bb.buffer()[1];
         bb.set_end(bb.buffer() + size());
+        LOG(INFO) << "bb.end:\t" << bb.end();
+        bb.set_cursor(bb.buffer());
         return bb;
     }
+    */
 
 private:
     zmq_msg_t _zmg;

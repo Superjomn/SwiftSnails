@@ -38,6 +38,14 @@ public:
         other.clear();
     }
 
+    void set(char* buffer, size_t size) {
+        CHECK(size > 0);
+        reserve(size);
+        memcpy(_buffer, buffer, size);
+        _cursor = _buffer;
+        _end = _buffer + size;
+    }
+
     BasicBuffer& operator=(const BasicBuffer&) = delete;
     BasicBuffer& operator=(BasicBuffer&& other) {
         if (this != &other) {
@@ -59,6 +67,7 @@ public:
     }
     */
     ~BasicBuffer() {
+        LOG(INFO) << "Buffer deconstruct!";
         free();
     }
 
@@ -80,11 +89,11 @@ public:
     std::string status () const {
     	std::stringstream os;
         os << "BinaryBuffer Status" << std::endl;
-        os << "buffer:\t" << buffer() << std::endl;
-        os << "cursor:\t" << cursor() << std::endl;
+        os << "buffer:\t" << _buffer << std::endl;
+        os << "cursor:\t" << _cursor << std::endl;
         os << "size:\t" << size() << std::endl;
         os << "capacity:\t" << capacity() << std::endl;
-        os << "end:\t" << end() << std::endl;
+        os << "end:\t" << _cursor << std::endl;
         return std::move(os.str());
     }
     
@@ -112,7 +121,12 @@ public:
             delete _buffer; 
             //clear();
         }
+        _capacity = 0;
+        _buffer = nullptr;
+        _cursor = _buffer;
+        _end = _buffer;
     }
+
 protected:
     void reserve(size_t newcap) {
         LOG(WARNING) << "reserve new memory:\t" << newcap;
@@ -129,6 +143,7 @@ protected:
             _buffer = newbuf;
         }
     }
+protected:
     // used in read mod
     void cursor_preceed(size_t size) {
       //CHECK(cursor() + size < end());
@@ -185,6 +200,8 @@ protected:
     // T should be basic types
     template<typename T>
     void get_raw(T& x) {
+        LOG(INFO) << "buffer cursor:" << cursor();
+        LOG(INFO) << "buffer end:" << end();
         CHECK(! read_finished());
         memcpy(&x, cursor(), sizeof(T));
         cursor_preceed(sizeof(T));

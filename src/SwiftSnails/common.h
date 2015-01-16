@@ -190,6 +190,14 @@ struct Package : public VirtualObject {
     Package(Request&);
     Message meta;
     Message cont;
+
+    std::string status() {
+        using namespace std;
+        stringstream ss;
+        ss << "meta.size:\t" << meta.size() << endl;
+        ss << "cont.size:\t" << cont.size() << endl;
+        return std::move(ss.str());
+    }   
 };
 
 struct Response : public VirtualObject {
@@ -198,7 +206,8 @@ struct Response : public VirtualObject {
         CHECK(pkg.meta.size() == sizeof(MetaMessage));
         memcpy(&meta, &pkg.meta.zmg(), sizeof(MetaMessage));
         // copy content
-        pkg.cont.moveTo(cont);
+        //pkg.cont.moveTo(cont);
+        cont.set(pkg.cont.buffer(), pkg.cont.size());
         //cont = pkg.cont;
     }
 
@@ -206,14 +215,28 @@ struct Response : public VirtualObject {
 	BinaryBuffer cont;
 };
 
-struct Request : public VirtualObject {
-    Request(Package &&pkg) {
+struct Request {
+
+    typedef std::function<void(std::shared_ptr<Response>)> ResponseCallBack;
+
+    explicit Request() { }
+    Request(Package &pkg) {
+        LOG(INFO) << "int Request pkg.status:\t" << pkg.status();
         CHECK(pkg.meta.size() == sizeof(MetaMessage));
         memcpy(&meta, &pkg.meta.zmg(), sizeof(MetaMessage));
         // copy content
-        pkg.cont.moveTo(cont);
+        CHECK(cont.size() == 0);
+        cont.set(pkg.cont.buffer(), pkg.cont.size());
+        //pkg.cont.moveTo(cont);
     }
-    typedef std::function<void(Response&)> ResponseCallBack;
+
+    Request(const Request&) = delete;
+
+    Request(Request &&other) {
+        meta = std::move(other.meta);
+        cont = std::move(other.cont);
+        call_back_handler = std::move(other.call_back_handler);
+    }
     // datas
     MetaMessage meta;
     BinaryBuffer cont;

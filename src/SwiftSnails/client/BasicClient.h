@@ -48,7 +48,7 @@ public:
         std::lock_guard<std::mutex> lock(_mut);
         _send_addrs.emplace(id, addr);
         _send_mutexes.emplace(id, std::unique_ptr<std::mutex>(new std::mutex));
-        void *sender = zmq_socket(_zmq_ctx, ZMQ_PULL);
+        void *sender = zmq_socket(_zmq_ctx, ZMQ_PUSH);
         _senders.emplace(id, sender);
     }
     /*
@@ -99,18 +99,19 @@ public:
                 CHECK(!zmq_msg_more(&pkg.cont.zmg()));
             } // unlock mutex
 
-            Response response(std::move(pkg));
-            CHECK(response.meta.client_id == client_id());
+            auto response = std::make_shared<Response>(std::move(pkg));
+            // wait to init client_id ?
+            CHECK(_client_id==0 || response->meta.client_id == client_id());
             // call the callback handler
             { 
                 std::lock_guard<SpinLock> lock(_spinlock);
-                auto it = _msg_handlers.find(response.meta.message_id);
+                auto it = _msg_handlers.find(response->meta.message_id);
                 CHECK(it != _msg_handlers.end());
                 handler = std::move(it->second);
                 _msg_handlers.erase(it);
             }
             _async_channel->push(
-                [&handler, &response] () {
+                [&handler, response] () {
                     //handler(response);
                     handler(response);
                 });
@@ -195,6 +196,7 @@ protected:
      * @id: id of the node
      */
     void connect(index_t id) {
+        LOG(INFO) << "client connect " << _send_addrs[id];
         PCHECK(0 == ignore_signal_call(zmq_connect, _senders[id], _send_addrs[id].c_str()));
     }
 
