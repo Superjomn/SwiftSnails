@@ -237,6 +237,10 @@ struct Request {
         cont = std::move(other.cont);
         call_back_handler = std::move(other.call_back_handler);
     }
+
+    ~Request() {
+        LOG(INFO) << "deconstruct Request!";
+    }
     // datas
     MetaMessage meta;
     BinaryBuffer cont;

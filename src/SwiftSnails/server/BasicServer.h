@@ -96,7 +96,7 @@ public:
     void main_loop() {
         for(;;) {
             Package package;
-            LOG(INFO) << "running listen thread ...";
+            //LOG(INFO) << "running listen thread ...";
             { std::lock_guard<std::mutex> lock(_receiver_mutex);
                 // receive meta-message first
                 PCHECK(ignore_signal_call(zmq_msg_recv, &package.meta.zmg(), _receiver, 0) >= 0);
@@ -109,20 +109,22 @@ public:
                 CHECK(!zmq_msg_more(&package.cont.zmg()));
             }
             LOG(INFO) << "constructing the request from package";
-            LOG(INFO) << "package.cont:\t" << package.cont.buffer();
+            //LOG(INFO) << "package.cont:\t" << package.cont.buffer();
             auto request = std::make_shared<Request>(package);
+            LOG(INFO) << "create a request shared_ptr, use_count():\t" << request.use_count();
             LOG(INFO) << "get a message: message_class:\t" << request->meta.message_class;
-            LOG(INFO) << "request.cont status:\t" << request->cont.status();
+            //LOG(INFO) << "request.cont status:\t" << request->cont.status();
             // read package
             auto it = _message_classes.find(request->meta.message_class);
             CHECK(it != _message_classes.end());
             // push the handler to async channel
             Handler handler = it->second;
-            LOG(INFO) << "request.cont status ...";
+            //LOG(INFO) << "request.cont status ...";
             LOG(INFO) << request->cont.status();
             LOG(INFO) << "push handler into async_channel ...";
             _async_channel->push(
                 [&handler, request] {
+                    LOG(INFO) << "request.use_count():\t" << request.use_count();
                     handler(request);
                 });
         }

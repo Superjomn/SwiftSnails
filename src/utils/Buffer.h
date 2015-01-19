@@ -200,8 +200,8 @@ protected:
     // T should be basic types
     template<typename T>
     void get_raw(T& x) {
-        LOG(INFO) << "buffer cursor:" << cursor();
-        LOG(INFO) << "buffer end:" << end();
+        //LOG(INFO) << "buffer cursor:" << cursor();
+        //LOG(INFO) << "buffer end:" << end();
         CHECK(! read_finished());
         memcpy(&x, cursor(), sizeof(T));
         cursor_preceed(sizeof(T));

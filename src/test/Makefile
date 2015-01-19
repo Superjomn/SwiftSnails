@@ -60,13 +60,13 @@ $(BIN)/swiftsnails_client_basicclient.out : SwiftSnails/client/BasicClient.cpp .
 $(BIN)/utils_spinlock.out : utils/Spinlock.cpp ../utils/SpinLock.h
 	$(CXX) utils/Spinlock.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/utils_spinlock.out
 
-$(BIN)/swiftsnails_server_basicserver.out : SwiftSnails/server/BasicServer.cpp ../SwiftSnails/server/Basic.h
+$(BIN)/swiftsnails_server_basicserver.out : SwiftSnails/server/BasicServer.cpp ../SwiftSnails/server/BasicServer.h
 	$(CXX) SwiftSnails/server/BasicServer.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_server_basicserver.out
 # test Master client and server --------
 $(BIN)/swiftsnails_client_masterclient.out : SwiftSnails/client/MasterClient.cpp SwiftSnails/client/Master.h ../SwiftSnails/client/BasicClient.h ../SwiftSnails/common.h ../utils/common.h
 	$(CXX) SwiftSnails/client/MasterClient.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_client_masterclient.out
 
-$(BIN)/swiftsnails_client_masterserver.out : SwiftSnails/client/MasterServer.cpp SwiftSnails/client/Master.h ../SwiftSnails/server/Basic.h ../SwiftSnails/common.h ../utils/common.h
+$(BIN)/swiftsnails_client_masterserver.out : SwiftSnails/client/MasterServer.cpp SwiftSnails/client/Master.h ../SwiftSnails/server/BasicServer.h ../SwiftSnails/common.h ../utils/common.h
 	$(CXX) SwiftSnails/client/MasterServer.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_client_masterserver.out
 
 clean:
