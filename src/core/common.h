@@ -1,13 +1,13 @@
 //
 //  common.h
-//  SwiftSnails
+//  core
 //
 //  Created by Chunwei on 12/9/14.
 //  Copyright (c) 2014 Chunwei. All rights reserved.
 //
 
-#ifndef SwiftSnails_SwiftSnails_common_h_
-#define SwiftSnails_SwiftSnails_common_h_
+#ifndef SwiftSnails_core_common_h_
+#define SwiftSnails_core_common_h_
 #include <sstream>
 #include <stdio.h>
 #include <unistd.h>

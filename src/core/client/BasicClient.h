@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Chunwei. All rights reserved.
 //
 
-#ifndef SwiftSnails_SwiftSnails_BasicClient_h_
-#define SwiftSnails_SwiftSnails_BasicClient_h_
+#ifndef SwiftSnails_core_BasicClient_h_
+#define SwiftSnails_core_BasicClient_h_
 #include "../../utils/common.h"
 #include "../common.h"
 #include "../AsynExec.h"

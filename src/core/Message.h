@@ -1,5 +1,5 @@
-#ifndef SwiftSnails_SwiftSnails_Message_h_
-#define SwiftSnails_SwiftSnails_Message_h_
+#ifndef SwiftSnails_core_Message_h_
+#define SwiftSnails_core_Message_h_
 #include "../utils/common.h"
 #include "../utils/Buffer.h"
 

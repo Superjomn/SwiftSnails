@@ -1,12 +1,12 @@
 //
 //  ThreadPool.h
-//  SwiftSnails
+//  core
 //
 //  Created by Chunwei on 12/24/14.
 //  Copyright (c) 2014 Chunwei. All rights reserved.
 //
-#ifndef SwiftSnails_SwiftSnails_ThreadPool_h_
-#define SwiftSnails_SwiftSnails_ThreadPool_h_
+#ifndef SwiftSnails_core_ThreadPool_h_
+#define SwiftSnails_core_ThreadPool_h_
 #include "BasicChannel.h"
 
 namespace swift_snails {

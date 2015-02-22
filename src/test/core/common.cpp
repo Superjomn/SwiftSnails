@@ -5,7 +5,7 @@
  *      Author: Chunwei
  */
 
-#include "../../SwiftSnails/common.h"
+#include "../../core/common.h"
 using namespace swift_snails;
 using namespace std;
 

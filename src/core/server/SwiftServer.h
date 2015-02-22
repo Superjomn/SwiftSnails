@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Chunwei. All rights reserved.
 //
 
-#ifndef SwiftSnails_SwiftSnails_server_SwiftServer_h_
-#define SwiftSnails_SwiftSnails_server_SwiftServer_h_
+#ifndef SwiftSnails_core_server_SwiftServer_h_
+#define SwiftSnails_core_server_SwiftServer_h_
 
 namespace swift_snails {
 

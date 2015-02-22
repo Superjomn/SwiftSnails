@@ -5,8 +5,8 @@
 //  Created by Chunwei on 12/23/14.
 //  Copyright (c) 2014 Chunwei. All rights reserved.
 //
-#ifndef SwiftSnails_SwiftSnails_server_BasicServer_h_
-#define SwiftSnails_SwiftSnails_server_BasicServer_h_
+#ifndef SwiftSnails_core_server_BasicServer_h_
+#define SwiftSnails_core_server_BasicServer_h_
 #include <map>
 #include "zmq.h"
 #include "../AsynExec.h"

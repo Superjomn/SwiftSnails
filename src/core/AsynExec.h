@@ -1,12 +1,12 @@
 //
 //  AsynExec.h
-//  SwiftSnails
+//  core
 //
 //  Created by Chunwei on 12/24/14.
 //  Copyright (c) 2014 Chunwei. All rights reserved.
 //
-#ifndef SwiftSnails_SwiftSnails_AsynExec_h_
-#define SwiftSnails_SwiftSnails_AsynExec_h_
+#ifndef SwiftSnails_core_AsynExec_h_
+#define SwiftSnails_core_AsynExec_h_
 #include "../utils/common.h"
 #include "BasicChannel.h"
 #include "common.h"

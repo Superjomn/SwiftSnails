@@ -42,32 +42,32 @@ $(BIN)/utils_mpi.out : utils/mpi.cpp ../utils/mpi.h
 $(BIN)/utils_buffer.out : utils/Buffer.cpp ../utils/Buffer.h
 	$(CXX) utils/Buffer.cpp  $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/utils_buffer.out
 
-$(BIN)/swiftsnails_asyn_exec.out : SwiftSnails/AsynExec.cpp ../SwiftSnails/AsynExec.h ../SwiftSnails/BasicChannel.h
-	$(CXX) SwiftSnails/AsynExec.cpp  $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_asyn_exec.out
+$(BIN)/swiftsnails_asyn_exec.out : core/AsynExec.cpp ../core/AsynExec.h ../core/BasicChannel.h
+	$(CXX) core/AsynExec.cpp  $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_asyn_exec.out
 	
-$(BIN)/swiftsnails_threadpool.out : SwiftSnails/ThreadPool.cpp ../SwiftSnails/ThreadPool.h 
-	$(CXX) SwiftSnails/ThreadPool.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_threadpool.out
+$(BIN)/swiftsnails_threadpool.out : core/ThreadPool.cpp ../core/ThreadPool.h 
+	$(CXX) core/ThreadPool.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_threadpool.out
 
 $(BIN)/utils_hash_map.out : utils/hash_map.cpp
 	$(CXX) utils/hash_map.cpp $(CXXFLAGS) $(THIRD_INCPATH)  -o $(BIN)/utils_hash_map.out
 
-$(BIN)/swiftsnails_common.out: SwiftSnails/common.cpp ../SwiftSnails/common.h ../utils/common.h
-	$(CXX) SwiftSnails/common.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_common.out
+$(BIN)/swiftsnails_common.out: core/common.cpp ../core/common.h ../utils/common.h
+	$(CXX) core/common.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_common.out
 
-$(BIN)/swiftsnails_client_basicclient.out : SwiftSnails/client/BasicClient.cpp ../SwiftSnails/client/BasicClient.h ../SwiftSnails/common.h ../utils/common.h
-	$(CXX) SwiftSnails/client/BasicClient.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_client_basicclient.out
+$(BIN)/swiftsnails_client_basicclient.out : core/client/BasicClient.cpp ../core/client/BasicClient.h ../core/common.h ../utils/common.h
+	$(CXX) core/client/BasicClient.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_client_basicclient.out
 
 $(BIN)/utils_spinlock.out : utils/Spinlock.cpp ../utils/SpinLock.h
 	$(CXX) utils/Spinlock.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/utils_spinlock.out
 
-$(BIN)/swiftsnails_server_basicserver.out : SwiftSnails/server/BasicServer.cpp ../SwiftSnails/server/BasicServer.h
-	$(CXX) SwiftSnails/server/BasicServer.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_server_basicserver.out
+$(BIN)/swiftsnails_server_basicserver.out : core/server/BasicServer.cpp ../core/server/BasicServer.h
+	$(CXX) core/server/BasicServer.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_server_basicserver.out
 # test Master client and server --------
-$(BIN)/swiftsnails_client_masterclient.out : SwiftSnails/client/MasterClient.cpp SwiftSnails/client/Master.h ../SwiftSnails/client/BasicClient.h ../SwiftSnails/common.h ../utils/common.h
-	$(CXX) SwiftSnails/client/MasterClient.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_client_masterclient.out
+$(BIN)/swiftsnails_client_masterclient.out : core/client/MasterClient.cpp core/client/Master.h ../core/client/BasicClient.h ../core/common.h ../utils/common.h
+	$(CXX) core/client/MasterClient.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_client_masterclient.out
 
-$(BIN)/swiftsnails_client_masterserver.out : SwiftSnails/client/MasterServer.cpp SwiftSnails/client/Master.h ../SwiftSnails/server/BasicServer.h ../SwiftSnails/common.h ../utils/common.h
-	$(CXX) SwiftSnails/client/MasterServer.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_client_masterserver.out
+$(BIN)/swiftsnails_client_masterserver.out : core/client/MasterServer.cpp core/client/Master.h ../core/server/BasicServer.h ../core/common.h ../utils/common.h
+	$(CXX) core/client/MasterServer.cpp $(CXXFLAGS) $(THIRD_INCPATH) -Xlinker $(THIRD_LIB) -o $(BIN)/swiftsnails_client_masterserver.out
 
 clean:
 	rm $(BIN)/*.out
