@@ -1,3 +1,0 @@
-libzmq_la-pgm_socket.lo: pgm_socket.cpp platform.hpp
-
-platform.hpp:
