@@ -12,14 +12,6 @@
 //#include "../SwiftSnails/Message.h"
 namespace swift_snails {
 
-/*
- * 将对象序列化，便于网络传输
- * 管理动态分配内存
- *
- * 先传入数据
- * 由于共享cursor，因此在传入数据之后，
- * 要读出数据，必须reset_cursor来重新设置cursor
- */
 class BasicBuffer {
 public:
     explicit BasicBuffer() {
@@ -84,9 +76,24 @@ public:
     size_t capacity() const {
         return _capacity;
     }   
+    /*
+     * get the actual size of data
+     *
+     * size() has no relation with cursor's position
+     *
+     * Attention: size() will not change duiring the read period
+     */
     size_t size() const {
         return end() - buffer();
     }
+
+    /*
+     * get the size of the data that has been read
+     */
+    size_t read_size() const {
+        return cursor() - buffer();
+    }
+
     std::string status () const {
     	std::stringstream os;
         os << "BinaryBuffer Status" << std::endl;
@@ -108,30 +115,38 @@ public:
     void set_end(char* x) {
         _end = x;
     }
+    /*
+     * put the cursor to the begin of buffer
+     */
     void reset_cursor() { 
         _cursor = buffer();
     }
-
+    /*
+     * check if finish readding 
+     */
     bool read_finished() {
         CHECK(cursor() <= end());
         return cursor() == end();
     }
 
-    void free() {   // just free memory
+    // free memory and reset flags include `buffer` and `capacity`
+    void free() {   
+        LOG(INFO) << "free() is called";
         if(_buffer) {
             delete _buffer; 
-            //clear();
+            _buffer = nullptr;
+            _capacity = 0;
         }
-        /*
-        _capacity = 0;
-        _buffer = nullptr;
+    }
+    // clear data and read flags
+    void clear() {
         _cursor = _buffer;
         _end = _buffer;
-        */
     }
 
 protected:
     void reserve(size_t newcap) {
+        CHECK(newcap > 0);
         LOG(WARNING) << "reserve new memory:\t" << newcap;
         if(newcap > capacity()) {
             char* newbuf = new char[newcap];
@@ -140,8 +155,8 @@ protected:
             }
             _cursor = newbuf + (cursor() - buffer());
             _end = newbuf + (end() - buffer());
+            free(); 
             _capacity = newcap;
-            free(); // free previous memory
             _buffer = newbuf;
         }
         LOG(INFO) << "memory reserve ok!";
@@ -158,14 +173,6 @@ protected:
         _end += size;
     }
 
-    // clear status
-    void clear() {
-        _buffer = nullptr;  // should move or delete content of _buffer before
-        _cursor = nullptr;
-        _end = nullptr;
-        _capacity = 0;
-    }
-
 private:
     char* _buffer = nullptr;    // memory address
     char* _cursor = nullptr;    // read cursor
@@ -173,7 +180,20 @@ private:
     size_t _capacity = 1024;
 };  // end class BasicBuffer
 
-// 二进制buffer管理
+
+/*
+ * Binary Buffer support
+ *
+ * flags:
+ *
+ *  buffer
+ *  cursor
+ *  end
+ *
+ *  `cursor` is used for reading, it records the read status
+ *  `end` record the end position of the data saved in buffer
+ *  and new data will be appended after `end`
+ */
 class BinaryBuffer  : public BasicBuffer {
 public:
     // define << operator for basic types
@@ -203,14 +223,16 @@ protected:
     // T should be basic types
     template<typename T>
     void get_raw(T& x) {
-        //LOG(INFO) << "buffer cursor:" << cursor();
-        //LOG(INFO) << "buffer end:" << end();
         CHECK(! read_finished());
         memcpy(&x, cursor(), sizeof(T));
         cursor_preceed(sizeof(T));
         //set_cursor(cursor() + sizeof(T));
     }
-
+    /*
+     * read begin from the current position of the cursor
+     * when the cursor reach the end of the buffer, the reading
+     * will be end
+     */
     template<typename T>
     T get_raw() {
         T x;
@@ -220,7 +242,9 @@ protected:
         cursor_preceed(sizeof(T));
         return std::move(x);
     }
-
+    /*
+     * append data from the current position of the curosr
+     */
     template<typename T>
     void put_raw(T& x) {
         if( size() + sizeof(x) > capacity()) {
@@ -228,6 +252,7 @@ protected:
             reserve(newcap);
         }
         memcpy(end(), &x, sizeof(T));
+        //end_preceed(sizeof(T));
         end_preceed(sizeof(T));
         //_end += sizeof(T);
         //put_cursor_preceed(sizeof(T));

@@ -95,4 +95,35 @@ TEST(_BinaryBuffer, large_data_support) {
 
     ASSERT_TRUE ( bb.size() == sizeof(int) * 1024);
 
+    int b;
+    for(int i = 0; i < 1024; i++) {
+        bb >> b;
+        ASSERT_TRUE ( b == a);
+    }
+    ASSERT_TRUE( bb.read_finished());
+
+    LOG(INFO) << "after clean bb.size:" << bb.size() << "\t"<< bb.buffer() <<  "\t" << bb.cursor();
+    ASSERT_TRUE ( bb.cursor()  == bb.end());
+
+    for(int i = 0; i < 2244; i++) {
+        bb << a;
+    }
+
+    ASSERT_TRUE ( bb.size() == sizeof(int) * (2244 + 1024));
+}
+
+TEST(_BinaryBuffer, rewrite_after_clear) {
+    BinaryBuffer bb;
+    int a = 100;
+    for (int i = 0; i < 1000; i ++) {
+        bb << a;
+    }
+    bb.clear();
+    ASSERT_TRUE(bb.size() == 0);
+    ASSERT_TRUE(bb.capacity() >= 1000 * sizeof(int));
+    for (int i = 0; i < 1000; i ++) {
+        bb << a;
+    }
+    ASSERT_TRUE(bb.capacity() >= 1000 * sizeof(int));
+    ASSERT_TRUE(bb.size() == 1000 * sizeof(int));
 }
