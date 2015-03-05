@@ -26,8 +26,8 @@ public:
         _end(other._end),
         _capacity(other._capacity)
     {
-        // clear other's pointer
-        other.clear();
+        other.set_buffer(nullptr);  // to avoid free the common memory
+        other.clear();  // clear all the status flags
     }
 
     void set(char* buffer, size_t size) {
@@ -124,7 +124,7 @@ public:
     /*
      * check if finish readding 
      */
-    bool read_finished() {
+    bool read_finished() const {
         CHECK(cursor() <= end());
         return cursor() == end();
     }
