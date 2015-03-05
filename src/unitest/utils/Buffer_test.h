@@ -128,7 +128,7 @@ TEST(_BinaryBuffer, rewrite_after_clear) {
     ASSERT_TRUE(bb.size() == 1000 * sizeof(int));
 }
 
-TEST(_BinaryBuffer, assign) {
+TEST(_BinaryBuffer, move_assign) {
     BinaryBuffer aa;
 
     int a = 1;
@@ -138,6 +138,25 @@ TEST(_BinaryBuffer, assign) {
     aa << b;
 
     BinaryBuffer bb = std::move(aa);
+
+    int _a; float _b;
+    bb >> _a;
+    bb >> _b;
+
+    ASSERT_TRUE(a == _a);
+    ASSERT_TRUE(b == _b);
+}
+
+TEST(_BinaryBuffer, construct_assign) {
+    BinaryBuffer aa;
+
+    int a = 1;
+    float b = 1.34;
+
+    aa << a;
+    aa << b;
+
+    BinaryBuffer bb(std::move(aa));
 
     int _a; float _b;
     bb >> _a;
