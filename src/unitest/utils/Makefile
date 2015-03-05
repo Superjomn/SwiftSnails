@@ -16,7 +16,8 @@ THIRD_INCPATH=-I$(LOCAL_ROOT)/glog/include \
 THIRD_LIB=$(LOCAL_ROOT)/glog/lib/libglog.a  $(LOCAL_ROOT)/zeromq/lib/libzmq.a 
 
 
-$(BIN)/test : Buffer_test.h main.cpp
+$(BIN)/test :  main.cpp \
+	Buffer_test.h ../../utils/Buffer.h
 	$(CXX) main.cpp $(THIRD_INCPATH) -L$(GTEST_HOME)/lib/.libs -Xlinker $(THIRD_LIB)  $(CXXFLAGS) -o $(BIN)/test
 
 

@@ -50,6 +50,7 @@ public:
     BasicBuffer& operator=(BasicBuffer&& other) {
         if (this != &other) {
             free();     // clean original buffer
+            clear();    // clear and init all the flags
             _buffer = other._buffer;
             _cursor = other._cursor;
             _end = other._end;
@@ -121,18 +122,19 @@ public:
             delete _buffer; 
             //clear();
         }
+        /*
         _capacity = 0;
         _buffer = nullptr;
         _cursor = _buffer;
         _end = _buffer;
+        */
     }
 
 protected:
     void reserve(size_t newcap) {
         LOG(WARNING) << "reserve new memory:\t" << newcap;
         if(newcap > capacity()) {
-            char* newbuf;
-            newbuf = new char[newcap];
+            char* newbuf = new char[newcap];
             if (size() > 0) {
                 memcpy(newbuf, buffer(), size());
             }
@@ -142,6 +144,7 @@ protected:
             free(); // free previous memory
             _buffer = newbuf;
         }
+        LOG(INFO) << "memory reserve ok!";
     }
 protected:
     // used in read mod
