@@ -1,4 +1,5 @@
 #include "Buffer_test.h"
+#include "string_test.h"
 
 int main(int argc, char **argv) {  
 

@@ -13,11 +13,21 @@ namespace swift_snails {
 
 std::string& trim(std::string &ss) {
     if (ss.empty()) return ss;
-    ss.erase(0, ss.find_first_not_of(" \t\n"));
-    ss.erase(ss.find_last_not_of(" \t\n") + 1);
+    ss.erase(0, ss.find_first_not_of(" \t\n\r"));
+    ss.erase(ss.find_last_not_of(" \t\n\r") + 1);
     return ss;
 }
 
+/*
+ * split string to vector
+ *
+ * example:
+ *  vector<string> cols = split("hello world@bb", " @");
+ *
+ * Attention: 
+ *  use first_not_of
+ *  the real delim is either char in a string
+ */
 std::vector<std::string> split(const std::string &s, const std::string &delim) {
     std::vector<std::string> cols;
     size_t last = 0;
@@ -27,7 +37,10 @@ std::vector<std::string> split(const std::string &s, const std::string &delim) {
         last = index + 1;
         index = s.find_first_of(delim, last);
     }
-    if (index - last > 0) cols.push_back(s.substr(last, index - last));
+    if (index - last > 0) 
+    {
+        cols.push_back(s.substr(last, index - last)); 
+    }
     return std::move(cols);
 }
 
