@@ -11,6 +11,8 @@ SS的目标是实现一个适用于大规模机器学习的分布式的并行参
 
 服务器将使用类似Node.js的服务机制，以key-value的方式支撑大规模的参数。
 包含中央Master服务器，及worker节点。
+以Hadoop map的方式分发数据和分配集群节点。
+支持冗余容错和错误恢复（map节点的修改）
 
 预计的基本特性：
 
@@ -33,3 +35,9 @@ SS的目标是实现一个适用于大规模机器学习的分布式的并行参
 C++11 
 glog
 google-sparsehash
+Hadoop C API
+
+开发&&测试
+------------
+gtest
+valgrind
