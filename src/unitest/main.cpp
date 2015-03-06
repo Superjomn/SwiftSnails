@@ -1,5 +1,6 @@
-#include "Buffer_test.h"
-#include "string_test.h"
+#include "utils/Buffer_test.h"
+#include "utils/string_test.h"
+#include "utils/queue_test.h"
 
 int main(int argc, char **argv) {  
 

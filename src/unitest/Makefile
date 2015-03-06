@@ -4,7 +4,7 @@ BIN=./bin
 
 CXXFLAGS= -std=c++11 -pthread -lpthread -Wall -g -DHAVE_PCAP -lgtest -lgtest_main
 
-LOCAL_ROOT=../../../third/local
+LOCAL_ROOT=../../third/local
 GTEST_HOME=$(LOCAL_ROOT)/gtest
 
 THIRD_INCPATH=-I$(LOCAL_ROOT)/glog/include \
@@ -17,8 +17,9 @@ THIRD_LIB=$(LOCAL_ROOT)/glog/lib/libglog.a  $(LOCAL_ROOT)/zeromq/lib/libzmq.a
 
 
 $(BIN)/test :  main.cpp \
-	Buffer_test.h ../../utils/Buffer.h \
-	string_test.h ../../utils/string.h 
+	utils/Buffer_test.h ../utils/Buffer.h \
+	utils/string_test.h ../utils/string.h \
+	utils/queue_test.h  ../utils/queue.h
 	$(CXX) main.cpp $(THIRD_INCPATH) -L$(GTEST_HOME)/lib/.libs -Xlinker $(THIRD_LIB)  $(CXXFLAGS) -o $(BIN)/test
 
 
