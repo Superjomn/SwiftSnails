@@ -21,6 +21,18 @@ namespace swift_snails {
  * threads(waiting or working) to exit
  * the threads can pop the data and check the return flag 
  * to tell whether stop work
+ *
+ * Example: 
+ *  
+ *  BasicChannel<int> channel;
+ *
+ *  std::function<void()> handle = [&channel] {
+ *      int task;
+ *      bool toexit = channel.pop(task);
+ *      if(toexit) return;
+ *      // deal with the task ...
+ *      // ...
+ *  };
  */
 template<typename T>
 class BasicChannel : public threadsafe_queue<T> {
