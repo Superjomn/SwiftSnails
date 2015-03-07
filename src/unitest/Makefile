@@ -15,11 +15,12 @@ THIRD_INCPATH=-I$(LOCAL_ROOT)/glog/include \
 
 THIRD_LIB=$(LOCAL_ROOT)/glog/lib/libglog.a  $(LOCAL_ROOT)/zeromq/lib/libzmq.a 
 
+.PHONY:all clean test cur
 
-$(BIN)/test :  main.cpp \
-	utils/Buffer_test.h ../utils/Buffer.h \
-	utils/string_test.h ../utils/string.h \
-	utils/queue_test.h  ../utils/queue.h
+$(BIN)/test :  main.cpp 
 	$(CXX) main.cpp $(THIRD_INCPATH) -L$(GTEST_HOME)/lib/.libs -Xlinker $(THIRD_LIB)  $(CXXFLAGS) -o $(BIN)/test
 
+
+clean: 
+	rm $(BIN)/test
 

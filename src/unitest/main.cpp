@@ -1,6 +1,10 @@
+// utils/
 #include "utils/Buffer_test.h"
 #include "utils/string_test.h"
 #include "utils/queue_test.h"
+
+// core/
+#include "core/Message_test.h"
 
 int main(int argc, char **argv) {  
 
