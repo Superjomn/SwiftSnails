@@ -33,7 +33,9 @@ struct MetaMessage : public BasicMetaMessage {
     }
 };
 
-
+/*
+ * a C++ class wrapper of ZMQ message
+ */
 class Message {
 public:
     Message() {
@@ -44,6 +46,14 @@ public:
     Message(char& buf, size_t size) {
         PCHECK(0 == zmq_msg_init_size(&_zmg, size));
         memcpy((void*)buffer(), &buf, size);
+    }
+
+    // move support
+    Message(BasicBuffer &&bb) {
+        PCHECK(0 == zmq_msg_init_data(&_zmg, bb.buffer(), bb.size(), self_free, NULL));
+        // give buffer's owner to Message
+        bb.set_buffer(nullptr);
+        bb.clear();
     }
 
     Message(BasicBuffer &b) {
@@ -111,6 +121,12 @@ public:
 
 private:
     zmq_msg_t _zmg;
+    // support zmq_msg_init_data's free
+    static void self_free(void* data, void* hint) {
+        CHECK(data);
+        LOG(INFO) << "Message call self_free";
+        free(data);
+    }
 };  // end class Message
 
 };  // end namespace swift_snails
