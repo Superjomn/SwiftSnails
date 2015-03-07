@@ -14,17 +14,21 @@ namespace swift_snails {
 
 /*
  * Channel for thread pool
- * a channel acts like a queue and save tasks
- * if call `close()`, the channel will tell all the
- * waiting threads to exit
+ *
+ * a channel acts like a task queue
+ * with full control of multi-thread 
+ * when call `close()`, the channel will tell all the
+ * threads(waiting or working) to exit
+ * the threads can pop the data and check the return flag 
+ * to tell whether stop work
  */
 template<typename T>
 class BasicChannel : public threadsafe_queue<T> {
 public:
     explicit BasicChannel() {}
     /* 
-     * return true if channel is closed
-     * the thread pool will exit if channel is closed
+     * return false if channel is closed
+     * the pop thread can use this flag to tell whether exit
     */
     bool pop(T& value) {
         LOG(INFO) << std::this_thread::get_id() << " pop job " << _closed;
@@ -38,8 +42,8 @@ public:
         return true;
     }
     /*
-     * return null if closed
-     * the waiting threads will exit
+     * return null if the channel is closed
+     * the waiting threads can use this flag to tell whether exit
      */
     std::shared_ptr<T> pop() {
         LOG(INFO) << std::this_thread::get_id() << " pop job";
