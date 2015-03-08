@@ -13,6 +13,27 @@
 
 namespace swift_snails {
 
+/*
+ * Asynchronous execution framework
+ *
+ * Example:
+ *  
+ *  AsynExec::task_t task = []() {
+ *      ...
+ *  };
+ *
+ *  // thread num
+ *  AsynExec asunc(10);
+ *  auto channel = async.channel();
+ *
+ *  for (int i = 0; i < 1000; i ++) {
+ *      channel->push(task);
+ *  }
+ *
+ *  // tell the work threads to exit
+ *  channel->close();
+ *
+ */
 class AsynExec : public VirtualObject {
 public:
     typedef std::function<void()> task_t;
@@ -20,6 +41,7 @@ public:
 
     explicit AsynExec() {}
 
+    // set thread num and open the channel
     explicit AsynExec(int thread_num) : 
         _thread_num(thread_num)
     { 
@@ -48,7 +70,9 @@ public:
                 }
             }};
     }
-
+    /*
+     * should be called before `open()`
+     */
     void set_thread_num(int x) {
         CHECK(x > 0);
         _thread_num = x;
