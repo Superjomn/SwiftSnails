@@ -219,7 +219,7 @@ struct Response : public VirtualObject {
 
 struct Request {
 
-    typedef std::function<void(Request&&)> response_call_back_t;
+    typedef std::function<void(std::shared_ptr<Request>)> response_call_back_t;
 
     explicit Request() { }
     Request(const Request&) = delete;

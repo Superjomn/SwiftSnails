@@ -82,26 +82,29 @@ public:
                 CHECK(!zmq_msg_more(&package.cont.zmg()));
             }
 
-            Request response(std::move(package));
-            CHECK(_client_id == 0 || response.meta.client_id == client_id());
+            std::shared_ptr<Request> response = std::make_shared<Request>(std::move(package));
+            CHECK(_client_id == 0 || response->meta.client_id == client_id());
             // call the callback handler
             { std::lock_guard<SpinLock> lock(_msg_handlers_mut);
-                auto it = _msg_handlers.find(response.message_id());
+                auto it = _msg_handlers.find(response->message_id());
                 CHECK(it != _msg_handlers.end());
                 handler = std::move(it->second);
                 _msg_handlers.erase(it);
             }
 
             // execute the response_recallback handler
-            index_t message_id = response.message_id();
+            /*
+            index_t message_id = response->message_id();
             { std::lock_guard<SpinLock> lock(_response_cache_mut);
                 // cache response
                 _responses.emplace(message_id, std::move(response));
             }
+            */
 
             _async_channel->push(
                 // TODO refrence handler?
-                [handler, this, message_id]() {
+                [&handler, this, response]() {
+                    /*
                     //{
                     _response_cache_mut.lock();    
                     // get cached response
@@ -112,7 +115,8 @@ public:
                     this->_responses.erase(message_id);
                     _response_cache_mut.unlock();   
                     //}
-                    handler(std::move(rsp));
+                    */
+                    handler(response);
                 }
             );
         }
@@ -161,10 +165,10 @@ private:
 
     SpinLock    _send_mut;
     SpinLock    _msg_handlers_mut;
-    SpinLock    _response_cache_mut;
+    //SpinLock    _response_cache_mut;
 
     // cache response until it is handled
-    std::map<index_t, Request> _responses;
+    //std::map<index_t, Request> _responses;
 
     int _client_id = 0;
 }; // end class 
