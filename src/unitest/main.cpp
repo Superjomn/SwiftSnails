@@ -8,6 +8,7 @@
 #include "core/Message_test.h"
 #include "core/BasicChannel_test.h"
 #include "core/AsynExec_test.h"
+#include "core/transfer/Route_test.h"
 
 int main(int argc, char **argv) {  
 

@@ -179,12 +179,12 @@ struct IP {
         return bb;
     }
 }; // struct IP
-/*
- * higher level message package
- */
 
 struct Request;
 
+/*
+ * higher level message package
+ */
 struct Package : public VirtualObject {
     explicit Package() { };
     Package(Request&);
@@ -200,6 +200,7 @@ struct Package : public VirtualObject {
     }   
 };
 
+/*
 struct Response : public VirtualObject {
     Response(Package &&pkg) {
         // copy meta 
@@ -214,15 +215,19 @@ struct Response : public VirtualObject {
 	MetaMessage meta;
 	BinaryBuffer cont;
 };
+*/
 
 struct Request {
 
-    typedef std::function<void(std::shared_ptr<Response>)> ResponseCallBack;
+    typedef std::function<void(std::shared_ptr<Request>)> response_call_back_t;
 
     explicit Request() { }
-    Request(Package &pkg) {
+    Request(const Request&) = delete;
+
+    Request(Package &&pkg) {
         LOG(INFO) << "int Request pkg.status:\t" << pkg.status();
         CHECK(pkg.meta.size() == sizeof(MetaMessage));
+        // TODO avoid this memory copy
         memcpy(&meta, &pkg.meta.zmg(), sizeof(MetaMessage));
         // copy content
         CHECK(cont.size() == 0);
@@ -230,12 +235,18 @@ struct Request {
         //pkg.cont.moveTo(cont);
     }
 
-    Request(const Request&) = delete;
-
     Request(Request &&other) {
         meta = std::move(other.meta);
         cont = std::move(other.cont);
         call_back_handler = std::move(other.call_back_handler);
+    }
+
+    int message_id() const {
+        return meta.message_id;
+    }
+
+    void set_msg_id(int id) {
+        meta.message_id = id;
     }
 
     ~Request() {
@@ -244,7 +255,7 @@ struct Request {
     // datas
     MetaMessage meta;
     BinaryBuffer cont;
-    ResponseCallBack call_back_handler;
+    response_call_back_t call_back_handler;
 };
 
 /*
