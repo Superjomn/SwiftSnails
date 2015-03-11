@@ -10,6 +10,7 @@
 #include "core/AsynExec_test.h"
 #include "core/transfer/Route_test.h"
 #include "core/transfer/Sender_test.h"
+#include "core/transfer/Receiver_test.h"
 
 int main(int argc, char **argv) {  
 
