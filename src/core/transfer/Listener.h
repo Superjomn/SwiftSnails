@@ -31,9 +31,9 @@ public:
     virtual void* zmq_ctx() = 0;
 
     // set properties
-    void set_recv_addr(const std::string &addr) {
-        CHECK(!addr.empty());
-        _recv_addr = addr;
+    void set_recv_ip(const std::string &ip) {
+        CHECK(!ip.empty());
+        _recv_ip = ip;
     }
 
     int listen() {
@@ -42,6 +42,7 @@ public:
         return _recv_port;
     }
 
+    // get attributes
     void* receiver() {
         return _receiver;
     }
