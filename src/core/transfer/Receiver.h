@@ -88,7 +88,7 @@ public:
         }
     }
 
-    void main_loop() {
+    void main_loop() override {
         for(;;) {
             Package package;
             { std::lock_guard<std::mutex> lock(receiver_mutex() );
@@ -112,6 +112,20 @@ public:
         }
         LOG(WARNING) << "server terminated!";
     }
+
+    bool service_complete() override {
+        return true;
+    }
+
+    /*
+     * work as an API
+     *
+     * control Receiver service by adding handler to message_class
+     */
+    MessageClass<handler_t>& message_class() {
+        return _message_class;
+    }
+
 
 private:
 

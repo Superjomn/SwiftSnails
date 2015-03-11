@@ -16,6 +16,7 @@ TEST (Sender, construct) {
     Sender sender(route);
 }
 
+
 TEST (Sender, client) {
     class Route : public BaseRoute {
         void update() {

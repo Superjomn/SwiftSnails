@@ -28,7 +28,7 @@ public:
 
     virtual void main_loop() = 0;
     virtual bool service_complete() = 0;
-    virtual void* zmq_ctx() = 0;
+    //virtual void* zmq_ctx() = 0;
 
     // set properties
     void set_recv_ip(const std::string &ip) {
@@ -36,12 +36,27 @@ public:
         _recv_ip = ip;
     }
 
+    /*
+     * listen to a random port
+     */
     int listen() {
         zmq_bind_random_port(_recv_ip, _receiver,  _recv_addr, _recv_port);
         LOG(INFO) << "client listen to address:\t" << _recv_addr;
         return _recv_port;
     }
+    /*
+     * listen to a specified address
+     */
+    void listen(const std::string &addr) {
+        LOG(INFO) << "server listen to " << addr;
+        _recv_addr = addr;
+        int res;
+        PCHECK((res = zmq_bind(_receiver, addr.c_str()), res == 0));
+    }
 
+    void* zmq_ctx() {
+        return _zmq_ctx;
+    }
     // get attributes
     void* receiver() {
         return _receiver;

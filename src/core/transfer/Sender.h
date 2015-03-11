@@ -121,9 +121,11 @@ public:
         return _msg_handlers.empty();
     }
 
+    /*
     void* zmq_ctx() override {
         return _route_ptr->zmq_ctx();
     }
+    */
 
     ~Sender() {
         /*
