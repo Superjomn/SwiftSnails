@@ -69,6 +69,11 @@ public:
         return data_queue.empty();
     }
 
+    index_t size() const {
+        std::lock_guard<std::mutex> lk(mut);
+        return data_queue.size();
+    };
+
 }; // end class threadsafe_queue
 
 

@@ -86,6 +86,14 @@ public:
         data_cond.notify_all(); // notify all waiting threads to exit
         LOG(INFO) << "notify all threads to exit";
     }
+
+    void size() const {
+        return data_queue.size();
+    }
+
+    bool empty() const {
+        return data_queue.empty();
+    }
 private:
     bool _closed = false;
     mutable std::mutex mut;
