@@ -3,6 +3,7 @@
 #include "utils/string_test.h"
 #include "utils/queue_test.h"
 #include "utils/hashmap_test.h"
+#include "utils/RWLock_test.h"
 
 // core/
 #include "core/Message_test.h"
