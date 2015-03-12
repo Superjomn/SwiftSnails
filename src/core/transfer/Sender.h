@@ -89,29 +89,9 @@ public:
             }
 
             // execute the response_recallback handler
-            /*
-            index_t message_id = response->message_id();
-            { std::lock_guard<SpinLock> lock(_response_cache_mut);
-                // cache response
-                _responses.emplace(message_id, std::move(response));
-            }
-            */
-
             _async_channel->push(
                 // TODO refrence handler?
                 [&handler, this, response]() {
-                    /*
-                    //{
-                    _response_cache_mut.lock();    
-                    // get cached response
-                    auto it = _responses.find(message_id);
-                    CHECK(it != this->_responses.end());
-                    Request rsp(std::move(it->second));
-                    // delete cache
-                    this->_responses.erase(message_id);
-                    _response_cache_mut.unlock();   
-                    //}
-                    */
                     handler(response);
                 }
             );
