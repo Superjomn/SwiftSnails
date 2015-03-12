@@ -25,6 +25,10 @@ public:
     void set_async_channel(std::shared_ptr<AsynExec::channel_t> channel) {
         _async_channel = channel;
     }
+
+    void set_client_id(int client_id) {
+        _client_id = client_id;
+    }
     /*
      * @request:    request
      * @to_id:  id of the node where the message is sent to
@@ -32,6 +36,8 @@ public:
     void send(Request &&request, int to_id) {
         index_t msg_id = _msg_id_counter++;
         request.set_msg_id(msg_id);
+        CHECK(_client_id != 0) << "shoud set client_id first";
+        request.meta.client_id = _client_id;
         // convert Request to underlying Package
         Package package(request);
         // cache the recall_back
@@ -61,8 +67,8 @@ public:
         Package package;
         Request::response_call_back_t handler;
         for(;;) {
-            {
-                std::lock_guard<std::mutex> lock(receiver_mutex() );
+
+            { std::lock_guard<std::mutex> lock(receiver_mutex() );
                 PCHECK(ignore_signal_call(zmq_msg_recv, &package.meta.zmg(), receiver(), 0) >= 0);
                 if(package.meta.size() == 0) break;
                 CHECK(zmq_msg_more(&package.meta.zmg()));
@@ -71,6 +77,8 @@ public:
             }
 
             std::shared_ptr<Request> response = std::make_shared<Request>(std::move(package));
+            LOG(INFO) << "receive a response, message_id: " << response->meta.message_id;
+
             CHECK(_client_id == 0 || response->meta.client_id == client_id());
             // call the callback handler
             { std::lock_guard<SpinLock> lock(_msg_handlers_mut);
@@ -121,17 +129,8 @@ public:
         return _msg_handlers.empty();
     }
 
-    /*
-    void* zmq_ctx() override {
-        return _route_ptr->zmq_ctx();
-    }
-    */
-
     ~Sender() {
-        /*
-        LOG(WARNING) << "sender exit!";
-        PCHECK(0 == zmq_close(_receiver));
-        */
+        CHECK(service_complete());
     }
 
 private:

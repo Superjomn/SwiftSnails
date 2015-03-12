@@ -61,13 +61,18 @@ private:
 class Receiver : public Listener {
 
 public:
-    typedef std::function<void(std::shared_ptr<Request>)> handler_t;
+    // handler(request, &response)
+    typedef std::function<void(std::shared_ptr<Request>, Request&)> handler_t;
 
     explicit Receiver(BaseRoute& route) :
         Listener(route.zmq_ctx()),
         _route_ptr(&route) 
     {
         //PCHECK(_receiver = zmq_socket(_zmq_ctx, ZMQ_PULL));
+    }
+
+    ~Receiver() {
+        CHECK(service_complete());
     }
 
     void set_async_channel(std::shared_ptr<AsynExec::channel_t> channel) {
@@ -85,6 +90,8 @@ public:
             );
             PCHECK(ignore_signal_call(zmq_msg_send, &package.meta.zmg(), route.senders()[to_id], ZMQ_SNDMORE) >= 0);
             PCHECK(ignore_signal_call(zmq_msg_send, &package.cont.zmg(), route.senders()[to_id], 0) >= 0);
+
+            LOG(INFO) << "response has been sent";
         }
     }
 
@@ -102,11 +109,22 @@ public:
                 PCHECK(ignore_signal_call(zmq_msg_recv, &package.cont.zmg(), receiver(), 0) >= 0);
                 CHECK(!zmq_msg_more(&package.cont.zmg()));
             }
+            LOG(INFO) << "receiver get a message";
             auto request = std::make_shared<Request>(std::move(package));
             handler_t handler = _message_class.get( request->meta.message_class);
+            LOG(INFO) << "push task to channel";
             _async_channel->push(
-                [&handler, request] {
-                    handler(request);
+                [this, &handler, request] {
+                    LOG(INFO) << "channel run task";
+                    Request response;
+                    handler(request, response);
+                    // set response meta
+                    response.meta.message_id = request->meta.message_id;
+                    response.meta.client_id = request->meta.client_id;
+                    response.meta.message_class = request->meta.message_class;
+
+                    LOG(INFO) << "send response to client " << request->meta.client_id;
+                    send_response(std::move(response),  request->meta.client_id);
                 }
             );
         }

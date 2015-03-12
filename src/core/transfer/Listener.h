@@ -21,7 +21,6 @@ public:
     }
 
     virtual ~Listener() {
-
         LOG(WARNING) << "listener exit!";
         PCHECK(0 == zmq_close(_receiver));
     }
