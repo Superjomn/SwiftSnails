@@ -15,10 +15,17 @@ namespace swift_snails {
 
 class ListenService {
 public:
-    ListenService(std::shared_ptr<Listener> sender, int thread_num) : 
+    explicit ListenService(std::shared_ptr<Listener> sender) :
+        _sender(sender)
+    { }
+
+    explicit ListenService(std::shared_ptr<Listener> sender, int thread_num) : 
         _sender(sender),
         _thread_num(thread_num)
-    {
+    { }
+
+    void set_thread_num(int thread_num) {
+        _thread_num = thread_num;
     }
 
     void start() {

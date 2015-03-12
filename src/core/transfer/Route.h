@@ -32,11 +32,34 @@ public:
     
     void register_node(int id, std::string &&addr) {
         std::lock_guard<std::mutex> lock(_write_mut);
+        CHECK(_send_addrs.count(id) == 0) << "id exists!";
         _send_addrs.emplace(id, std::move(addr));
         _send_mutexes.emplace(id, std::unique_ptr<std::mutex>(new std::mutex));
         void *sender = zmq_socket(_zmq_ctx, ZMQ_PUSH);
         _senders.emplace(id, sender);
         connect(id);
+    }
+
+    void delete_node(int id) {
+        std::lock_guard<std::mutex> lock(_write_mut);
+        LOG(WARNING) << "delete node " << id << " " << _send_addrs[id];
+        {
+        auto it = _send_addrs.find(id);
+        CHECK(it != _send_addrs.end());
+        _send_addrs.erase(it);
+        }
+        {
+        auto it = _send_mutexes.find(id);
+        CHECK(it != _send_mutexes.end());
+        _send_mutexes.erase(it);
+        }
+        // drop the connection
+        {
+        auto it = _senders.find(id);
+        CHECK(it != _senders.end());
+        PCHECK(0 == zmq_close(it->second));
+        _senders.erase(it);
+        }
     }
 
     std::map<int, void*>& senders() {
