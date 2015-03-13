@@ -46,11 +46,6 @@ public:
         return it->second;
     }
 
-    const std::map<index_t, Handler>& 
-    message_classes() {
-        return _message_classes;
-    }
-
 private:
     SpinLock _spinlock;
     std::map<index_t, Handler> _message_classes;

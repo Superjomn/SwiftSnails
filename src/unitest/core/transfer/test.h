@@ -15,14 +15,11 @@ class Route : public BaseRoute {
     }
 };
 
-std::shared_ptr<AsynExec::channel_t> global_channel() {
-    int thread_num = 4;
-    static AsynExec as(thread_num);
-    static std::shared_ptr<AsynExec::channel_t> global_channel = as.open();
-    return global_channel;
-}
 
 void run_receiver() {
+
+    AsynExec as(4);
+    std::shared_ptr<AsynExec::channel_t> global_channel = as.open();
 
     // get address 
     int port = 80805;
@@ -57,7 +54,7 @@ void run_receiver() {
     receiver->message_class().add(2, std::move(handler2));
 
     // set async channel
-    receiver->set_async_channel(global_channel());
+    receiver->set_async_channel(global_channel);
 
     receiver->listen(addr);
     ListenService listen_service(receiver, 4);
@@ -70,9 +67,11 @@ void run_receiver() {
 
     LOG(WARNING) << "receiver end service";
     listen_service.end();
+    global_channel->close();
 }
 
 void run_sender() {
+
     // get address 
     int port = 80806;
     std::string addr;
@@ -91,7 +90,10 @@ void run_sender() {
     sender->set_client_id(1);
     sender->listen(addr);
 
-    sender->set_async_channel(global_channel());
+    AsynExec as(4);
+    std::shared_ptr<AsynExec::channel_t> global_channel = as.open();
+
+    sender->set_async_channel(global_channel);
 
     ListenService listen_service(sender, 4);
     LOG(WARNING) << "sender start service";
@@ -116,6 +118,7 @@ void run_sender() {
     std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
     LOG(WARNING) << "sender end service";
     listen_service.end();
+    global_channel->close();
 }
 
 };  // end namespace _test_transfer
