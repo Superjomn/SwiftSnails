@@ -48,6 +48,11 @@ public:
         _channel = open();
     }
 
+    /*
+     * Attention:
+     *  every `open` should end with an `close()`
+     *  or there will be memory leak
+     */
     std::shared_ptr<channel_t> open() {
 
         std::shared_ptr<MultiWorker> worker = std::make_shared<MultiWorker>();
