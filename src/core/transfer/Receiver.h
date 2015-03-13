@@ -17,7 +17,9 @@ namespace swift_snails {
 template<typename Handler>
 class MessageClass :public VirtualObject {
 public:
-
+    // TODO change spinlock to read-write-lock ? 
+    // do not change now , because message_class will only be changed 
+    // between read
     void add (index_t id, Handler&& handler) {
         LOG(INFO) << "register message class: " << id;
         std::lock_guard<SpinLock> lock(_spinlock);
