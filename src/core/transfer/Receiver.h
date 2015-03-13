@@ -86,10 +86,10 @@ public:
             // TODO will the mutex share between sender and receiver 
             // effect performance?
             std::lock_guard<std::mutex> lock(
-                * route.send_mutexes()[to_id]
+                * route.send_mutex(to_id)
             );
-            PCHECK(ignore_signal_call(zmq_msg_send, &package.meta.zmg(), route.senders()[to_id], ZMQ_SNDMORE) >= 0);
-            PCHECK(ignore_signal_call(zmq_msg_send, &package.cont.zmg(), route.senders()[to_id], 0) >= 0);
+            PCHECK(ignore_signal_call(zmq_msg_send, &package.meta.zmg(), route.sender(to_id), ZMQ_SNDMORE) >= 0);
+            PCHECK(ignore_signal_call(zmq_msg_send, &package.cont.zmg(), route.sender(to_id), 0) >= 0);
 
             LOG(INFO) << "response has been sent";
         }

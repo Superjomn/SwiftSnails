@@ -39,6 +39,10 @@ public:
      * listen to a random port
      */
     int listen() {
+        if(_recv_ip.empty()) {
+            _recv_ip = get_local_ip();
+        }
+        CHECK(_recv_port == -1) << "local receiver can only listen once";
         zmq_bind_random_port(_recv_ip, _receiver,  _recv_addr, _recv_port);
         LOG(INFO) << "client listen to address:\t" << _recv_addr;
         return _recv_port;

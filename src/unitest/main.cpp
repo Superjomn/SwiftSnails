@@ -12,6 +12,7 @@
 #include "core/transfer/Route_test.h"
 #include "core/transfer/Sender_test.h"
 #include "core/transfer/Receiver_test.h"
+#include "core/transfer/Transfer_test.h"
 // a sender send a message to a receiver
 #include "core/transfer/test.h"
 

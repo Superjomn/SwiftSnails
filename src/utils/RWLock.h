@@ -38,7 +38,37 @@ private:
     
 };
 
+// lock guard
+class rwlock_read_guard {
+public:
+    rwlock_read_guard (RWLock &lock) :
+        _lock(&lock)
+    { 
+        _lock->rdlock();
+    }
 
+    ~rwlock_read_guard () {
+        _lock->unlock();
+    }
+private:
+    RWLock *_lock;
+};
+
+// lock guard
+class rwlock_write_guard {
+public:
+    rwlock_write_guard(RWLock &lock) :
+        _lock(&lock)
+    { 
+        _lock->wrlock();
+    }
+
+    ~rwlock_write_guard () {
+        _lock->unlock();
+    }
+private:
+    RWLock *_lock;
+};
 
 };  // end namespace swift_snails
 #endif

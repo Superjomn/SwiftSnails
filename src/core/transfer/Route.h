@@ -11,6 +11,7 @@
 #include "../AsynExec.h"
 #include "../../utils/SpinLock.h"
 #include "../../utils/hashmap.h"
+#include "../../utils/RWLock.h"
 namespace swift_snails {
 
 /*
@@ -29,9 +30,9 @@ public:
     void* zmq_ctx() {
         return _zmq_ctx;
     }
-    
+    // TODO change node at once 
     void register_node(int id, std::string &&addr) {
-        std::lock_guard<std::mutex> lock(_write_mut);
+        //std::lock_guard<std::mutex> lock(_write_mut);
         CHECK(_send_addrs.count(id) == 0) << "id exists!";
         _send_addrs.emplace(id, std::move(addr));
         _send_mutexes.emplace(id, std::unique_ptr<std::mutex>(new std::mutex));
@@ -39,10 +40,13 @@ public:
         _senders.emplace(id, sender);
         connect(id);
     }
-
+    
+    // Attention: not thread-safe
+    // should use rwlock(Read-Write lock)
     void delete_node(int id) {
-        std::lock_guard<std::mutex> lock(_write_mut);
+        //std::lock_guard<std::mutex> lock(_write_mut);
         LOG(WARNING) << "delete node " << id << " " << _send_addrs[id];
+        // write lock
         {
         auto it = _send_addrs.find(id);
         CHECK(it != _send_addrs.end());
@@ -62,16 +66,19 @@ public:
         }
     }
 
-    std::map<int, void*>& senders() {
-        return _senders;
+    void* sender(int id) {
+        rwlock_read_guard lock(_read_write_lock);
+        return _senders[id];
     }
 
-    std::map<int, std::string>& send_addrs() {
-        return _send_addrs;
+    const std::string& sender_addr(int id) {
+        rwlock_read_guard lock(_read_write_lock);
+        return _send_addrs[id];
     }
 
-    std::map<int, std::unique_ptr<std::mutex>>& send_mutexes() {
-        return _send_mutexes;
+    std::unique_ptr<std::mutex>& send_mutex(int id) {
+        rwlock_read_guard lock(_read_write_lock);
+        return _send_mutexes[id];
     }
 
     ~BaseRoute() {
@@ -98,7 +105,8 @@ private:
     // be updated
     index_t _version = -1;
     // protect only one writer
-    std::mutex _write_mut;
+    RWLock _read_write_lock;
+    //std::mutex _write_mut;
     // determine whether version is valid
     bool _version_valid = true;
 };
