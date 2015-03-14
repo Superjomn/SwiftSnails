@@ -227,7 +227,7 @@ struct Request {
     Request(const Request&) = delete;
 
     Request(Package &&pkg) {
-        LOG(INFO) << "int Request pkg.status:\t" << pkg.status();
+        //LOG(INFO) << "int Request pkg.status:\t" << pkg.status();
         CHECK(pkg.meta.size() == sizeof(MetaMessage));
         // TODO avoid this memory copy
         memcpy(&meta, &pkg.meta.zmg(), sizeof(MetaMessage));
@@ -252,7 +252,7 @@ struct Request {
     }
 
     ~Request() {
-        LOG(INFO) << "deconstruct Request!";
+        //LOG(INFO) << "deconstruct Request!";
     }
     // datas
     MetaMessage meta;

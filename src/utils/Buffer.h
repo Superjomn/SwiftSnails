@@ -60,7 +60,7 @@ public:
     }
     */
     ~BasicBuffer() {
-        LOG(INFO) << "Buffer deconstruct!";
+        //LOG(INFO) << "Buffer deconstruct!";
         free();
     }
 
@@ -131,7 +131,7 @@ public:
 
     // free memory and reset flags include `buffer` and `capacity`
     void free() {   
-        LOG(INFO) << "free() is called";
+        //LOG(INFO) << "free() is called";
         if(_buffer) {
             delete _buffer; 
             _buffer = nullptr;
@@ -147,7 +147,7 @@ public:
 protected:
     void reserve(size_t newcap) {
         CHECK(newcap > 0);
-        LOG(WARNING) << "reserve new memory:\t" << newcap;
+        //LOG(WARNING) << "reserve new memory:\t" << newcap;
         if(newcap > capacity()) {
             char* newbuf = new char[newcap];
             if (size() > 0) {
@@ -159,7 +159,7 @@ protected:
             _capacity = newcap;
             _buffer = newbuf;
         }
-        LOG(INFO) << "memory reserve ok!";
+        //LOG(INFO) << "memory reserve ok!";
     }
 protected:
     // used in read mod
