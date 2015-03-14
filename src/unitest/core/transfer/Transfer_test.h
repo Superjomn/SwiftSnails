@@ -16,12 +16,10 @@ class TransferTest : public testing::Test {
 protected:
     virtual void SetUp() {
         // open global channel
-        int thread_num = 2;
-        AsynExec as(thread_num);
-        global_channel = as.open();
-
+        //int thread_num = 2;
+        transfer.init_async_channel(2);
         transfer.set_listen_service_num(2);
-        transfer.set_async_channel(global_channel);
+        //transfer.set_async_channel(global_channel);
         //transfer.start_sender_service("tcp://10.15.229.188:17831");
         //transfer.start_receiver_service("tcp://10.15.229.188:17832");
         transfer.start_sender_service();
@@ -30,14 +28,12 @@ protected:
     }
 
     virtual void TearDown() {
-        global_channel->close();
+        //global_channel->close();
     }
 
 protected:
     Transfer<Route> transfer;
-    std::shared_ptr<AsynExec::channel_t> global_channel;
-
-
+    //std::shared_ptr<AsynExec::channel_t> global_channel;
 };  // end class TransferTest
 
 

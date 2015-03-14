@@ -19,19 +19,36 @@ class Transfer : public VirtualObject {
 
 public:
     // message class handler
-    typedef Receiver::handler_t msgcls_handler_t;
+    typedef Receiver::handler_t             msgcls_handler_t;
     // message respons callback handler
-    typedef Request::response_call_back_t msgrsp_handler_t;
+    typedef Request::response_call_back_t   msgrsp_handler_t;
 
-    Transfer() {
+    explicit Transfer() {
         // init listen services
         _sender_listen_service = std::make_shared<ListenService>(_sender);
         _receiver_listen_service = std::make_shared<ListenService>(_receiver);
+    }
+    void init_async_channel(int thread_num) {
+        CHECK(!_channel) << "async channel has been created";
+        AsynExec as(thread_num);
+        _channel = as.open();
+    }
+
+    explicit Transfer(int channel_thread_num) {
+        // init listen services
+        _sender_listen_service = std::make_shared<ListenService>(_sender);
+        _receiver_listen_service = std::make_shared<ListenService>(_receiver);
+        // set async channel
+        AsynExec as(channel_thread_num);
+        _channel = as.open();
     }
     ~Transfer() {
         LOG(WARNING) << "Transfer desconstruct!";
         _sender_listen_service->end();
         _receiver_listen_service->end();
+        // close the channel
+        CHECK(_channel) << "async channel is not inited or has been closed";
+        _channel->close();
     }
 
     void set_listen_service_num(int num) {
@@ -40,10 +57,12 @@ public:
         _sender_listen_service->set_thread_num(num);
         _receiver_listen_service->set_thread_num(num);
     }
+    /*
     void set_async_channel(std::shared_ptr<AsynExec::channel_t> channel) {
         CHECK(channel);
         _channel = channel;
     }
+    */
     void set_client_id(int id) {
         _sender->set_client_id(id);
     }
@@ -99,8 +118,10 @@ private:
     // need init
     std::shared_ptr<ListenService> _sender_listen_service;
     std::shared_ptr<ListenService> _receiver_listen_service;
-    std::shared_ptr<AsynExec::channel_t> _channel;
     int _listen_thread_num = 2;
+    // channel
+    //int _channel_thread_num = 2;
+    std::shared_ptr<AsynExec::channel_t> _channel;
 };  // end class Transfer
 
 
