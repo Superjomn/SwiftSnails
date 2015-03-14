@@ -80,6 +80,7 @@ public:
             LOG(INFO) << "receive a response, message_id: " << response->meta.message_id;
 
             CHECK(_client_id == 0 || response->meta.client_id == client_id());
+            //LOG(INFO) << ".. call response handler";
             // call the callback handler
             { std::lock_guard<SpinLock> lock(_msg_handlers_mut);
                 auto it = _msg_handlers.find(response->message_id());
@@ -88,10 +89,12 @@ public:
                 _msg_handlers.erase(it);
             }
 
+            //LOG(INFO) << ".. push response handler to channel";
+
             // execute the response_recallback handler
             _async_channel->push(
                 // TODO refrence handler?
-                [&handler, this, response]() {
+                [handler, this, response]() {
                     handler(response);
                 }
             );

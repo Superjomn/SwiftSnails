@@ -98,7 +98,6 @@ public:
             { std::lock_guard<std::mutex> lock(receiver_mutex() );
                 // receive meta-message first
                 PCHECK(ignore_signal_call(zmq_msg_recv, &package.meta.zmg(), receiver(), 0) >= 0);
-                LOG(INFO) << "receive a message";
                 if(package.meta.size() == 0) break; // exit server
                 CHECK(package.meta.size() == sizeof(MetaMessage));
                 CHECK(zmq_msg_more(&package.meta.zmg()));
@@ -106,12 +105,12 @@ public:
                 PCHECK(ignore_signal_call(zmq_msg_recv, &package.cont.zmg(), receiver(), 0) >= 0);
                 CHECK(!zmq_msg_more(&package.cont.zmg()));
             }
-            LOG(INFO) << "receiver get a message";
             auto request = std::make_shared<Request>(std::move(package));
+            LOG(INFO) << "receiver get a message," << "message_class\t" << request->meta.message_class;
             handler_t handler = _message_class.get( request->meta.message_class);
-            LOG(INFO) << "push task to channel";
+            //LOG(INFO) << "push task to channel";
             _async_channel->push(
-                [this, &handler, request] {
+                [this, handler, request] {
                     LOG(INFO) << "channel run task";
                     Request response;
                     handler(request, response);

@@ -43,7 +43,7 @@ public:
 
     void end() {
         LOG(WARNING) << "SenderService service threads exit!";
-        //CHECK(!_threads.empty());
+        CHECK(!_threads.empty());
 
         { std::lock_guard<SpinLock> lock(_spinlock);
             CHECK(_sender->service_complete());
