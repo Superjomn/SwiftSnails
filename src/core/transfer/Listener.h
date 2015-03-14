@@ -20,7 +20,7 @@ public:
         PCHECK(_receiver = zmq_socket(_zmq_ctx, ZMQ_PULL));
     }
 
-    virtual ~Listener() {
+    ~Listener() {
         LOG(WARNING) << "listener exit!";
         PCHECK(0 == zmq_close(_receiver));
     }

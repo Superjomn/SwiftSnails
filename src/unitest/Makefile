@@ -2,7 +2,8 @@ CXX=g++
 CC=gcc
 BIN=./bin
 
-CXXFLAGS= -std=c++11 -pthread -lpthread -Wall -g -DHAVE_PCAP -lgtest -lgtest_main
+#CXXFLAGS= -static -g -std=c++11 -pthread -lpthread -Wall -DHAVE_PCAP -lgtest -lgtest_main
+CXXFLAGS= -O0 -g -std=c++11 -pthread -lpthread -Wall -DHAVE_PCAP -lgtest -lgtest_main
 
 LOCAL_ROOT=../../third/local
 GTEST_HOME=$(LOCAL_ROOT)/gtest
@@ -22,5 +23,5 @@ $(BIN)/test :  main.cpp
 
 
 clean: 
-	rm $(BIN)/test
+	rm -f $(BIN)/test
 

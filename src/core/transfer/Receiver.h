@@ -125,7 +125,7 @@ public:
                 }
             );
         }
-        LOG(WARNING) << "server terminated!";
+        LOG(WARNING) << "receiver terminated!";
     }
 
     bool service_complete() override {

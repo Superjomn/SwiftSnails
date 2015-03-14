@@ -41,7 +41,9 @@ inline void zmq_bind_random_port(const std::string& ip, void* socket, std::strin
     for(;;) {
         port = 1024 + rand() % (65536 - 1024);
         format_string(addr, "tcp://%s:%d", ip.c_str(), port);
-        //LOG(INFO) << "try addr: " << addr;
+        // ATTENTION: fix the wied memory leak
+        // add the LOG valhind detect no memory leak, else ...
+        LOG(WARNING) << "try addr: " << addr;
         int res = 0;
         PCHECK((res = zmq_bind(socket, addr.c_str()), 
                 res == 0 || errno == EADDRINUSE));  // port is already in use

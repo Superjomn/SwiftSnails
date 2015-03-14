@@ -6,6 +6,7 @@
 #include "utils/RWLock_test.h"
 
 // core/
+#include "core/common_test.h"
 #include "core/Message_test.h"
 #include "core/BasicChannel_test.h"
 #include "core/AsynExec_test.h"

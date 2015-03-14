@@ -18,6 +18,11 @@ template<typename Route>
 class Transfer : public VirtualObject {
 
 public:
+    // message class handler
+    typedef Receiver::handler_t msgcls_handler_t;
+    // message respons callback handler
+    typedef Request::response_call_back_t msgrsp_handler_t;
+
     Transfer() {
         // init listen services
         _sender_listen_service = std::make_shared<ListenService>(_sender);
@@ -38,6 +43,17 @@ public:
     void set_async_channel(std::shared_ptr<AsynExec::channel_t> channel) {
         CHECK(channel);
         _channel = channel;
+    }
+    void set_client_id(int id) {
+        _sender->set_client_id(id);
+    }
+    void send(Request &&request, int to_id) {
+        _sender->send(std::move(request), to_id);
+    }
+    MessageClass<Receiver::handler_t>& 
+    message_class() {
+        return _receiver->message_class();
+
     }
 
     // listen
@@ -62,6 +78,18 @@ public:
         CHECK(_channel);
         _receiver->set_async_channel(_channel);
         _receiver_listen_service->start();
+    }
+
+    Route& route() {
+        return _route;
+    }
+    // receiver listen address
+    const std::string &receiver_addr() const {
+        return _receiver->recv_addr();
+    }
+    // sender listen address
+    const std::string &sender_addr() const {
+        return _sender->recv_addr();
     }
 
 private:

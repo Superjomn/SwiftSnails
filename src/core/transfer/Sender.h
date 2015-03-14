@@ -96,6 +96,7 @@ public:
                 }
             );
         }
+        LOG(WARNING) << "sender terminated!";
     }
 
     int client_id() const {
