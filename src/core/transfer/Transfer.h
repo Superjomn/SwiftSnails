@@ -125,6 +125,26 @@ private:
 };  // end class Transfer
 
 
+template<typename Route>
+inline Transfer<Route>& global_transfer() {
+    static Transfer<Route> transfer;
+    static std::once_flag flag;
+
+    std::call_once( flag,
+        []() {
+            // TODO load config from file
+            int listen_thread_num = 2;
+            int channel_thread_num = 2;
+            transfer.init_async_channel(channel_thread_num);
+            transfer.set_listen_service_num(listen_thread_num);
+            transfer.start_sender_service();
+            transfer.start_receiver_service();
+        });
+
+    return transfer;
+}
+
+
 };  // end namespace swift_snails
 #endif
 

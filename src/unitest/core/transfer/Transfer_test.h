@@ -88,5 +88,9 @@ TEST_F (TransferTest, send_receive_message) {
 
 }
 
+TEST(Transfer, global_transfer) {
+    auto &transfer = global_transfer<Route>();
+}
+
 };  // end namespace _test_one_transfer
 
