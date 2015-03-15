@@ -83,33 +83,7 @@ public:
         if(_t.joinable()) _t.join();
     }
 };
-/*
-std::string get_local_ip() {
-    int sockfd;
-    char buf[512];
-    struct ifconf ifconf;
-    struct ifreq* ifreq;
 
-    ifconf.ifc_len = 512;
-    ifconf.ifc_buf = buf;
-    PCHECK((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) >= 0);
-    PCHECK(ioctl(sockfd, SIOCGIFCONF, &ifconf) >= 0);
-    PCHECK(0 == close(sockfd));
-
-    ifreq = (struct ifreq*)buf;
-    for (int i = 0; i < int(ifconf.ifc_len / sizeof(struct ifreq)); i++) {
-        std::string ip;
-        ip = inet_ntoa(((struct sockaddr_in*)&ifreq->ifr_addr)->sin_addr);
-        LOG(INFO) << "get_local_ip: " << ip;
-        if (ip != "127.0.0.1") {
-            return ip;
-        }
-        ifreq++;
-    }
-    LOG(FATAL) << "IP not found";
-    return "";
-}
-*/
 std::string get_local_ip() {
     struct ifaddrs * ifAddrStruct=NULL;
     struct ifaddrs * ifa=NULL;
@@ -202,22 +176,6 @@ struct Package : public VirtualObject {
     }   
 };
 
-/*
-struct Response : public VirtualObject {
-    Response(Package &&pkg) {
-        // copy meta 
-        CHECK(pkg.meta.size() == sizeof(MetaMessage));
-        memcpy(&meta, &pkg.meta.zmg(), sizeof(MetaMessage));
-        // copy content
-        //pkg.cont.moveTo(cont);
-        cont.set(pkg.cont.buffer(), pkg.cont.size());
-        //cont = pkg.cont;
-    }
-
-	MetaMessage meta;
-	BinaryBuffer cont;
-};
-*/
 
 struct Request {
 
@@ -249,6 +207,12 @@ struct Request {
 
     void set_msg_id(int id) {
         meta.message_id = id;
+    }
+    // to tell whether this message
+    // is a request from other node 
+    // or response from the receiver
+    bool is_response() const {
+        return meta.message_id == -1;
     }
 
     ~Request() {
