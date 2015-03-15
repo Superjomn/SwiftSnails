@@ -82,7 +82,7 @@ public:
     }
 
     ~BaseRoute() {
-        LOG(WARNING) << "Route construct";
+        LOG(WARNING) << "Route deconstruct";
         for(auto& sender : _senders) {
             PCHECK(0 == zmq_close(sender.second));
         }

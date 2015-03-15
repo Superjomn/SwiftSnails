@@ -67,7 +67,7 @@ public:
         } // for
 
         return { &worker->channel, 
-            [worker](channel_t*) {
+            [this, worker](channel_t*) {
                 worker->channel.close();
                 LOG(INFO) << "channel to destroy, worker threads join";
                 for (auto& t : worker->threads) {

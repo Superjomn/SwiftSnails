@@ -1,5 +1,5 @@
 #include <climits>
-#include "../../../core/transfer/Transfer.h"
+#include "../../../core/transfer/transfer.h"
 #include "gtest/gtest.h"
 using namespace std;
 using namespace swift_snails;
@@ -11,19 +11,20 @@ class Route : public BaseRoute {
     }
 };
 
-
 class TransferTest : public testing::Test {
 protected:
     virtual void SetUp() {
         // open global channel
         //int thread_num = 2;
-        transfer.init_async_channel(2);
-        transfer.set_listen_service_num(2);
+        transfer.listen();
+        transfer.init_async_channel(4);
+        transfer.set_thread_num(2);
         //transfer.set_async_channel(global_channel);
         //transfer.start_sender_service("tcp://10.15.229.188:17831");
         //transfer.start_receiver_service("tcp://10.15.229.188:17832");
-        transfer.start_sender_service();
-        transfer.start_receiver_service();
+        //transfer.start_sender_service();
+        //transfer.start_receiver_service();
+        transfer.service_start();
 
     }
 
@@ -37,18 +38,11 @@ protected:
 };  // end class TransferTest
 
 
-
-// the transfer send message to itself
-TEST_F (TransferTest, send_receive_message) {
-    LOG(WARNING) << "transfer receiver address:\t" << transfer.receiver_addr();
-    LOG(WARNING) << "transfer receiver address:\t" << transfer.sender_addr();
-
-    string receiver_addr = transfer.receiver_addr();
-    string sender_addr = transfer.sender_addr();
-
-    transfer.route().register_node(0, std::move(receiver_addr));
-    transfer.route().register_node(1, std::move(sender_addr));
-
+TEST_F(TransferTest, send_receive_message) {
+    std::string address = transfer.recv_addr();
+    LOG(INFO) << "transfer listen address\t" << address;
+    transfer.route().register_node(1, std::move(address));
+    //transfer.route().register_node(1, std::move(address));
 
     Transfer<Route>::msgcls_handler_t msgcls1 = [](std::shared_ptr<Request> request, Request& response) {
         LOG(INFO) << ".. get a message";
@@ -83,14 +77,9 @@ TEST_F (TransferTest, send_receive_message) {
     request.cont << 2008;
 
     transfer.set_client_id(1);
-    transfer.send(std::move(request), 0);
+    transfer.send(std::move(request), 1);
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
 }
 
-TEST(Transfer, global_transfer) {
-    auto &transfer = global_transfer<Route>();
-}
 
-};  // end namespace _test_one_transfer
-
+}; // end namespace _test_one_transfer
