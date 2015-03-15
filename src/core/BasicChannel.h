@@ -80,11 +80,15 @@ public:
      * waiting threads to exit
      */
     void close() {
-        LOG(INFO) << "channel is closed";
+        LOG(INFO) << "!!channel is closed";
         std::lock_guard<std::mutex> lk(mut);
         _closed = true;
         data_cond.notify_all(); // notify all waiting threads to exit
         LOG(INFO) << "notify all threads to exit";
+    }
+
+    bool closed() const {
+        return _closed;
     }
 
     void size() const {

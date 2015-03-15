@@ -39,6 +39,7 @@ auto ignore_signal_call(FUNC func, ARGS&&... args)
 
 inline void zmq_bind_random_port(const std::string& ip, void* socket, std::string& addr, int& port) {
     for(;;) {
+        addr = "";
         port = 1024 + rand() % (65536 - 1024);
         format_string(addr, "tcp://%s:%d", ip.c_str(), port);
         // ATTENTION: fix the wied memory leak
@@ -212,7 +213,7 @@ struct Request {
     // is a request from other node 
     // or response from the receiver
     bool is_response() const {
-        return meta.message_id == -1;
+        return meta.message_class == -1;
     }
 
     ~Request() {

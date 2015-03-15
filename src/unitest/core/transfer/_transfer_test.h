@@ -1,5 +1,5 @@
 #include <climits>
-#include "../../../core/transfer/Transfer.h"
+#include "../../../core/transfer/transfer.h"
 #include "gtest/gtest.h"
 using namespace std;
 using namespace swift_snails;

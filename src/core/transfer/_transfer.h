@@ -1,5 +1,5 @@
 //
-//  Sender.h
+//  Transfer.h
 //  SwiftSnails
 //
 //  Created by Chunwei on 3/09/15.

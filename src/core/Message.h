@@ -14,8 +14,8 @@ struct BasicMetaMessage {
 
 // meta message of MasterServer and MasterClient
 struct MetaMessage : public BasicMetaMessage {
-    index_t client_id = 0;
-    index_t message_id = 0;
+    index_t client_id = -1;
+    index_t message_id = -1;
 
     explicit MetaMessage() { }
 
