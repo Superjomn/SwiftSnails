@@ -31,6 +31,7 @@ public:
         return _zmq_ctx;
     }
     // TODO change node at once 
+    // Attention: not thread-safe
     void register_node(int id, std::string &&addr) {
         //std::lock_guard<std::mutex> lock(_write_mut);
         CHECK(_send_addrs.count(id) == 0) << "id exists!";
@@ -81,7 +82,7 @@ public:
         return _send_mutexes[id];
     }
 
-    ~BaseRoute() {
+    virtual ~BaseRoute() {
         LOG(WARNING) << "Route deconstruct";
         for(auto& sender : _senders) {
             PCHECK(0 == zmq_close(sender.second));
@@ -95,7 +96,7 @@ protected:
         PCHECK(0 == ignore_signal_call(zmq_connect, _senders[id], _send_addrs[id].c_str()));
     }
 
-private:
+protected:
     void* _zmq_ctx = NULL;
     std::map<int, void*> _senders;
     std::map<int, std::string> _send_addrs;
@@ -103,14 +104,13 @@ private:
     // version of the route
     // if _version is out of date, route will 
     // be updated
-    index_t _version = -1;
+    //index_t _version = -1;
     // protect only one writer
     RWLock _read_write_lock;
     //std::mutex _write_mut;
     // determine whether version is valid
-    bool _version_valid = true;
+    //bool _version_valid = true;
 };
-
 
 
 }; // end namespace swift_snails
