@@ -40,7 +40,9 @@ public:
     seconds elapsed() const {
         return std::chrono::duration_cast<seconds>(high_resolution_clock::now() - _start);
     }
-
+    int time_span() const {
+        return _time_span;
+    }
     template <typename T, typename Traits>
     friend std::basic_ostream<T, Traits>& operator<<(std::basic_ostream<T, Traits>& out, const Timer& timer)
     {
