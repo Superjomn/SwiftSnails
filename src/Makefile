@@ -1,14 +1,31 @@
 CXX=g++
 CC=gcc
-BIN=../bin
-CXXFLAGS= -std=c++11 -pthread -Wall -g 
-THIRD_INCPATH=-I../third/local/glog/include \
-	-I../third/local/openmpi/include \
-	-I../third/local/zeromq/include
+BIN=./bin
 
-THIRD_LIB=../third/local/glog/lib/libglog.a  \
-		-L /Users/apple/project/SwiftSnails/third/local/openmpi/lib \
-		-lmpi_cxx \
-		-lmpi
+#CXXFLAGS= -static -g -std=c++11 -pthread -lpthread -Wall -DHAVE_PCAP -lgtest -lgtest_main
+CXXFLAGS= -O0 -g -std=c++11 -pthread -lpthread -Wall -DHAVE_PCAP -lgtest -lgtest_main
 
-.PHONY:all clean test
+LOCAL_ROOT=../third/local
+GTEST_HOME=$(LOCAL_ROOT)/gtest
+
+THIRD_INCPATH=-I$(LOCAL_ROOT)/glog/include \
+	-I$(LOCAL_ROOT)/zeromq/include \
+	-I/usr/local/Cellar/google-sparsehash/2.0.2/include \
+	-I/usr/include/pthread \
+	-I$(GTEST_HOME)/include
+
+THIRD_LIB=$(LOCAL_ROOT)/glog/lib/libglog.a  $(LOCAL_ROOT)/zeromq/lib/libzmq.a 
+
+.PHONY:all clean test cur
+
+ALL: master worker
+
+master: master.cpp
+	$(CXX) master.cpp $(THIRD_INCPATH) -L$(GTEST_HOME)/lib/.libs -Xlinker $(THIRD_LIB)  $(CXXFLAGS) -o $(BIN)/master
+
+worker: worker.cpp
+	$(CXX) worker.cpp $(THIRD_INCPATH) -L$(GTEST_HOME)/lib/.libs -Xlinker $(THIRD_LIB)  $(CXXFLAGS) -o $(BIN)/worker
+
+
+clean:
+	rm -f $(BIN)/*

@@ -12,13 +12,17 @@
 namespace swift_snails {
 
 class BaseBarrier {
-    virtual void block() = 0;
+public:
+	virtual void block() = 0;
     virtual void unblock() = 0;
+    virtual ~BaseBarrier() {}
 };
 
-class Barrier : BaseBarrier {
+class Barrier : public BaseBarrier {
 public:
     explicit Barrier() {
+    }
+    virtual ~Barrier() {
     }
     // block current thread
     void block() {
@@ -54,19 +58,29 @@ private:
 
 // a more flexible Barrier
 class CompBarrier : public BaseBarrier {
+
+    typedef std::function<void()> void_lamb;
+
 public:
-    virtual void block(void_lamb &set_flag, void_lamb &cond_func) {
+    void block(void_lamb &set_flag, std::function<bool()> &cond_func) {
         set_flag();
         std::unique_lock<std::mutex> lk(_flag_mut);
         _block_cond.wait(lk, cond_func);
     }
 
-    virtual void unblock(void_lamb &func) {
+    void unblock(void_lamb &func) {
         func(); // reset flag
         _block_cond.notify_all();
     }
 
-    virtual ~FinishInitBarrier() {
+    virtual void block() {
+        throw std::bad_function_call();
+    }
+    virtual void unblock() {
+        throw std::bad_function_call();
+    }
+
+    virtual ~CompBarrier() {
     }
 
 private:

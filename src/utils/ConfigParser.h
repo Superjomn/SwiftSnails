@@ -118,6 +118,20 @@ private:
 };  // end class ConfigParser
 
 
+// global_config need to be inited
+ConfigParser& global_config() {
+    static ConfigParser config;
+	static std::once_flag flag;
+    std::call_once(flag,
+        []{
+            config.register_config("listen_addr");
+            config.register_config("async_exec_num");
+            config.register_config("listen_thread_num");
+
+        });
+    return config;
+}
+
 }; // end namespace swift_snails
 
 #endif

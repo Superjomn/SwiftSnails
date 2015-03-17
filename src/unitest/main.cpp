@@ -4,6 +4,8 @@
 #include "utils/queue_test.h"
 #include "utils/hashmap_test.h"
 #include "utils/RWLock_test.h"
+#include "utils/Barrier_test.h"
+#include "utils/ConfigParser_test.h"
 
 // core/
 #include "core/common_test.h"

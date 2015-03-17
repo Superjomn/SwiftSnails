@@ -14,8 +14,8 @@ namespace swift_snails {
 class ServerWorkerRoute : public BaseRoute {
 public:
     // thread-safe
-    int register_node(bool is_server, std::string &&addr) {
-        rwlock_write_guard(_read_write_lock);
+    int register_node_(bool is_server, std::string &&addr) {
+        //rwlock_write_guard lock(_read_write_lock);
         int id{-1};
         if(is_server) {
             id = _server_num ++;
@@ -26,6 +26,9 @@ public:
         }
         CHECK(id >= 0);
         return id;
+    }
+
+    virtual void update() {
     }
 
     friend BinaryBuffer& operator<<(BinaryBuffer& bb, const ServerWorkerRoute& route) {
@@ -52,7 +55,7 @@ public:
         int id;
         IP ip;
 
-        rwlock_write_guard(route._read_write_lock);
+        rwlock_write_guard lock(route._read_write_lock);
         for(int i = 0; i < route._server_num + route._worker_num; i++) {
             bb >> id;
             bb >> ip;

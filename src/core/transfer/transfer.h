@@ -82,24 +82,28 @@ public:
     void send(Request &&request, int to_id) {
         index_t msg_id = _msg_id_counter++;
         request.set_msg_id(msg_id);
-        CHECK(_client_id != 0) << "shoud set client_id first";
+        CHECK(_client_id != -2) << "shoud set client_id first";
         request.meta.client_id = _client_id;
         // convert Request to underlying Package
         Package package(request);
+        LOG(INFO) << "send package";
         // cache the recall_back
         // when the sent message's reply is received 
         // the call_back handler will be called
         { std::lock_guard<SpinLock> lock(_send_mut);
             CHECK(_msg_handlers.emplace(msg_id, std::move(request.call_back_handler)).second);
+            LOG(INFO) << "call_back_handler is registered";
         }
 
         // send the package
-        BaseRoute& route = _route;
+        Route& route = _route;
 
         {
+            LOG(INFO) << "to lock send_mutex";
             std::lock_guard<std::mutex> lock(
                 * route.send_mutex(to_id)
             );
+            LOG(INFO) << "zmq to send message";
             PCHECK(ignore_signal_call(zmq_msg_send, &package.meta.zmg(), route.sender(to_id), ZMQ_SNDMORE) >= 0);
             PCHECK(ignore_signal_call(zmq_msg_send, &package.cont.zmg(), route.sender(to_id), 0) >= 0);
         }
@@ -154,7 +158,14 @@ public:
                 response.meta.message_class = -1;
 
                 LOG(INFO) << "send response to client " << request->meta.client_id;
-                send_response(std::move(response),  request->meta.client_id);
+                // only send response with content
+                // empty response will not be sent, and master should
+                // send a response with content later
+                if(response.cont.size() > 0) {
+                    send_response(std::move(response),  request->meta.client_id);
+                } else {
+                    LOG(INFO) << "empty response, not send";
+                }
             }
         );
     }
@@ -187,7 +198,7 @@ public:
 
     void send_response(Request &&request, int to_id) {
         Package package(request);
-        BaseRoute& route = _route;
+        Route& route = _route;
         {
             // TODO will the mutex share between sender and receiver 
             // effect performance?
@@ -204,8 +215,11 @@ public:
     int client_id() const {
         return _client_id;
     }
-    BaseRoute& route() {
+    Route& route() {
         return _route;
+    }
+    std::shared_ptr<AsynExec::channel_t>& async_channel() {
+        return _async_channel;
     }
     // determine whether all sended message get a 
     // reply
@@ -246,9 +260,34 @@ private:
     SpinLock    _msg_handlers_mut;
     MessageClass<msgcls_handler_t> _message_class;
 
-    int _client_id = 0;
+    int _client_id = -2;
 
 };  // end class Transfer
+
+
+
+template<typename Route>
+Transfer<Route> &global_transfer() {
+	static Transfer<Route> transfer;
+	static std::once_flag flag;
+	std::call_once(flag,
+		[]{
+            LOG(WARNING) << "init transfer ...";
+            // TODO read from config file
+            int async_thread_num = 4;
+            int service_thread_num = 2;
+            transfer.listen();
+            // TODO read from config
+            // register master server
+            LOG(WARNING) << "local register server ...";
+            std::string addr = "tcp://127.0.0.1:8080";
+            transfer.route().register_node_(true, std::move(addr));
+            transfer.init_async_channel(async_thread_num);
+            transfer.set_thread_num(service_thread_num);
+            transfer.service_start();
+		});
+    return transfer;
+}
 
 
 };  // end namespace swift_snails
