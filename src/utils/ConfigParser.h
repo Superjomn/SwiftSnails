@@ -13,9 +13,10 @@
 
 namespace swift_snails {
 /*
- * 解析简单的配置文件
+ * a simple config parser
  *
- * 基本的语法：
+ * support syntax:
+ *
  * import ../common.conf
  * key: value
  * # comment
@@ -41,10 +42,21 @@ public:
             return false;
         }
     };
-
-
-    ConfigParser(const std::string &conf_path): _conf_path(conf_path) {
+    
+    explicit ConfigParser(const std::string &conf_path): _conf_path(conf_path) {
     }
+
+    explicit ConfigParser() {
+    }
+    void load_conf(const std::string path) {
+        _conf_path = path;
+    }
+
+    void parse() {
+        LOG(WARNING) << "load conf from\t" << _conf_path;
+        parse_conf(_conf_path);
+    }
+
 
     void register_config(const std::string &key, const std::string &value = "") {
         CHECK(!key.empty());
@@ -52,7 +64,6 @@ public:
         _dic.insert({std::move(key), Item(value)});
     }
 
-    // 返回值中支持操作：
     // to_int32()
     // to_string()
     // to_bool()
@@ -60,11 +71,6 @@ public:
         auto p = _dic.find(key);
         CHECK(p != _dic.end()) << "no registered key:\t" << key;
         return p->second;
-    }
-
-    void parse() {
-        LOG(WARNING) << "load conf from\t" << _conf_path;
-        parse_conf(_conf_path);
     }
 
     friend std::ostream& operator<< (std::ostream& os, const ConfigParser &other) {
@@ -79,7 +85,7 @@ public:
 private:
 
     void parse_conf(const std::string &path) {
-        LOG(INFO) << "parsing conf:\t" << path;
+        //LOG(INFO) << "parsing conf:\t" << path;
         typedef std::pair<std::string, std::string> key_value_t;
         std::ifstream file(path);
         PCHECK(file) << "conf can not open:\t" << path;
@@ -91,7 +97,7 @@ private:
             // import path
             if(headswith(line, "import")) {
                 std::pair<std::string, std::string> kv = key_value_split(line, " ");
-                CHECK(kv.second != path);   // 还需要防止交叉循环import
+                CHECK(kv.second != path);   // 
                 parse_conf(kv.second);
                 continue;
             }

@@ -53,8 +53,8 @@ std::pair<std::string, std::string> key_value_split(const std::string &s, const 
     keyvalue.first = s.substr(last, index - last);
     last = index + 1;
     // get value
-    index = s.find_first_of(delim, last);
-    keyvalue.second = s.substr(last, index - last);
+    //index = s.find_first_of(delim, last);
+    keyvalue.second = s.substr(last);
     return std::move(keyvalue);
 }
 
