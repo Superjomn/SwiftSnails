@@ -15,7 +15,7 @@ class ServerWorkerRoute : public BaseRoute {
 public:
     // thread-safe
     int register_node_(bool is_server, std::string &&addr) {
-        //rwlock_write_guard lock(_read_write_lock);
+        rwlock_write_guard lock(_read_write_lock);
         int id{-1};
         if(is_server) {
             id = _server_num ++;
