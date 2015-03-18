@@ -13,6 +13,7 @@
 #include "../ServerWorkerRoute.h"
 #include "../../transfer/transfer.h"
 namespace swift_snails {
+
 /*
  * when timeout or all the nodes has been registered
  */
@@ -25,9 +26,15 @@ public:
     explicit MasterTransferInit() {
         LOG(INFO) << "init Master ...";
         // TODO should read from config file
-        registered_node_num = 0;
-        expected_node_num = 10;     // nodes include server and worker
-        _timer.set_time_span(10); // 5 minites
+        expected_node_num = global_config().get_config("expected_node_num").to_int32();     // nodes include server and worker
+        int time_span = global_config().get_config("master_time_out").to_int32();
+        LOG(INFO) << "get time_span:\t" << time_span;
+        _timer.set_time_span( time_span); 
+
+        LOG(WARNING) << "local register server ...";
+        std::string addr = gtransfer.recv_addr();
+        gtransfer.route().register_node_(true, std::move(addr));
+
         _timer.start();
     }
 
@@ -41,7 +48,7 @@ public:
         LOG(WARNING) << "register message class ...";
     	auto handler = node_init_address;
         gtransfer.message_class().add(NODE_INIT_ADDRESS, std::move(handler));
-        LOG(WARNING) << "end register message class";
+        //LOG(WARNING) << "end register message class";
     }
 
     void wait_for_workers_register_route() {
@@ -54,8 +61,8 @@ public:
         // set a thread to try unblock current thread 
         // when timeout 
         void_lamb timeout_try_unblock = [this] {
-            LOG(WARNING) << "try unblock is called ...";
-            LOG(WARNING) << "wait for 2 s";
+            //LOG(WARNING) << "try unblock is called ...";
+            LOG(WARNING) << "master will wait for " << _timer.time_span() << " s";
             std::this_thread::sleep_for( std::chrono::milliseconds(1000 + 1000 * _timer.time_span() ));
             void_lamb handle = []{};
             _wait_init_barrier.unblock(handle);
@@ -73,9 +80,11 @@ protected:
         IP ip;
         request->cont >> ip;
         std::string addr = "tcp://" + ip.to_string();
+        LOG(INFO) << "node's addr:\t" << addr;
         auto& gtransfer = global_transfer<ServerWorkerRoute>();
         // tell server/worker by clent_id
         // -1 or 0
+        LOG(INFO) << "request.client_id:\t" << request->meta.client_id;
         CHECK(request->meta.client_id <= 0);
         int id = gtransfer.route().register_node_( request->meta.client_id == 0, std::move(addr));
 

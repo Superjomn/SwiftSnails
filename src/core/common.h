@@ -122,16 +122,15 @@ struct IP {
     IP(const std::string &ip) {
         from_string(ip);
     }
-    std::string to_string() const {
-        std::stringstream ss;
-        ss << addr[0];
-        for(int i = 1; i < 4; i++) {
-            ss << "." << addr[i];
+    void from_string(const std::string &_addr) {
+        std::string ip;
+        // TODO fix this trick
+        // heads with tcp://?
+        if(_addr[0] == 't') {
+            ip = _addr.substr(6);
+        } else {
+            ip = _addr;
         }
-        ss << ":" << port;
-        return std::move(ss.str());
-    }
-    void from_string(const std::string &ip) {
         const char* begin = &ip[0];
         char* end; 
         for(int i = 0; i < 4; i++) {
@@ -140,6 +139,15 @@ struct IP {
             begin = end+1;
         }
         port = (uint16_t) std::strtoul(begin, &end, 10);
+    }
+    std::string to_string() const {
+        std::stringstream ss;
+        ss << addr[0];
+        for(int i = 1; i < 4; i++) {
+            ss << "." << addr[i];
+        }
+        ss << ":" << port;
+        return std::move(ss.str());
     }
     friend BinaryBuffer& operator<<(BinaryBuffer& bb, const IP& ip) {
         for(int i = 0; i < 4; i++) {

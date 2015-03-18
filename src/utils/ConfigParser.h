@@ -124,10 +124,10 @@ ConfigParser& global_config() {
 	static std::once_flag flag;
     std::call_once(flag,
         []{
-            config.register_config("listen_addr");
-            config.register_config("async_exec_num");
-            config.register_config("listen_thread_num");
-
+            // common key between master and worker
+            config.register_config("listen_addr", "");
+            config.register_config("async_exec_num", "5");
+            config.register_config("listen_thread_num", "2");
         });
     return config;
 }
