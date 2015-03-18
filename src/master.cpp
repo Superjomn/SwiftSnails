@@ -28,6 +28,7 @@ int main(int argc, char* argv[]) {
     std::string config_path = cmdline.getValue(param_config_path);
 
     // register master's keys to config
+    //global_config().register_config("listen_addr", "");
     global_config().register_config("expected_node_num", "2");
     global_config().register_config("master_time_out", "2");
 

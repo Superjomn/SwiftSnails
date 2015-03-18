@@ -23,23 +23,29 @@ class NodeTransferInit {
 public:
     explicit NodeTransferInit()
     {
+        //global_config().register_config("master_addr", "");
     }
 
     void operator() () {
+        register_master();
         register_local_node_to_master();
     }
-    /*
-    void set_master_addr(std::string &&addr) {
-        _master_addr = addr;
+    void register_master() {
+        std::string addr = global_config().get_config("master_addr").to_string();
+        LOG(WARNING) << "register master:\t" << addr;
         gtransfer.route().register_node(0, std::move(addr));
+        //LOG(WARNING) << "local register server ...";
+        //std::string addr = gtransfer.recv_addr();
+        //gtransfer.route().register_node_(true, std::move(addr));
     }
-    */
     
     // register local address to remote master server
     void register_local_node_to_master() {
         //auto& gtransfer = global_transfer<ServerWorkerRoute>();
-        IP ip(gtransfer.recv_ip());
-        ip.port = gtransfer.recv_port();
+        LOG(INFO) << "local listen addr:\t" << gtransfer.recv_addr();
+        IP ip(gtransfer.recv_addr());
+        LOG(INFO) << "after init ip.to_string():\t" << ip.to_string();
+        //ip.port = gtransfer.recv_port();
         // TODO read from config
         gtransfer.set_client_id(-1);
         // create message

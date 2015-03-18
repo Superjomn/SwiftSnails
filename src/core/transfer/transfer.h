@@ -274,10 +274,16 @@ Transfer<Route> &global_transfer() {
 	std::call_once(flag,
 		[]{
             LOG(WARNING) << "init transfer ...";
+            std::string listen_addr = global_config().get_config("listen_addr").to_string();
             // TODO read from config file
             int async_thread_num = global_config().get_config("async_exec_num").to_int32();
             int service_thread_num = global_config().get_config("listen_thread_num").to_int32();
-            transfer.listen();
+
+            if(!listen_addr.empty()) {
+                transfer.listen(listen_addr);
+            } else {
+                transfer.listen();
+            }
             // TODO read from config
             // register master server
             //LOG(WARNING) << "local register server ...";

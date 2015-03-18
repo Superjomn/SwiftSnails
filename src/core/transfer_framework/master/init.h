@@ -80,9 +80,11 @@ protected:
         IP ip;
         request->cont >> ip;
         std::string addr = "tcp://" + ip.to_string();
+        LOG(INFO) << "node's addr:\t" << addr;
         auto& gtransfer = global_transfer<ServerWorkerRoute>();
         // tell server/worker by clent_id
         // -1 or 0
+        LOG(INFO) << "request.client_id:\t" << request->meta.client_id;
         CHECK(request->meta.client_id <= 0);
         int id = gtransfer.route().register_node_( request->meta.client_id == 0, std::move(addr));
 
