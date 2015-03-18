@@ -59,6 +59,7 @@ public:
         for(int i = 0; i < route._server_num + route._worker_num; i++) {
             bb >> id;
             bb >> ip;
+            if(id == 0) continue;
             std::string addr = "tcp://" + ip.to_string();
             route.register_node(id, std::move(addr));   // not thread-safe
         }

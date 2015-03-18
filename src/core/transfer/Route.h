@@ -90,6 +90,10 @@ public:
         PCHECK(0 == zmq_ctx_destroy(_zmq_ctx));
     }
 
+    std::map<int, std::string>& send_addrs() {
+        return _send_addrs;
+    }
+
 protected:
     void connect(index_t id) {
         LOG(INFO) << "client connect " << _send_addrs[id];

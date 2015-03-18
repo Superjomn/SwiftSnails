@@ -42,6 +42,8 @@ public:
         register_init_message_class();
         CHECK(!gtransfer.async_channel()->closed()) << "channel should not been closed before transfer is deconstructed";
         wait_for_workers_register_route();
+        // sent route as response to clients
+        send_route_to_workers();
     }
 
     void register_init_message_class() {
@@ -71,6 +73,24 @@ public:
         _wait_init_barrier.block(set_flag, cond_func); 
     }
 
+    void send_route_to_workers() {
+
+        for(auto& r : gtransfer.route().send_addrs()) {
+            // TODO make response copy ? 
+            // change to reduce ? 
+            int id = r.first;
+            const std::string &addr = r.second;
+            Request response;
+            response.cont << gtransfer.route();
+            response.meta.message_class = -1;
+            response.meta.message_id = init_msg_ids[id];
+            LOG(WARNING) << "send route to worker:\t" << addr;
+            // skip master
+            if(id == 0) continue;
+            gtransfer.send_response(std::move(response), id);
+        }
+    }
+
 protected:
     // message-class handlers   ---------------------------------
     // node register address to master
@@ -87,6 +107,8 @@ protected:
         LOG(INFO) << "request.client_id:\t" << request->meta.client_id;
         CHECK(request->meta.client_id <= 0);
         int id = gtransfer.route().register_node_( request->meta.client_id == 0, std::move(addr));
+        // cache message_ids
+        init_msg_ids[id] = request->meta.message_id;
 
         registered_node_num ++;
 
@@ -101,6 +123,9 @@ protected:
 
 private:
     Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
+    // cache message id
+    std::map<index_t, index_t> init_msg_ids;
+
     int registered_node_num = 0;
     // TODO should read from config file
     int expected_node_num = 10; // TODO read from config file

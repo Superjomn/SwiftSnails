@@ -8,6 +8,7 @@
 #ifndef SwiftSnails_core_transfer_framework_worker_init_h_
 #define SwiftSnails_core_transfer_framework_worker_init_h_
 #include "../../../utils/Barrier.h"
+#include "../../../utils/Timer.h"
 #include "../ServerWorkerRoute.h"
 #include "../message_classes.h"
 #include "../../transfer/transfer.h"
@@ -19,6 +20,7 @@ namespace swift_snails {
  * register message_classes  and response_handlers
  */
 //template<typename Route>
+
 class NodeTransferInit {
 public:
     explicit NodeTransferInit()
