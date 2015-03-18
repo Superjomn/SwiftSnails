@@ -25,13 +25,16 @@ class MasterTransferInit {
 public:
     explicit MasterTransferInit() {
         LOG(INFO) << "init Master ...";
-        // register master's keys to config
-        global_config().register_config("expected_node_num");
-        global_config().register_config("master_time_out");
         // TODO should read from config file
         expected_node_num = global_config().get_config("expected_node_num").to_int32();     // nodes include server and worker
-        _timer.set_time_span(
-            global_config().get_config("master_time_out").to_int32() ); 
+        int time_span = global_config().get_config("master_time_out").to_int32();
+        LOG(INFO) << "get time_span:\t" << time_span;
+        _timer.set_time_span( time_span); 
+
+        LOG(WARNING) << "local register server ...";
+        std::string addr = gtransfer.recv_addr();
+        gtransfer.route().register_node_(true, std::move(addr));
+
         _timer.start();
     }
 
@@ -45,7 +48,7 @@ public:
         LOG(WARNING) << "register message class ...";
     	auto handler = node_init_address;
         gtransfer.message_class().add(NODE_INIT_ADDRESS, std::move(handler));
-        LOG(WARNING) << "end register message class";
+        //LOG(WARNING) << "end register message class";
     }
 
     void wait_for_workers_register_route() {
@@ -58,8 +61,8 @@ public:
         // set a thread to try unblock current thread 
         // when timeout 
         void_lamb timeout_try_unblock = [this] {
-            LOG(WARNING) << "try unblock is called ...";
-            LOG(WARNING) << "wait for 2 s";
+            //LOG(WARNING) << "try unblock is called ...";
+            LOG(WARNING) << "master will wait for " << _timer.time_span() << " s";
             std::this_thread::sleep_for( std::chrono::milliseconds(1000 + 1000 * _timer.time_span() ));
             void_lamb handle = []{};
             _wait_init_barrier.unblock(handle);

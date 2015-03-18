@@ -280,9 +280,9 @@ Transfer<Route> &global_transfer() {
             transfer.listen();
             // TODO read from config
             // register master server
-            LOG(WARNING) << "local register server ...";
-            std::string addr = global_config().get_config("listen_addr").to_string();
-            transfer.route().register_node_(true, std::move(addr));
+            //LOG(WARNING) << "local register server ...";
+            //std::string addr = global_config().get_config("listen_addr").to_string();
+            //transfer.route().register_node_(true, std::move(addr));
             transfer.init_async_channel(async_thread_num);
             transfer.set_thread_num(service_thread_num);
             transfer.service_start();
