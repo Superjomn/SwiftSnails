@@ -13,6 +13,7 @@
 #include "../ServerWorkerRoute.h"
 #include "../../transfer/transfer.h"
 namespace swift_snails {
+
 /*
  * when timeout or all the nodes has been registered
  */
@@ -24,10 +25,13 @@ class MasterTransferInit {
 public:
     explicit MasterTransferInit() {
         LOG(INFO) << "init Master ...";
+        // register master's keys to config
+        global_config().register_config("expected_node_num");
+        global_config().register_config("master_time_out");
         // TODO should read from config file
-        registered_node_num = 0;
-        expected_node_num = 10;     // nodes include server and worker
-        _timer.set_time_span(10); // 5 minites
+        expected_node_num = global_config().get_config("expected_node_num").to_int32();     // nodes include server and worker
+        _timer.set_time_span(
+            global_config().get_config("master_time_out").to_int32() ); 
         _timer.start();
     }
 

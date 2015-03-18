@@ -10,6 +10,7 @@
 #include "../../utils/common.h"
 #include "../AsynExec.h"
 #include "../../utils/SpinLock.h"
+#include "../../utils/ConfigParser.h"
 #include "Listener.h"
 namespace swift_snails {
 
@@ -274,13 +275,13 @@ Transfer<Route> &global_transfer() {
 		[]{
             LOG(WARNING) << "init transfer ...";
             // TODO read from config file
-            int async_thread_num = 4;
-            int service_thread_num = 2;
+            int async_thread_num = global_config().get_config("async_exec_num").to_int32();
+            int service_thread_num = global_config().get_config("listen_thread_num").to_int32();
             transfer.listen();
             // TODO read from config
             // register master server
             LOG(WARNING) << "local register server ...";
-            std::string addr = "tcp://127.0.0.1:8080";
+            std::string addr = global_config().get_config("listen_addr").to_string();
             transfer.route().register_node_(true, std::move(addr));
             transfer.init_async_channel(async_thread_num);
             transfer.set_thread_num(service_thread_num);
