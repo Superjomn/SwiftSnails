@@ -40,3 +40,7 @@ TEST(_string, format_string) {
     ASSERT_EQ(a, string("hello Superjom, your age is 25"));
 
 }
+
+TEST(_string, headswith) {
+    ASSERT_TRUE( headswith("tcp://127.0.0.1:8080", "tcp://"));
+}
