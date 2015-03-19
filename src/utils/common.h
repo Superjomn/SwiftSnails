@@ -14,6 +14,8 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <mutex>
+#include <condition_variable>
 #include <memory>
 #include <queue>
 #include <thread>
