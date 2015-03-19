@@ -19,6 +19,7 @@ THIRD_LIB=$(LOCAL_ROOT)/glog/lib/libglog.a  $(LOCAL_ROOT)/zeromq/lib/libzmq.a
 .PHONY:all clean test cur
 
 $(BIN)/test :  main.cpp 
+	mkdir -p $(BIN)
 	$(CXX) main.cpp $(THIRD_INCPATH) -L$(GTEST_HOME)/lib/.libs -Xlinker $(THIRD_LIB)  $(CXXFLAGS) -o $(BIN)/test
 
 
