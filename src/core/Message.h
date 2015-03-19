@@ -15,7 +15,7 @@ struct BasicMetaMessage {
 // meta message of MasterServer and MasterClient
 struct MetaMessage : public BasicMetaMessage {
     int client_id = -1;
-    index_t message_id = -1;
+    int message_id = -1;    // TODO this type ok?
 
     explicit MetaMessage() { }
 
