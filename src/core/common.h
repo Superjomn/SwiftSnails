@@ -20,7 +20,7 @@
 #include <arpa/inet.h>
 #include "../utils/common.h"
 #include "../utils/string.h"
-#include "../utils/buffer.h"
+#include "../utils/Buffer.h"
 #include "Message.h"
 namespace swift_snails {
 
