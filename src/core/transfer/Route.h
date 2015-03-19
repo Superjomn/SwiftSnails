@@ -10,7 +10,7 @@
 #include "../../utils/common.h"
 #include "../AsynExec.h"
 #include "../../utils/SpinLock.h"
-#include "../../utils/hashmap.h"
+//#include "../../utils/hashmap.h"
 #include "../../utils/RWLock.h"
 namespace swift_snails {
 
