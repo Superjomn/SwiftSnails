@@ -56,7 +56,7 @@ public:
     void wait_for_workers_register_route() {
         std::function<bool()> cond_func = [this]() {
             return ( _timer.timeout() 
-                || registered_node_num == expected_node_num);
+                || registered_node_num >= expected_node_num);
         };
 
         void_lamb set_flag = [] { };
@@ -66,10 +66,13 @@ public:
             //LOG(WARNING) << "try unblock is called ...";
             LOG(WARNING) << "master will wait for " << _timer.time_span() << " s";
             std::this_thread::sleep_for( std::chrono::milliseconds(1000 + 1000 * _timer.time_span() ));
+            LOG(WARNING) << "master wait *timeout* and unblock current process";
             void_lamb handle = []{};
             _wait_init_barrier.unblock(handle);
         };
-        gtransfer.async_channel()->push(std::move(timeout_try_unblock));
+        std::thread timeout_t(timeout_try_unblock);
+        timeout_t.detach();
+        //gtransfer.async_channel()->push(std::move(timeout_try_unblock));
         _wait_init_barrier.block(set_flag, cond_func); 
     }
 
@@ -115,10 +118,13 @@ protected:
         CHECK(id >= 0);
         // check status 
         // and notify the main thread to check the cond_variable 
-        if(registered_node_num >= expected_node_num - 2) {
-            void_lamb handler = []{};
-            _wait_init_barrier.unblock(handler);
-        }
+        //if(registered_node_num >= expected_node_num - 2) {
+        void_lamb handler = [this]{
+            LOG(INFO) << ".. registered_node_num\t" << registered_node_num;
+            LOG(INFO) << ".. expected_node_num\t" << expected_node_num;
+            };
+        _wait_init_barrier.unblock(handler);
+        //}
     };
 
 private:
