@@ -40,7 +40,7 @@ public:
         for (const auto& rcd : route._send_addrs) {
             bb << rcd.first;    // id
             CHECK(headswith(rcd.second, "tcp://"));  // skip "tcp://"
-            std::string ip_no_head = rcd.second.substr(7);
+            std::string ip_no_head = rcd.second.substr(6);
             IP ip(ip_no_head);
             bb << ip;
         }
