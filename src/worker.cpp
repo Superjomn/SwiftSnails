@@ -29,6 +29,7 @@ int main(int argc, char* argv[]) {
 
     //global_config().register_config("listen_addr", "");
     global_config().register_config("master_addr");
+    global_config().register_config("init_timeout", "10");
     global_config().load_conf(config_path);
     global_config().parse();
 
