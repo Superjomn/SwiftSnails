@@ -1,6 +1,6 @@
 #include <iostream>
 #include "utils/CMDLine.h"
-#include "core/transfer_framework/master/init.h"
+#include "core/system/master/init.h"
 using namespace swift_snails;
 using namespace std;
 using namespace fms;

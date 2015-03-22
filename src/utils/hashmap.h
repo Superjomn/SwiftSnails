@@ -8,13 +8,11 @@
 //
 #ifndef SwiftSnails_utils_hash_map_h_
 #define SwiftSnails_utils_hash_map_h_
-#include "common.h"
 #include <iostream>
 #include <sparsehash/sparse_hash_map>
-#include <iostream>
 #include <sparsehash/dense_hash_map>
-#include "../utils/common.h"
-using std::hash; 
+#include "common.h"
+//using std::hash; 
 using google::sparse_hash_map;
 using google::dense_hash_map;
 
