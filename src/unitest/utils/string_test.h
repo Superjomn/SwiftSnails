@@ -29,6 +29,17 @@ TEST(_string, split) {
     ASSERT_EQ(cols1[0], "hello");
     ASSERT_EQ(cols1[1], "world");
     ASSERT_EQ(cols1[2], "bb");
+
+    string c = "hello \
+    world \
+    yes go";
+
+    vector<string> cols2 = split(c, "\n ");
+
+    ASSERT_EQ(cols2[0], "hello");
+    ASSERT_EQ(cols2[1], "world");
+    ASSERT_EQ(cols2[2], "yes");
+    ASSERT_EQ(cols2[3], "go");
 }
 
 TEST(_string, format_string) {

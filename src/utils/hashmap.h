@@ -41,13 +41,13 @@ struct _eqstr
 template<typename K, typename V>
 class SparseHashMap {
 public:
-    using map_t = sparse_hash_map<K, V, hash<K>>;
+    using map_t = sparse_hash_map<K, V, std::hash<K>>;
     map_t& get_map() {
         return map;
     }
 
 private:
-    sparse_hash_map<K, V, hash<K>> map;
+    sparse_hash_map<K, V, std::hash<K>> map;
 };
 /*
  * a specification wrapper for SparseHashMap<const char*, V>
@@ -58,7 +58,7 @@ template<typename V>
 class SparseHashMap<const char*, V> {
 
 public:
-    using map_t =  sparse_hash_map<const char*, V, hash<const char*>, _eqstr>;
+    using map_t =  sparse_hash_map<const char*, V, std::hash<const char*>, _eqstr>;
 
     map_t& get_map() {
         return map;
@@ -72,7 +72,7 @@ private:
 template<typename K, typename V>
 class DenseHashMap {
 public:
-    using map_t = dense_hash_map<K, V, hash<K>>;
+    using map_t = dense_hash_map<K, V, std::hash<K>>;
 
     explicit DenseHashMap() {
         map.set_empty_key(0);
@@ -89,7 +89,7 @@ private:
 template<typename V>
 class DenseHashMap<const char*, V> {
 public:
-    using map_t = dense_hash_map<const char*, V, hash<const char*>, _eqstr>;
+    using map_t = dense_hash_map<const char*, V, std::hash<const char*>, _eqstr>;
 
     explicit DenseHashMap() {
         map.set_empty_key(NULL);
