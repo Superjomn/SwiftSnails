@@ -21,10 +21,6 @@ public:
     // num_nodes: initial number of nodes
     explicit HashFrag() 
     { 
-        std::call_once( _config_register_flag,
-            [] {
-                global_config().register_config("frag_num");
-            });
     }
     /*
      * number of nodes should be setted by master
@@ -40,7 +36,7 @@ public:
     void init() {
         CHECK(num_nodes() > 0);
         //num_nodes = global_config().register_config("init_node_num").to_int32();
-        frag_num = global_config().register_config("frag_num").to_int32();
+        frag_num = global_config().get_config("frag_num").to_int32();
         _map_table.reset(new index_t[num_frags()]);
         // divide the fragments
         int num_frag_each_node = int(frag_num / num_nodes);
@@ -100,7 +96,6 @@ private:
     std::unique_ptr _map_table;
 
 };  // class HashFrag
-static std::once_flag BasicHashFrag::once_flag;
 
 
 
