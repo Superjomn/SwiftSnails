@@ -37,21 +37,11 @@ public:
 
 };  // class PullMethod
 
+};  // end namespace sparse_table_test
+
+
 TEST(SparseTable, access_method) {
+    using namespace sparse_table_test;
     table_t table;
     auto access = make_pull_access<table_t, PullMethod>(table);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-};  // end namespace sparse_table_test
-

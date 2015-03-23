@@ -12,13 +12,17 @@
 #include "core/Message_test.h"
 #include "core/BasicChannel_test.h"
 #include "core/AsynExec_test.h"
+
+// transfer
 #include "core/transfer/Route_test.h"
 #include "core/transfer/transfer_test.h"
-//#include "core/transfer/Sender_test.h"
-//#include "core/transfer/Receiver_test.h"
-//#include "core/transfer/Transfer_test.h"
-// a sender send a message to a receiver
-//#include "core/transfer/test.h"
+
+// parameter
+#include "core/parameter/sparsetable_test.h"
+#include "core/parameter/sparse_access_method_test.h"
+
+// hashfrag
+#include "core/parameter/hashfrag_test.h"
 
 int main(int argc, char **argv) {  
 

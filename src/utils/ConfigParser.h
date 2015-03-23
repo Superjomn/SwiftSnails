@@ -57,6 +57,9 @@ public:
         parse_conf(_conf_path);
     }
 
+    void clear() {
+        _dic.clear();
+    }
 
     void register_config(const std::string &key, const std::string &value = "") {
         CHECK(!key.empty());

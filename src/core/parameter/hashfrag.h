@@ -3,10 +3,7 @@
 namespace swift_snails {
 
 // get hash code
-template<typename Key>
-int hash_fn(const Key& key);
-
-uint64_t hash_fn<uint64_t>(uint64_t x) {
+uint64_t hash_fn(uint64_t x) {
     return get_hash_code(x);
 }
 
@@ -17,9 +14,9 @@ uint64_t hash_fn<uint64_t>(uint64_t x) {
 template<typename Key>
 class BasicHashFrag : public VirtualObject {
 public:
-    typedef typename Key key_t;
+    typedef Key key_t;
     // num_nodes: initial number of nodes
-    explicit HashFrag() 
+    explicit BasicHashFrag() 
     { 
     }
     /*
@@ -36,18 +33,18 @@ public:
     void init() {
         CHECK(num_nodes() > 0);
         //num_nodes = global_config().register_config("init_node_num").to_int32();
-        frag_num = global_config().get_config("frag_num").to_int32();
+        _num_frags = global_config().get_config("frag_num").to_int32();
         _map_table.reset(new index_t[num_frags()]);
         // divide the fragments
-        int num_frag_each_node = int(frag_num / num_nodes);
-        for(int i = 0; i < frag_num; i ++) {
+        int num_frag_each_node = int(num_frags() / num_nodes() );
+        for(int i = 0; i < num_frags(); i ++) {
             _map_table[i] = int(i / num_frag_each_node);
         }
     }
 
     int to_node_id(const key_t &key) {
         CHECK(_map_table) << "map_table has not been inited";
-        int frag_id = hash_fn(key) % frag_num;
+        int frag_id = hash_fn(key) % num_frags();
         int node_id = _map_table[frag_id];
         return node_id;
     }
@@ -85,6 +82,15 @@ public:
         return _num_frags;
     }
 
+    friend std::ostream& operator<< (std::ostream &os, BasicHashFrag<key_t> &frag) {
+        os << "hash frag" << std::endl;
+        for(int i = 0; i < frag.num_frags(); i ++) {
+            os << frag._map_table[i] << " ";
+        }
+        os << std::endl;
+        return os;
+    }
+
 
 private:
     int _num_nodes = 0;
@@ -92,8 +98,7 @@ private:
     // record visit frequency
     //std::map<int, NodeVisitFreq> visit_freqs;
     // register config 
-    static std::once_flag _config_register_flag;
-    std::unique_ptr _map_table;
+    std::unique_ptr<index_t[]> _map_table;
 
 };  // class HashFrag
 
