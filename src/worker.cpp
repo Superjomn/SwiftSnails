@@ -1,6 +1,7 @@
 #include <iostream>
 #include "utils/CMDLine.h"
 #include "core/system/worker/init.h"
+#include "core/system/worker/init_config.h"
 using namespace swift_snails;
 using namespace std;
 using namespace fms;
@@ -27,9 +28,8 @@ int main(int argc, char* argv[]) {
     }
     std::string config_path = cmdline.getValue(param_config_path);
 
-    //global_config().register_config("listen_addr", "");
-    global_config().register_config("master_addr");
-    global_config().register_config("init_timeout", "10");
+    worker_init_configs();
+
     global_config().load_conf(config_path);
     global_config().parse();
 

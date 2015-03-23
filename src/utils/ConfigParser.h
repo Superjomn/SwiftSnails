@@ -121,15 +121,16 @@ private:
 // global_config need to be inited
 ConfigParser& global_config() {
     static ConfigParser config;
-	static std::once_flag flag;
-    std::call_once(flag,
-        []{
-            // common key between master and worker
-            config.register_config("listen_addr", "");
-            config.register_config("async_exec_num", "5");
-            config.register_config("listen_thread_num", "2");
-        });
     return config;
+}
+
+
+void init_configs(const std::string& configs) {
+    std::vector<std::string> _configs = split(configs, " \n");
+
+    for (auto& c : _configs) {
+        global_config().register_config(c);
+    }
 }
 
 }; // end namespace swift_snails

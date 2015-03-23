@@ -1,6 +1,7 @@
 #include <iostream>
-#include "utils/CMDLine.h"
+#include "utils/all.h"
 #include "core/system/master/init.h"
+#include "core/system/master/init_config.h"
 using namespace swift_snails;
 using namespace std;
 using namespace fms;
@@ -27,10 +28,7 @@ int main(int argc, char* argv[]) {
     }
     std::string config_path = cmdline.getValue(param_config_path);
 
-    // register master's keys to config
-    //global_config().register_config("listen_addr", "");
-    global_config().register_config("expected_node_num", "2");
-    global_config().register_config("master_time_out", "2");
+    master_init_configs();
 
     global_config().load_conf(config_path);
 
