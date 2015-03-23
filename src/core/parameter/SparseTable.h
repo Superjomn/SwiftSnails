@@ -9,12 +9,9 @@ public:
     typedef Key     key_t;
     typedef Value   value_t;
 
+    // not thread safe!
     SparseHashMap<key_t, value_t>& data() {
         return _data;
-    }
-
-    std::mutex& mutex() {
-        return _mutex;
     }
 
     index_t size() const {
@@ -62,7 +59,7 @@ private:
     int _shard_num = 1;
 };  // class SparseTable
 
-
+/*
 template<typename Table, typename AccessMethod>
 class PullAccessAgent {
 public:
@@ -130,7 +127,7 @@ public:
         return _table->to_shard_id(key);
     }
 
-    void merge_push_value(const key_t &key, push_val_t push_val, const push_val_t &other_push_val) {
+    void merge_push_value(const key_t &key, push_val_t &push_val, const push_val_t &other_push_val) {
         _access_method.merge_push_value(key, push_val, other_push_val);
     }
     // update parameters
@@ -157,6 +154,7 @@ private:
     access_method_t _access_method;
 
 };  // class PushAccessAgent
+*/
 
 
 

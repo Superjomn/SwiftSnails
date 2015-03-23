@@ -35,6 +35,10 @@ public:
     typedef typename PushVal    push_val_t;
     typedef typename PushParam  push_param_t;
 
+    virtual void merge_push_value(const key_t& key, push_val_t &push_val, const push_val_t &other_push_val) = 0;
+
+    virutal apply_push_value(const key_t& 
+
 };  // class PushAccessMethod
 
 
