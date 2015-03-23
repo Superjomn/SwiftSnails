@@ -49,3 +49,17 @@ TEST(SparseTable, find) {
     ASSERT_EQ(val, 1);
 }
 
+TEST(SparseTable, complex_value_struct) {
+    struct Val {
+        int a;
+        float b;
+    };
+
+    SparseTable<index_t, Val> table;
+
+    Val a; a.a = 1; a.b = 0.5;
+
+    table.assign(23232, a);
+}
+
+
