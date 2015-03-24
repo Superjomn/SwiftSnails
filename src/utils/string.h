@@ -84,6 +84,42 @@ std::string format_string(const char* format, ARGS... args) {
     return std::move(tmp_s);
 }
 
+
+class LineFileReader : public VirtualObject {
+public:
+    ~LineFileReader() {
+        ::free(_buffer);
+    }
+    char* getline(FILE* f) {
+        return this->getdelim(f, '\n');
+    }
+    char* getdelim(FILE* f, char delim) {
+        ssize_t ret = ::getdelim(&_buffer, &_buf_size, delim, f);
+        if (ret >= 0) {
+            if (ret >= 1 && _buffer[ret - 1] == delim) {
+                _buffer[--ret] = 0;
+            }
+            _length = (size_t)ret;
+            return _buffer;
+        } else {
+            _length = 0;
+            CHECK(feof(f));
+            return NULL;
+        }
+    }
+    char* get() {
+        return _buffer;
+    }
+    size_t length() {
+        return _length;
+    }
+private:
+    char* _buffer = NULL;
+    size_t _buf_size = 0;
+    size_t _length = 0;
+};
+
+
 }; // end namespace swift_snails
 
 #endif 

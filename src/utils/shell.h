@@ -1,47 +1,41 @@
-//
-//  shell.h
-//  SwiftSnails
-//
-//  Created by Chunwei on 12/25/14.
-//  Copyright (c) 2014 Chunwei. All rights reserved.
-//
-#ifndef SwiftSnails_utils_shell_h_
-#define SwiftSnails_utils_shell_h_
-#include "../SwiftSnails/common.h"
+#pragma once
+
 #include "common.h"
 #include "string.h"
 namespace swift_snails {
 
 class GlobalShell : public VirtualObject {
 public:
-    std::shared_ptr<FILE> make_pipe(const char* cmd, const char* mode) {
-        if(_verbose) 
+
+    bool verbose() {
+        return _verbose;
+    }
+    void set_verbose(bool x) {
+        _verbose = x;
+    }
+    shared_ptr<FILE> make_pipe(const char* cmd, const char* mode) {
+        if (_verbose) {
             LOG(INFO) << "Making pipe [ " << cmd << " ] with mode [ " << mode << " ]";
-        std::shared_ptr<ManagedPipe> pipe = std::make_shared<ManagedPipe>();
+        }
+        shared_ptr<ManagedPipe> pipe;
+        pipe = std::make_shared<ManagedPipe>();
         pipe->cmd = cmd;
         pipe->verbose = _verbose;
-        PCHECK(pipe->fp = 
-            guarded_popen(
-                format_string("set -o pipefail; %s", cmd).c_str(), mode))
+        PCHECK(pipe->fp = guarded_popen(format_string("set -o pipefail; %s", cmd).c_str(), mode))
             << "command=[ " << cmd << " ] mode=[ " << mode << " ]";
-        return std::shared_ptr<FILE>(pipe, pipe->fp);
+        return shared_ptr<FILE>(pipe, pipe->fp);
     }
-
     void execute(const char* cmd) {
         make_pipe(cmd, "w");
     }
-
     std::string get_command_output(const char* cmd) {
-        std::shared_ptr<FILE> pipe = make_pipe(cmd, "r");
-        fseek(pipe, 0, SEEK_END);
-        int len = ftell(pipe);  
-        rewind(pipe);
-        std::shared_ptr<char> content = new char[len+1];
-        len = fread(content, sizeof(char), len, pipe);
-        content[len] = '\0'; 
-        return std::move(std::string(content));
+        shared_ptr<FILE> pipe = make_pipe(cmd, "r");
+        LineFileReader reader;
+        if (reader.getdelim(&*pipe, 0)) {
+            return reader.get();
+        }
+        return "";
     }
-
 private:
     struct ManagedPipe {
         FILE* fp = NULL;
@@ -49,21 +43,26 @@ private:
         bool verbose = false;
         ~ManagedPipe() {
             if (fp) {
-                if (verbose) LOG(INFO) << "Closing pipe [ " << cmd << " ]";
-                int err = guarded_pclose(fp);
-                PCHECK(err == 0 || err == (128 + SIGPIPE) * 256 || 
-                        err == -1 && errno == ECHILD)
+                if (verbose) {
+                    LOG(INFO) << "Closing pipe [ " << cmd << " ]";
+                }
+                int err = guarded_pclose(fp);;
+                PCHECK(err == 0 || err == (128 + SIGPIPE) * 256 || err == -1 && errno == ECHILD)
                     << "err=" << err << " command=[ " << cmd << " ]";
-                if(errno = ECHILD) LOG(WARNING) << "errno is ECHILD";
+                if (errno == ECHILD) {
+                    LOG(WARNING) << "errno is ECHILD";
+                }
             }
         }
     };
 
+    bool _verbose = false;
+};
 
-}; // class GlobalShell
-
+inline GlobalShell& global_shell() {
+    static GlobalShell shell;
+    return shell;
+}
 
 }; // end namespace swift_snails
-#endif
-
 
