@@ -97,7 +97,7 @@ public:
     void register_local_node_to_master() {
         //auto& gtransfer = global_transfer<ServerWorkerRoute>();
         LOG(INFO) << "local listen addr:\t" << gtransfer.recv_addr();
-        IP ip(gtransfer.recv_addr());
+        Addr ip(gtransfer.recv_addr());
         LOG(INFO) << "after init ip.to_string():\t" << ip.to_string();
         //ip.port = gtransfer.recv_port();
         // TODO read from config
@@ -106,6 +106,7 @@ public:
         Request request;
         request.meta.message_class = MSG_CLS::NODE_INIT_ADDRESS;
         request.meta.client_id = -1;
+        request.meta.addr = ip;
         request.cont << ip;
         // response-callback
         request.call_back_handler = [this](std::shared_ptr<Request> response) {

@@ -21,7 +21,7 @@
 #include "../utils/common.h"
 #include "../utils/string.h"
 #include "../utils/Buffer.h"
-#include "Message.h"
+//#include "Message.h"
 namespace swift_snails {
 
 template<class FUNC, class... ARGS>
@@ -112,14 +112,21 @@ std::string get_local_ip() {
     return std::move(ip);
 }
 
-struct IP {
+struct Addr {
     uint16_t addr[4] = {0};
     uint16_t port = 0;
 
-    IP() {
+    Addr() {
     }
 
-    IP(const std::string &ip) {
+    Addr(const Addr& other) {
+        port = other.port;
+        for(int i = 0; i < 4; i ++) {
+            addr[i] = other.addr[i];
+        }
+    }
+
+    Addr(const std::string &ip) {
         from_string(ip);
     }
     void from_string(const std::string &_addr) {
@@ -149,98 +156,21 @@ struct IP {
         ss << ":" << port;
         return std::move(ss.str());
     }
-    friend BinaryBuffer& operator<<(BinaryBuffer& bb, const IP& ip) {
+    friend BinaryBuffer& operator<<(BinaryBuffer& bb, const Addr& ip) {
         for(int i = 0; i < 4; i++) {
             bb << ip.addr[i];
         }
         bb << ip.port;
         return bb;
     }
-    friend BinaryBuffer& operator>>(BinaryBuffer& bb, IP& ip) {
+    friend BinaryBuffer& operator>>(BinaryBuffer& bb, Addr& ip) {
         for(int i = 0; i < 4; i++) {
             bb >> ip.addr[i];
         }
         bb >> ip.port;
         return bb;
     }
-}; // struct IP
-
-struct Request;
-
-/*
- * higher level message package
- */
-struct Package : public VirtualObject {
-    explicit Package() { };
-    Package(Request&);
-    Message meta;
-    Message cont;
-
-    std::string status() {
-        using namespace std;
-        stringstream ss;
-        ss << "meta.size:\t" << meta.size() << endl;
-        ss << "cont.size:\t" << cont.size() << endl;
-        return std::move(ss.str());
-    }   
-};
-
-
-struct Request {
-
-    typedef std::function<void(std::shared_ptr<Request>)> response_call_back_t;
-
-    explicit Request() { }
-    Request(const Request&) = delete;
-
-    Request(Package &&pkg) {
-        //LOG(INFO) << "int Request pkg.status:\t" << pkg.status();
-        CHECK(pkg.meta.size() == sizeof(MetaMessage));
-        // TODO avoid this memory copy
-        memcpy(&meta, &pkg.meta.zmg(), sizeof(MetaMessage));
-        // copy content
-        CHECK(cont.size() == 0);
-        cont.set(pkg.cont.buffer(), pkg.cont.size());
-        //pkg.cont.moveTo(cont);
-    }
-
-    Request(Request &&other) {
-        meta = std::move(other.meta);
-        cont = std::move(other.cont);
-        call_back_handler = std::move(other.call_back_handler);
-    }
-
-    int message_id() const {
-        return meta.message_id;
-    }
-
-    void set_msg_id(int id) {
-        meta.message_id = id;
-    }
-    // to tell whether this message
-    // is a request from other node 
-    // or response from the receiver
-    bool is_response() const {
-        return meta.message_class == -1;
-    }
-
-    ~Request() {
-        //LOG(INFO) << "deconstruct Request!";
-    }
-    // datas
-    MetaMessage meta;
-    BinaryBuffer cont;
-    response_call_back_t call_back_handler;
-};
-
-/*
- * zmq network package
- */
-Package::Package(Request& request) {
-    meta.assign((char*)&request.meta, sizeof(MetaMessage));
-    cont.assign(request.cont.buffer(), request.cont.size());
-}
-
+}; // struct Addr
 
 };  // end namespace swift_snails
 #endif

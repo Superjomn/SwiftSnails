@@ -63,4 +63,5 @@ TEST(string, LineFileReader_get_lines) {
     while(file.getline(f)) {
         LOG(INFO) << "line:\t" << file.get();
     }
+    fclose(f);
 }
