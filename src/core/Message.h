@@ -1,7 +1,7 @@
 #ifndef SwiftSnails_core_Message_h_
 #define SwiftSnails_core_Message_h_
-#include "../utils/common.h"
-#include "../utils/Buffer.h"
+#include "../utils/all.h"
+#include "common.h"
 
 namespace swift_snails {
 
@@ -9,7 +9,8 @@ typedef std::function<void(int shared_id, BinaryBuffer& ibb, BinaryBuffer& obb)>
 
 // every MessageMeta should have a message_class
 struct BasicMetaMessage {
-    index_t message_class = 0; // server-side function
+    int message_class = 0; // server-side function
+    IP addr;    // to register new worker nodes
 };
 
 // meta message of MasterServer and MasterClient
@@ -23,12 +24,14 @@ struct MetaMessage : public BasicMetaMessage {
     	message_class = other.message_class;
     	client_id = other.client_id;
     	message_id = other.message_id;
+        addr = other.addr;
     }
 
     MetaMessage& operator= (const MetaMessage &other) {
     	message_class = other.message_class;
     	client_id = other.client_id;
     	message_id = other.message_id;
+        addr = other.addr;
     	return *this;
     }
 };
@@ -128,6 +131,87 @@ private:
         free(data);
     }
 };  // end class Message
+
+
+struct Request;
+
+/*
+ * higher level message package
+ */
+struct Package : public VirtualObject {
+    explicit Package() { };
+    Package(Request&);
+    Message meta;
+    Message cont;
+
+    std::string status() {
+        using namespace std;
+        stringstream ss;
+        ss << "meta.size:\t" << meta.size() << endl;
+        ss << "cont.size:\t" << cont.size() << endl;
+        return std::move(ss.str());
+    }   
+};
+
+
+struct Request {
+
+    typedef std::function<void(std::shared_ptr<Request>)> response_call_back_t;
+
+    explicit Request() { }
+    Request(const Request&) = delete;
+
+    Request(Package &&pkg) {
+        //LOG(INFO) << "int Request pkg.status:\t" << pkg.status();
+        CHECK(pkg.meta.size() == sizeof(MetaMessage));
+        // TODO avoid this memory copy
+        memcpy(&meta, &pkg.meta.zmg(), sizeof(MetaMessage));
+        // copy content
+        CHECK(cont.size() == 0);
+        cont.set(pkg.cont.buffer(), pkg.cont.size());
+        //pkg.cont.moveTo(cont);
+    }
+
+    Request(Request &&other) {
+        meta = std::move(other.meta);
+        cont = std::move(other.cont);
+        call_back_handler = std::move(other.call_back_handler);
+    }
+
+    int message_id() const {
+        return meta.message_id;
+    }
+
+    void set_msg_id(int id) {
+        meta.message_id = id;
+    }
+    // to tell whether this message
+    // is a request from other node 
+    // or response from the receiver
+    bool is_response() const {
+        return meta.message_class == -1;
+    }
+
+    ~Request() {
+        //LOG(INFO) << "deconstruct Request!";
+    }
+    // datas
+    MetaMessage meta;
+    BinaryBuffer cont;
+    response_call_back_t call_back_handler;
+};
+
+/*
+ * zmq network package
+ */
+Package::Package(Request& request) {
+    meta.assign((char*)&request.meta, sizeof(MetaMessage));
+    cont.assign(request.cont.buffer(), request.cont.size());
+}
+
+
+
+
 
 };  // end namespace swift_snails
 #endif

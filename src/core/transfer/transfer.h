@@ -7,10 +7,9 @@
 //
 #ifndef SwiftSnails_transfer_transfer_h_
 #define SwiftSnails_transfer_transfer_h_
-#include "../../utils/common.h"
+#include "../../utils/all.h"
+#include "../Message.h"
 #include "../AsynExec.h"
-#include "../../utils/SpinLock.h"
-#include "../../utils/ConfigParser.h"
 #include "Listener.h"
 namespace swift_snails {
 

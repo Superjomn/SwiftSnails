@@ -7,8 +7,7 @@
 //
 #ifndef SwiftSnails_core_transfer_framework_master_init_h_
 #define SwiftSnails_core_transfer_framework_master_init_h_
-#include "../../../utils/Barrier.h"
-#include "../../../utils/Timer.h"
+#include "../../../utils/all.h"
 #include "../message_classes.h"
 #include "../ServerWorkerRoute.h"
 #include "../../transfer/transfer.h"
