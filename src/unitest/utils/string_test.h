@@ -4,13 +4,13 @@
 using namespace std;
 using namespace swift_snails;
 
-TEST(_string, trim) {
+TEST(string, trim) {
     string a = "hello world\t \t\r";
     a = trim(a);
     ASSERT_EQ(a, string("hello world"));
 }
 
-TEST(_string, split) {
+TEST(string, split) {
     string a = "hello world";
     vector<string> cols = split(a, " ");
     ASSERT_EQ(cols.size(), 2);
@@ -42,7 +42,7 @@ TEST(_string, split) {
     ASSERT_EQ(cols2[3], "go");
 }
 
-TEST(_string, format_string) {
+TEST(string, format_string) {
     string s = "hello %s, your age is %d";
     string a;
 
@@ -52,6 +52,15 @@ TEST(_string, format_string) {
 
 }
 
-TEST(_string, headswith) {
+TEST(string, headswith) {
     ASSERT_TRUE( headswith("tcp://127.0.0.1:8080", "tcp://"));
+}
+
+TEST(string, LineFileReader_get_lines) {
+    FILE* f = fopen("1.txt", "r");
+    LineFileReader file; 
+
+    while(file.getline(f)) {
+        LOG(INFO) << "line:\t" << file.get();
+    }
 }
