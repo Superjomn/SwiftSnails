@@ -112,21 +112,21 @@ std::string get_local_ip() {
     return std::move(ip);
 }
 
-struct IP {
+struct Addr {
     uint16_t addr[4] = {0};
     uint16_t port = 0;
 
-    IP() {
+    Addr() {
     }
 
-    IP(const IP& other) {
+    Addr(const Addr& other) {
         port = other.port;
         for(int i = 0; i < 4; i ++) {
             addr[i] = other.addr[i];
         }
     }
 
-    IP(const std::string &ip) {
+    Addr(const std::string &ip) {
         from_string(ip);
     }
     void from_string(const std::string &_addr) {
@@ -156,21 +156,21 @@ struct IP {
         ss << ":" << port;
         return std::move(ss.str());
     }
-    friend BinaryBuffer& operator<<(BinaryBuffer& bb, const IP& ip) {
+    friend BinaryBuffer& operator<<(BinaryBuffer& bb, const Addr& ip) {
         for(int i = 0; i < 4; i++) {
             bb << ip.addr[i];
         }
         bb << ip.port;
         return bb;
     }
-    friend BinaryBuffer& operator>>(BinaryBuffer& bb, IP& ip) {
+    friend BinaryBuffer& operator>>(BinaryBuffer& bb, Addr& ip) {
         for(int i = 0; i < 4; i++) {
             bb >> ip.addr[i];
         }
         bb >> ip.port;
         return bb;
     }
-}; // struct IP
+}; // struct Addr
 
 };  // end namespace swift_snails
 #endif

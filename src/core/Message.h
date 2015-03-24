@@ -10,7 +10,7 @@ typedef std::function<void(int shared_id, BinaryBuffer& ibb, BinaryBuffer& obb)>
 // every MessageMeta should have a message_class
 struct BasicMetaMessage {
     int message_class = 0; // server-side function
-    IP addr;    // to register new worker nodes
+    Addr addr;    // to register new worker nodes
 };
 
 // meta message of MasterServer and MasterClient

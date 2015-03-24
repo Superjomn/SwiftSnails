@@ -17,8 +17,8 @@ TEST(core_common, zmq_bind_random_port) {
     PCHECK(0 == zmq_ctx_destroy(_zmq_ctx));
 }
 
-TEST(core_common, IP) {
-    IP ip;
+TEST(core_common, Addr) {
+    Addr ip;
 
     ip.from_string("127.0.0.1");
     ip.port = 8080;

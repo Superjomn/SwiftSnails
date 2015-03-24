@@ -99,7 +99,7 @@ protected:
 
     transfer_t::msgcls_handler_t node_init_address = [this](std::shared_ptr<Request> request, Request& response) {
         LOG(INFO) << "get node register";
-        IP ip;
+        Addr ip;
         request->cont >> ip;
         std::string addr = "tcp://" + ip.to_string();
         LOG(INFO) << "node's addr:\t" << addr;

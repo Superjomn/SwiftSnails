@@ -41,7 +41,7 @@ public:
             bb << rcd.first;    // id
             CHECK(headswith(rcd.second, "tcp://"));  // skip "tcp://"
             std::string ip_no_head = rcd.second.substr(6);
-            IP ip(ip_no_head);
+            Addr ip(ip_no_head);
             bb << ip;
         }
         return bb;
@@ -53,7 +53,7 @@ public:
         bb >> route._worker_num;
 
         int id;
-        IP ip;
+        Addr ip;
 
         rwlock_write_guard lock(route._read_write_lock);
         for(int i = 0; i < route._server_num + route._worker_num; i++) {
