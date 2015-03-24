@@ -106,6 +106,7 @@ public:
         Request request;
         request.meta.message_class = MSG_CLS::NODE_INIT_ADDRESS;
         request.meta.client_id = -1;
+        request.meta.addr = ip;
         request.cont << ip;
         // response-callback
         request.call_back_handler = [this](std::shared_ptr<Request> response) {
