@@ -12,9 +12,19 @@ namespace swift_snails {
 
 // registed message class ids
 enum MSG_CLS {
-	NODE_INIT_ADDRESS
-
-
+    /*
+     * transfer framework init 
+     * all the workers and servers register themselves to master
+     */
+	NODE_INIT_ADDRESS,  
+    /*
+     * worker PULL parameter from server
+     */
+    WORKER_PULL_REQUEST,
+    /*
+     * worker push local grad to server
+     */
+    WORKER_PUSH_REQUEST
 };  // end enum MSG_CLS
 
 

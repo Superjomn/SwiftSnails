@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <string>
 #include <map>
+#include <set>
 #include <vector>
 #include <mutex>
 #include <condition_variable>

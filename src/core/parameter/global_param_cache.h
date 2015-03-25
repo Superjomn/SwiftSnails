@@ -23,28 +23,29 @@ public:
  * run init_keys first
  * write single record will not use lock(+, -)
  */
-template<typename GradMethod>
+template<typename Key, typename Val, typename Grad>
 class GlobalParamCache {
 public:
-    typedef GradMethod              grad_method_t;
-    typedef typename grad_method_t::grad_t grad_t;
-    typedef typename grad_method_t::key_t  key_t;
-    typedef typename grad_method_t::val_t  val_t;
+    typedef Key key_t;
+    typedef Val val_t;
+    typedef Grad grad_t;
 
     explicit GlobalParamCache() {
     }
     // thread-safe
     // should run first
+    // init paramters and grads
     void init_keys(std::set<key_t> &keys) {
         rwlock_write_guard lk(_rwlock);
 
         for(auto& key : keys) {
-            _data[key] = val_t();
+            _params[key] = val_t();
+            _grads[key] = grad_t();
         }
     }
 
     size_t size() const {
-        return _data.size();
+        return _params.size();
     }
     // not thread-safe
     // should use rwlock first
@@ -59,19 +60,23 @@ public:
     RWLock& rwlock() {
         return _rwlock;
     }
+    
+    std::atomic<int>& num_iters() {
+        return _num_iters;
+    }
 
 private:
     std::map<key_t, val_t> _params;
     std::map<key_t, grad_t> _grads;
     // number of iterations
-    std::atomic<int> num_iters;
+    std::atomic<int> _num_iters = 0;
     RWLock _rwlock;
 };
 
 
-template<GradMethod> 
-GlobalParamCache<GradMethod>& global_param_cache() {
-    static GlobalParamCache<GradMethod> cache;
+template<class Key, class Val, class Grad> 
+GlobalParamCache<Key, Val, Grad>& global_param_cache() {
+    static GlobalParamCache<Key, Val, Grad> cache;
     return cache;
 }
 

@@ -103,5 +103,11 @@ private:
 };  // class HashFrag
 
 
+template<class Key>
+BasicHashFrag<key> &global_hashfrag() {
+    static HashFrag hash;
+    return hash;
+}
+
 
 };  // end namespace swift_snails
