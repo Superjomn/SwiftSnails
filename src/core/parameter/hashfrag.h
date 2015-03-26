@@ -104,8 +104,8 @@ private:
 
 
 template<class Key>
-BasicHashFrag<key> &global_hashfrag() {
-    static HashFrag hash;
+BasicHashFrag<Key> &global_hashfrag() {
+    static BasicHashFrag<Key> hash;
     return hash;
 }
 
