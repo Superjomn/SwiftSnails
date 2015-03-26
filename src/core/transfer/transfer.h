@@ -175,7 +175,10 @@ public:
     void handle_response(std::shared_ptr<Request> &response) {
         Request::response_call_back_t handler;
         // NOTE: allow client_id == 0 , when the cluster's route has not been created
-        CHECK(_client_id == 0 || response->meta.client_id == client_id());
+        CHECK((_client_id >=-1 && _client_id <= 0) || response->meta.client_id == client_id()) 
+                << "get client_id\t" << response->meta.client_id
+                << "\tlocal_id\t" << _client_id;
+
         //LOG(INFO) << ".. call response handler";
         // call the callback handler
         { std::lock_guard<SpinLock> lock(_msg_handlers_mut);
@@ -197,6 +200,7 @@ public:
     }
 
     void send_response(Request &&request, int to_id) {
+        request.meta.client_id = to_id;
         Package package(request);
         Route& route = _route;
         {

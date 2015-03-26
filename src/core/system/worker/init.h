@@ -55,7 +55,7 @@ protected:
         request.cont << ip;
         // response-callback
         request.call_back_handler = [this](std::shared_ptr<Request> response) {
-            LOG(WARNING) << "get response from master and init route";
+            LOG(WARNING) << "get response from master and init route, set client_id to\t" << response->meta.client_id;
             // init route
             response->cont >> gtransfer.route();
             gtransfer.set_client_id(response->meta.client_id);
@@ -85,12 +85,14 @@ protected:
 
     // ask master for hashfrag
     void askfor_hashfrag() {
+        LOG(WARNING) << "[worker] ask master for hashfrag init ...";
         Request req;
         // just put some useless content
         req.cont << 123;
         req.meta.message_class = NODE_ASKFOR_HASHFRAG;
         req.call_back_handler = [this](std::shared_ptr<Request> rsp) {
             LOG(WARNING) << "get hashfrag from master";
+            LOG(INFO) << "hashfrag rsp size:\t" << rsp->cont.size();
             hashfrag.deserialize(rsp->cont);
             // unblock hashfrag_barrier
             hashfrag_init_barrier.set_state_valid();

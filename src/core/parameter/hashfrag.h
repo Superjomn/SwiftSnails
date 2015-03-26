@@ -38,7 +38,8 @@ public:
         // divide the fragments
         int num_frag_each_node = int(num_frags() / num_nodes() );
         for(int i = 0; i < num_frags(); i ++) {
-            _map_table[i] = int(i / num_frag_each_node);
+            // skip case: node_id=0 which is master's id
+            _map_table[i] = index_t(i / num_frag_each_node) + 1;
         }
     }
 
@@ -62,16 +63,22 @@ public:
         int num_nodes_, num_frags_;
         bb >> num_nodes_;    
         bb >> num_frags_;
+        LOG(INFO) << "deserialize hashfrag\tnum_nodes\t" << num_nodes_ 
+                  << "\tnum_frags\t" << num_frags_;
         CHECK( 
             (_map_table && (num_frags_ == num_frags())) ||
             (!_map_table)
         );
+        // TODO fix this
         _num_nodes = num_nodes_;
         _num_frags = num_frags_;
+        _map_table.reset(new index_t[num_frags()]);
+
         // memory should not been inited
         // the size of the map table will not be changed
         for(int i = 0; i < num_frags(); i ++) {
-            bb << _map_table[i];
+            bb >> _map_table[i];
+            LOG(INFO) << "i\t" << i <<"\t" << _map_table[i];
         }
     }
 
@@ -79,6 +86,7 @@ public:
         return _num_nodes;
     }
     int num_frags() const {
+        CHECK(_num_frags > 0) << "num_frags should be inited from config";
         return _num_frags;
     }
 

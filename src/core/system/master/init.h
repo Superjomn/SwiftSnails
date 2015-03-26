@@ -37,6 +37,9 @@ public:
         wait_for_workers_register_route();
         // sent route as response to clients
         send_route_to_workers();
+
+        init_hashfrag();
+        wait_to_terminate();
     }
 
 protected:
@@ -76,13 +79,24 @@ protected:
             // skip master
             if(id == 0) continue;
             gtransfer.send_response(std::move(response), id);
+            LOG(INFO) << "[master] send routes to\t" << id;
         }
     }
     
     void init_hashfrag() {
         // TODO to make key's type changeble
-        hashfrag.set_num_nodes(registered_node_num);
+        hashfrag.set_num_nodes(registered_server_num);
         hashfrag.init();
+    }
+    // master should be alive during training 
+    void wait_to_terminate() {
+        int timeout = global_config().get_config("master_longest_alive_duration").to_int32();
+        LOG(WARNING) << "master will stay alive for " << timeout << " s";
+        _terminate_barrier.time_limit( 1000 * timeout, [this] {
+            //CHECK(1 == 2) << "[master] init route timeout!";
+            CHECK(1 == 2) << "exceed longest alive time, master terminate!";
+        });
+        _terminate_barrier.block();
     }
 
 protected:
@@ -106,6 +120,11 @@ protected:
         CHECK(id > 0);
 
         registered_node_num ++;
+        
+        // is server ?
+        if(request->meta.client_id == 0) {
+            registered_server_num ++;
+        }
 
         if(registered_node_num == expected_node_num) {
             _route_init_barrier.set_state_valid();
@@ -120,14 +139,17 @@ protected:
 private:
     Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
     // cache message id
-    std::map<index_t, index_t> init_msg_ids;
+    std::map<int, index_t> init_msg_ids;
 
     std::atomic<int> registered_node_num{0};
+    std::atomic<int> registered_server_num{0};
     // TODO should read from config file
     int expected_node_num = 10; // TODO read from config file
     BasicHashFrag<index_t> &hashfrag = global_hashfrag<index_t>();
 
     StateBarrier _route_init_barrier;
+    // terminate master's work
+    StateBarrier _terminate_barrier;
 };
 
 
