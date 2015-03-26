@@ -60,17 +60,38 @@ public:
     RWLock& rwlock() {
         return _rwlock;
     }
+
+    std::condition_variable& iter_cond() {
+        return _iter_cond;
+    }
+    std::mutex& iter_mutex() {
+        return _iter_mutex;
+    }
     
+    void inc_num_iters() {
+        _num_iters ++;
+        _iter_cond.notify_all();    // ? notify_one ? 
+    }
     std::atomic<int>& num_iters() {
         return _num_iters;
     }
+    bool terminate_flag() {
+        return _terminate_flag;
+    }
+    void terminate_service_threads() {
+        _terminate_flag = true;
+    }
 
 private:
+    RWLock _rwlock;
     std::map<key_t, val_t> _params;
     std::map<key_t, grad_t> _grads;
     // number of iterations
     std::atomic<int> _num_iters = 0;
-    RWLock _rwlock;
+    std::mutex _iter_mutex;
+    std::condition_variable _iter_cond;
+    // tell the service threads to terminate
+    bool _terminate_flag = false;
 };
 
 

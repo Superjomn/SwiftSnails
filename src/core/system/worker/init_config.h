@@ -4,6 +4,10 @@
 namespace swift_snails {
 
 void worker_init_configs() {
+    /*
+     * push_period: push every N times
+     * pull_period: pull  every N times
+     */
     std::string configs = 
         " \
         listen_addr \
@@ -11,6 +15,8 @@ void worker_init_configs() {
         listen_thread_num \
         master_addr \
         init_timeout \
+        push_period \
+        pull_period \
         ";
     init_configs(configs);
 }
