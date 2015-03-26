@@ -36,7 +36,7 @@ typedef unsigned int    uint32_t;
 typedef long long       int64_t;
 typedef unsigned long long   uint64_t;
 
-typedef size_t        index_t;
+typedef uint64_t        index_t;
 
 // for repeat patterns
 #define SS_REPEAT1(X) SS_REPEAT_PATTERN(X)

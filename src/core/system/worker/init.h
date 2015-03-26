@@ -8,6 +8,7 @@
 #pragma once
 #include "../../../utils/all.h"
 #include "../../transfer/transfer.h"
+#include "../../parameter/hashfrag.h"
 #include "../ServerWorkerRoute.h"
 #include "../message_classes.h"
 namespace swift_snails {
@@ -24,6 +25,9 @@ public:
     void operator() () {
         register_master();
         register_local_node_to_master();
+        wait_for_route_init();
+        askfor_hashfrag();
+        wait_to_get_hashfrag();
     }
 
 
@@ -64,16 +68,46 @@ protected:
         gtransfer.send(std::move(request), 0);
 
         LOG(WARNING) << "route is sent";
+    }
+
+    void wait_for_route_init() {
         LOG(WARNING) << "to block current thread";
 
         int timeout = global_config().get_config("init_timeout").to_int32();
         LOG(WARNING) << "[worker] init will wait for\t" << timeout <<" s";
-
+        // barrier with timeout
         route_init_barrier.time_limit(1000 * timeout, []{
             //LOG(ERROR) << "[worker] init timeout!";
             CHECK(1 == 2) << "[worker] init timeout!";
         });
         route_init_barrier.block();
+    }
+
+    // ask master for hashfrag
+    void askfor_hashfrag() {
+        Request req;
+        // just put some useless content
+        req.cont << 123;
+        req.meta.message_class = NODE_ASKFOR_HASHFRAG;
+        req.call_back_handler = [this](std::shared_ptr<Request> rsp) {
+            LOG(WARNING) << "get hashfrag from master";
+            hashfrag.deserialize(rsp->cont);
+            // unblock hashfrag_barrier
+            hashfrag_init_barrier.set_state_valid();
+            hashfrag_init_barrier.try_unblock();
+        };
+        gtransfer.send(std::move(req), 0);
+    }
+
+    void wait_to_get_hashfrag() {
+        int timeout = global_config().get_config("init_timeout").to_int32();
+        LOG(WARNING) << "[worker] ask for hashfrag will wait for\t" << timeout <<" s";
+        // barrier with timeout
+        hashfrag_init_barrier.time_limit(1000 * timeout, []{
+            //LOG(ERROR) << "[worker] init timeout!";
+            CHECK(1 == 2) << "[worker] askfor hashfrag timeout!";
+        });
+        hashfrag_init_barrier.block();
     }
 
 private:
@@ -82,6 +116,10 @@ private:
     Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
     // route init barrier
     StateBarrier route_init_barrier;
+    StateBarrier hashfrag_init_barrier;
+
+    BasicHashFrag<index_t> &hashfrag = global_hashfrag<index_t>();
+
     
 
 };  // end class WorkerTransferInit

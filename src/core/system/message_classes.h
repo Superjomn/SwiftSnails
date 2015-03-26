@@ -18,6 +18,10 @@ enum MSG_CLS {
      */
 	NODE_INIT_ADDRESS,  
     /*
+     * node ask for hashfrag
+     */
+    NODE_ASKFOR_HASHFRAG,
+    /*
      * worker PULL parameter from server
      */
     WORKER_PULL_REQUEST,

@@ -8,6 +8,7 @@
 #pragma once
 #include "../../../utils/all.h"
 #include "../../transfer/transfer.h"
+#include "../../parameter/hashfrag.h"
 #include "../message_classes.h"
 #include "../ServerWorkerRoute.h"
 namespace swift_snails {
@@ -16,7 +17,6 @@ namespace swift_snails {
  * when timeout or all the nodes has been registered
  */
 typedef std::function<void()> void_lamb;
-
 
 class MasterTransferInit {
 	typedef Transfer<ServerWorkerRoute> transfer_t;
@@ -32,7 +32,7 @@ public:
     }
 
     void operator() () {
-        register_init_message_class();
+        register_message_class();
         CHECK(!gtransfer.async_channel()->closed()) << "channel should not been closed before transfer is deconstructed";
         wait_for_workers_register_route();
         // sent route as response to clients
@@ -41,10 +41,13 @@ public:
 
 protected:
 
-    void register_init_message_class() {
+    void register_message_class() {
         LOG(WARNING) << "register message class ...";
     	auto handler = node_init_address;
         gtransfer.message_class().add(NODE_INIT_ADDRESS, std::move(handler));
+
+        handler = node_askfor_hashfrag;
+        gtransfer.message_class().add(NODE_ASKFOR_HASHFRAG, std::move(handler));
         //LOG(WARNING) << "end register message class";
     }
 
@@ -75,6 +78,12 @@ protected:
             gtransfer.send_response(std::move(response), id);
         }
     }
+    
+    void init_hashfrag() {
+        // TODO to make key's type changeble
+        hashfrag.set_num_nodes(registered_node_num);
+        hashfrag.init();
+    }
 
 protected:
     // message-class handlers   ---------------------------------
@@ -104,6 +113,10 @@ protected:
         }
     };
 
+    transfer_t::msgcls_handler_t node_askfor_hashfrag = [this] (std::shared_ptr<Request> request, Request& response) {
+        hashfrag.serialize(response.cont);
+    };
+
 private:
     Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
     // cache message id
@@ -112,6 +125,7 @@ private:
     std::atomic<int> registered_node_num{0};
     // TODO should read from config file
     int expected_node_num = 10; // TODO read from config file
+    BasicHashFrag<index_t> &hashfrag = global_hashfrag<index_t>();
 
     StateBarrier _route_init_barrier;
 };
