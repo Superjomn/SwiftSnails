@@ -5,12 +5,11 @@
 //  Created by Chunwei on 3/17/15.
 //  Copyright (c) 2015 Chunwei. All rights reserved.
 //
-#ifndef SwiftSnails_core_transfer_framework_master_init_h_
-#define SwiftSnails_core_transfer_framework_master_init_h_
+#pragma once
 #include "../../../utils/all.h"
+#include "../../transfer/transfer.h"
 #include "../message_classes.h"
 #include "../ServerWorkerRoute.h"
-#include "../../transfer/transfer.h"
 namespace swift_snails {
 
 /*
@@ -26,15 +25,10 @@ public:
         LOG(INFO) << "init Master ...";
         // TODO should read from config file
         expected_node_num = global_config().get_config("expected_node_num").to_int32();     // nodes include server and worker
-        int time_span = global_config().get_config("master_time_out").to_int32();
-        LOG(INFO) << "get time_span:\t" << time_span;
-        _timer.set_time_span( time_span); 
 
         LOG(WARNING) << "local register server ...";
         std::string addr = gtransfer.recv_addr();
         gtransfer.route().register_node_(true, std::move(addr));
-
-        _timer.start();
     }
 
     void operator() () {
@@ -45,6 +39,8 @@ public:
         send_route_to_workers();
     }
 
+protected:
+
     void register_init_message_class() {
         LOG(WARNING) << "register message class ...";
     	auto handler = node_init_address;
@@ -53,26 +49,13 @@ public:
     }
 
     void wait_for_workers_register_route() {
-        std::function<bool()> cond_func = [this]() {
-            return ( _timer.timeout() 
-                || registered_node_num >= expected_node_num);
-        };
+        int timeout = global_config().get_config("master_time_out").to_int32();
+        LOG(WARNING) << "master will wait for " << timeout << " s";
 
-        void_lamb set_flag = [] { };
-        // set a thread to try unblock current thread 
-        // when timeout 
-        void_lamb timeout_try_unblock = [this] {
-            //LOG(WARNING) << "try unblock is called ...";
-            LOG(WARNING) << "master will wait for " << _timer.time_span() << " s";
-            std::this_thread::sleep_for( std::chrono::milliseconds(1000 + 1000 * _timer.time_span() ));
-            LOG(WARNING) << "master wait *timeout* and unblock current process";
-            void_lamb handle = []{};
-            _wait_init_barrier.unblock(handle);
-        };
-        std::thread timeout_t(timeout_try_unblock);
-        timeout_t.detach();
-        //gtransfer.async_channel()->push(std::move(timeout_try_unblock));
-        _wait_init_barrier.block(set_flag, cond_func); 
+        _route_init_barrier.time_limit( 1000 * timeout, [this] {
+            CHECK(1 == 2) << "[master] init route timeout!";
+        });
+        _route_init_barrier.block();
     }
 
     void send_route_to_workers() {
@@ -96,7 +79,6 @@ public:
 protected:
     // message-class handlers   ---------------------------------
     // node register address to master
-
     transfer_t::msgcls_handler_t node_init_address = [this](std::shared_ptr<Request> request, Request& response) {
         LOG(INFO) << "get node register";
         Addr ip;
@@ -112,18 +94,14 @@ protected:
         // cache message_ids
         init_msg_ids[id] = request->meta.message_id;
 
+        CHECK(id > 0);
+
         registered_node_num ++;
 
-        CHECK(id >= 0);
-        // check status 
-        // and notify the main thread to check the cond_variable 
-        //if(registered_node_num >= expected_node_num - 2) {
-        void_lamb handler = [this]{
-            LOG(INFO) << ".. registered_node_num\t" << registered_node_num;
-            LOG(INFO) << ".. expected_node_num\t" << expected_node_num;
-            };
-        _wait_init_barrier.unblock(handler);
-        //}
+        if(registered_node_num == expected_node_num) {
+            _route_init_barrier.set_state_valid();
+            _route_init_barrier.try_unblock();
+        }
     };
 
 private:
@@ -131,15 +109,12 @@ private:
     // cache message id
     std::map<index_t, index_t> init_msg_ids;
 
-    int registered_node_num = 0;
+    std::atomic<int> registered_node_num{0};
     // TODO should read from config file
     int expected_node_num = 10; // TODO read from config file
 
-    Timer _timer;
-    CompBarrier _wait_init_barrier;
-
+    StateBarrier _route_init_barrier;
 };
 
 
 }; // end namespace swift_snails
-#endif
