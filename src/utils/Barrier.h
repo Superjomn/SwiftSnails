@@ -5,8 +5,8 @@
 //  Created by Chunwei on 3/17/15.
 //  Copyright (c) 2015 Chunwei. All rights reserved.
 //
-#ifndef SwiftSnals_utils_Barrier_h_
-#define SwiftSnals_utils_Barrier_h_
+#pragma once
+#include "common.h"
 // a wrapper of condition_variable to block current thread
 // and wait for future flag
 namespace swift_snails {
@@ -91,29 +91,25 @@ private:
 
 class StateBarrier {
 public:
-    StateBarrier(const bool &unblock_state) :
-        unblock_state(&unblock_state) 
-    {
-    }
-
     explicit StateBarrier() 
     { }
-    void set_unblock_state(const bool &unblock_state) {
-        this->unblock_state = &unblock_state;
-    }
 
     void block() {
         std::unique_lock<std::mutex> lk(mut);
-        cond.wait(lk, []{ return *unblock_state; });
+        cond.wait(lk, [this]{ return unblock_state; });
     }
     /*
      * when time out , this handler will be called;
      */
     void time_limit(int milliseconds, std::function<void()> &&out_time_handler)
     {
-        std::function<void()> handler = []{
-            std::this_thread::sleep_for( std::chrono::milliseconds(milliseconds));
-            out_time_handler();
+        std::function<void()> handler = [this, milliseconds, out_time_handler]{
+            std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+            if(unblock_state) {
+                try_unblock();
+            } else {
+                out_time_handler();
+            }
         };
         std::thread t(std::move(handler));
         t.detach();
@@ -123,12 +119,15 @@ public:
         cond.notify_all();
     }
 
+    void set_state_valid() {
+        unblock_state = true;
+    }
+
 private:
-    bool const* unblock_state = nullptr;
+    bool unblock_state = false;
     std::condition_variable cond;
     std::mutex mut;
 };
 
 
 };  // end namespace swift_snails
-#endif
