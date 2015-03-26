@@ -5,14 +5,11 @@
 //  Created by Chunwei on 3/15/15.
 //  Copyright (c) 2015 Chunwei. All rights reserved.
 //
-#ifndef SwiftSnails_core_transfer_framework_worker_init_h_
-#define SwiftSnails_core_transfer_framework_worker_init_h_
-#include "../../../utils/Barrier.h"
-#include "../../../utils/Timer.h"
+#pragma once
+#include "../../../utils/all.h"
+#include "../../transfer/transfer.h"
 #include "../ServerWorkerRoute.h"
 #include "../message_classes.h"
-#include "../../transfer/transfer.h"
-#include "../../system/message_classes.h"
 namespace swift_snails {
 /*
  * init management of Worker Node
@@ -76,14 +73,18 @@ public:
     {
         //global_config().register_config("master_addr", "");
         // TODO load config 
-        int timeout = global_config().get_config("init_timeout").to_int32();
-        _init_barrier.set_timespan(timeout);
+        //int timeout = global_config().get_config("init_timeout").to_int32();
+        //_init_barrier.set_timespan(timeout);
+        //route_init_barrier.set_unblock_state(route_init_finish_flag);
     }
 
     void operator() () {
         register_master();
         register_local_node_to_master();
     }
+
+
+protected:
     void register_master() {
         std::string addr = global_config().get_config("master_addr").to_string();
         LOG(WARNING) << "register master:\t" << addr;
@@ -115,16 +116,29 @@ public:
             response->cont >> gtransfer.route();
             gtransfer.set_client_id(response->meta.client_id);
 
-            _init_barrier.set_response_arrive();
-            _init_barrier.try_unblock();    // continue running
+            //_init_barrier.set_response_arrive();
+            //_init_barrier.try_unblock();    // continue running
+            // timeout's unit is seconds
+            route_init_barrier.set_state_valid();
+            route_init_barrier.try_unblock();
         };
         // send request to the master server
         LOG(WARNING) << "send route to master ...";
         gtransfer.send(std::move(request), 0);
+
         LOG(WARNING) << "route is sent";
         LOG(WARNING) << "to block current thread";
-        _init_barrier.start_timeout_thread();
-        _init_barrier.block();
+
+        int timeout = global_config().get_config("init_timeout").to_int32();
+        LOG(WARNING) << "[worker] init will wait for\t" << timeout <<" s";
+
+        route_init_barrier.time_limit(1000 * timeout, []{
+            //LOG(ERROR) << "[worker] init timeout!";
+            CHECK(1 == 2) << "[worker] init timeout!";
+        });
+        route_init_barrier.block();
+        //_init_barrier.start_timeout_thread();
+        //_init_barrier.block();
     }
 
 private:
@@ -132,9 +146,12 @@ private:
     //Barrier _init_barrier;
     InitWaitBarrier _init_barrier;
     Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
+    // route init barrier
+    //bool route_init_finish_flag = false;
+    StateBarrier route_init_barrier;
+    
 
 };  // end class WorkerTransferInit
 
 
 }; // end namespace swift_snails
-#endif
