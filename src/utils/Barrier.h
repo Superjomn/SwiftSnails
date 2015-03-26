@@ -89,5 +89,46 @@ private:
 };  // end class FinishInitBarrier
 
 
+class StateBarrier {
+public:
+    StateBarrier(const bool &unblock_state) :
+        unblock_state(&unblock_state) 
+    {
+    }
+
+    explicit StateBarrier() 
+    { }
+    void set_unblock_state(const bool &unblock_state) {
+        this->unblock_state = &unblock_state;
+    }
+
+    void block() {
+        std::unique_lock<std::mutex> lk(mut);
+        cond.wait(lk, []{ return *unblock_state; });
+    }
+    /*
+     * when time out , this handler will be called;
+     */
+    void time_limit(int milliseconds, std::function<void()> &&out_time_handler)
+    {
+        std::function<void()> handler = []{
+            std::this_thread::sleep_for( std::chrono::milliseconds(milliseconds));
+            out_time_handler();
+        };
+        std::thread t(std::move(handler));
+        t.detach();
+    }
+
+    void try_unblock() {
+        cond.notify_all();
+    }
+
+private:
+    bool const* unblock_state = nullptr;
+    std::condition_variable cond;
+    std::mutex mut;
+};
+
+
 };  // end namespace swift_snails
 #endif
