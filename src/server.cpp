@@ -1,5 +1,5 @@
 #include <iostream>
-#include "utils/CMDLine.h"
+#include "utils/all.h"
 #include "core/system/node_init.h"
 #include "core/system/worker/init_config.h"
 using namespace swift_snails;
@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
     if(cmdline.hasParameter(param_help) || argc == 1) {
         cout << endl;
         cout << "===================================================================" << endl;
-        cout << "master server main program";
+        cout << "server main program";
         cout << "===================================================================" << endl;
         cmdline.print_help();
         cout << endl;
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
     NodeTransferInit node_transfer_init;
     NodeHashfragInit node_hashfrag_init;
 
-    node_transfer_init(false);
+    node_transfer_init(true);
     node_hashfrag_init();
     
     return 0;

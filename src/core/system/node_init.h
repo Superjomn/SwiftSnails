@@ -1,33 +1,29 @@
 //
-//  worker/init.h
+//  node_init.h
 //  SwiftSnails
 //
 //  Created by Chunwei on 3/15/15.
 //  Copyright (c) 2015 Chunwei. All rights reserved.
 //
 #pragma once
-#include "../../../utils/all.h"
-#include "../../transfer/transfer.h"
-#include "../../parameter/hashfrag.h"
-#include "../ServerWorkerRoute.h"
-#include "../message_classes.h"
+#include "../../utils/all.h"
+#include "../transfer/transfer.h"
+#include "../parameter/hashfrag.h"
+#include "ServerWorkerRoute.h"
+#include "message_classes.h"
 namespace swift_snails {
-/*
- * init management of Worker Node
- *
- * register message_classes  and response_handlers
- */
+
+
 class NodeTransferInit {
 public:
     explicit NodeTransferInit()
     { }
 
-    void operator() () {
+    void operator() (bool is_server=false) {
+        _node_is_server = is_server;
         register_master();
         register_local_node_to_master();
         wait_for_route_init();
-        askfor_hashfrag();
-        wait_to_get_hashfrag();
     }
 
 
@@ -43,7 +39,7 @@ protected:
 
         LOG(INFO) << "local listen addr:\t" << gtransfer.recv_addr();
         Addr ip(gtransfer.recv_addr());
-        LOG(INFO) << "after init ip.to_string():\t" << ip.to_string();
+        //LOG(INFO) << "after init ip.to_string():\t" << ip.to_string();
         //ip.port = gtransfer.recv_port();
         // TODO read from config
         gtransfer.set_client_id(-1);
@@ -53,7 +49,10 @@ protected:
         //request.meta.client_id = -1;
         request.meta.addr = ip;
         request.cont << ip;
-        request.set_server();
+        if(_node_is_server) 
+            request.set_server();
+        else 
+            request.set_worker();
         // response-callback
         request.call_back_handler = [this](std::shared_ptr<Request> response) {
             LOG(WARNING) << "get response from master and init route, set client_id to\t" << response->meta.client_id;
@@ -84,6 +83,31 @@ protected:
         route_init_barrier.block();
     }
 
+private:
+    bool _node_is_server = false;
+
+    std::string _master_addr;
+    //Barrier _init_barrier;
+    Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
+    // route init barrier
+    StateBarrier route_init_barrier;
+};  // end class WorkerTransferInit
+
+/*
+ * init hashfrag
+ */
+class NodeHashfragInit {
+public:
+    explicit NodeHashfragInit() 
+    { }
+
+    void operator() () {
+        askfor_hashfrag();
+        wait_to_get_hashfrag();
+    }
+
+protected:
+
     // ask master for hashfrag
     void askfor_hashfrag() {
         LOG(WARNING) << "[worker] ask master for hashfrag init ...";
@@ -113,19 +137,18 @@ protected:
         hashfrag_init_barrier.block();
     }
 
+
 private:
-    std::string _master_addr;
-    //Barrier _init_barrier;
-    Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
-    // route init barrier
-    StateBarrier route_init_barrier;
-    StateBarrier hashfrag_init_barrier;
 
     BasicHashFrag<index_t> &hashfrag = global_hashfrag<index_t>();
+    Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
+    StateBarrier hashfrag_init_barrier;
 
-    
 
-};  // end class WorkerTransferInit
+};  // class NodeHashfragInit
+
+
+
 
 
 }; // end namespace swift_snails
