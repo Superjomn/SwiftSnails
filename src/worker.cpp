@@ -1,6 +1,6 @@
 #include <iostream>
 #include "utils/CMDLine.h"
-#include "core/system/worker/init.h"
+#include "core/system/node_init.h"
 #include "core/system/worker/init_config.h"
 using namespace swift_snails;
 using namespace std;
@@ -33,8 +33,11 @@ int main(int argc, char* argv[]) {
     global_config().load_conf(config_path);
     global_config().parse();
 
-    NodeTransferInit init;
-    init();
+    NodeTransferInit node_transfer_init;
+    NodeHashfragInit node_hashfrag_init;
+
+    node_transfer_init(false);
+    node_hashfrag_init();
     
     return 0;
 };
