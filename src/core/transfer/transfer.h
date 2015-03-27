@@ -83,7 +83,10 @@ public:
         index_t msg_id = _msg_id_counter++;
         request.set_msg_id(msg_id);
         CHECK(_client_id != -2) << "shoud set client_id first";
-        request.meta.client_id = _client_id;
+
+        if(client_id() >= 0) {
+            request.meta.client_id = _client_id;
+        }
         // convert Request to underlying Package
         Package package(request);
         LOG(INFO) << "send package";

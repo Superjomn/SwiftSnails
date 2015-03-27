@@ -23,7 +23,7 @@ public:
      * number of nodes should be setted by master
      */
     void set_num_nodes(int x) {
-        CHECK(x > 0);
+        CHECK_GT(x, 0);
         _num_nodes = x;
     }
     // init nodes in the hash ring
@@ -63,22 +63,26 @@ public:
         int num_nodes_, num_frags_;
         bb >> num_nodes_;    
         bb >> num_frags_;
-        LOG(INFO) << "deserialize hashfrag\tnum_nodes\t" << num_nodes_ 
+        CHECK_GT(num_frags_, 0);
+        DLOG(INFO) << "deserialize hashfrag\tnum_nodes\t" << num_nodes_ 
                   << "\tnum_frags\t" << num_frags_;
         CHECK( 
             (_map_table && (num_frags_ == num_frags())) ||
             (!_map_table)
         );
-        // TODO fix this
         _num_nodes = num_nodes_;
-        _num_frags = num_frags_;
-        _map_table.reset(new index_t[num_frags()]);
+        // init maptable
+        if(_num_frags == 0) {
+            CHECK(! _map_table);
+            _num_frags = num_frags_;
+            _map_table.reset(new index_t[num_frags()]);
+        }
 
         // memory should not been inited
         // the size of the map table will not be changed
         for(int i = 0; i < num_frags(); i ++) {
             bb >> _map_table[i];
-            LOG(INFO) << "i\t" << i <<"\t" << _map_table[i];
+            DLOG(INFO) << "i\t" << i <<"\t" << _map_table[i];
         }
     }
 

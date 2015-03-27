@@ -50,9 +50,10 @@ protected:
         // create message
         Request request;
         request.meta.message_class = MSG_CLS::NODE_INIT_ADDRESS;
-        request.meta.client_id = -1;
+        //request.meta.client_id = -1;
         request.meta.addr = ip;
         request.cont << ip;
+        request.set_server();
         // response-callback
         request.call_back_handler = [this](std::shared_ptr<Request> response) {
             LOG(WARNING) << "get response from master and init route, set client_id to\t" << response->meta.client_id;

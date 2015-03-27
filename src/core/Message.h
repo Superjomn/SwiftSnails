@@ -191,6 +191,24 @@ struct Request {
     bool is_response() const {
         return meta.message_class == -1;
     }
+    void set_response() {
+        meta.message_class = -1;
+    }
+    /*
+     * set node's type: worker / server
+     */
+    void set_worker() {
+        meta.client_id = -1;
+    }
+    void set_server() {
+        meta.client_id = -2;
+    }
+    bool is_worker() {
+        return meta.client_id == -1;
+    }
+    bool is_server() {
+        return meta.client_id == -2;
+    }
 
     ~Request() {
         //LOG(INFO) << "deconstruct Request!";

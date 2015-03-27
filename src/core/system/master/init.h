@@ -73,7 +73,8 @@ protected:
             const std::string &addr = r.second;
             Request response;
             response.cont << gtransfer.route();
-            response.meta.message_class = -1;
+
+            response.set_response();    // set flag
             response.meta.message_id = init_msg_ids[id];
             LOG(WARNING) << "send route to worker:\t" << addr;
             // skip master
@@ -107,22 +108,20 @@ protected:
         Addr ip;
         request->cont >> ip;
         std::string addr = "tcp://" + ip.to_string();
-        LOG(INFO) << "node's addr:\t" << addr;
+        DLOG(INFO) << "node's addr:\t" << addr;
         auto& gtransfer = global_transfer<ServerWorkerRoute>();
         // tell server/worker by clent_id
         // -1 or 0
-        LOG(INFO) << "request.client_id:\t" << request->meta.client_id;
+        DLOG(INFO) << "request.client_id:\t" << request->meta.client_id;
         CHECK(request->meta.client_id <= 0);
-        int id = gtransfer.route().register_node_( request->meta.client_id == 0, std::move(addr));
+        int id = gtransfer.route().register_node_( request->is_server(), std::move(addr));
         // cache message_ids
         init_msg_ids[id] = request->meta.message_id;
 
-        CHECK(id > 0);
+        CHECK_GT(id , 0);
 
         registered_node_num ++;
-        
-        // is server ?
-        if(request->meta.client_id == 0) {
+        if(request->is_server()) {
             registered_server_num ++;
         }
 
