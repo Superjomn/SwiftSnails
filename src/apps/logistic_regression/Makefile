@@ -5,7 +5,7 @@ BIN=./bin
 #CXXFLAGS= -static -g -std=c++11 -pthread -lpthread -Wall -DHAVE_PCAP -lgtest -lgtest_main
 CXXFLAGS= -O0 -g -std=c++11 -pthread -lpthread -Wall -DHAVE_PCAP -lgtest -lgtest_main
 
-LOCAL_ROOT=../third/local
+LOCAL_ROOT=../../../third/local
 GTEST_HOME=$(LOCAL_ROOT)/gtest
 
 THIRD_INCPATH=-I$(LOCAL_ROOT)/glog/include \

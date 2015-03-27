@@ -1,7 +1,7 @@
 #include <iostream>
-#include "utils/CMDLine.h"
-#include "core/system/node_init.h"
-#include "core/system/worker/init_config.h"
+#include "../../utils/all.h"
+#include "../../core/system/master/init.h"
+#include "../../core/system/master/init_config.h"
 using namespace swift_snails;
 using namespace std;
 using namespace fms;
@@ -28,16 +28,16 @@ int main(int argc, char* argv[]) {
     }
     std::string config_path = cmdline.getValue(param_config_path);
 
-    worker_init_configs();
+    master_init_configs();
 
     global_config().load_conf(config_path);
+
     global_config().parse();
 
-    NodeTransferInit node_transfer_init;
-    NodeHashfragInit node_hashfrag_init;
+    MasterTransferInit master_transfer_init;
 
-    node_transfer_init(false);
-    node_hashfrag_init();
-    
+    master_transfer_init();
+
+
     return 0;
-};
+}
