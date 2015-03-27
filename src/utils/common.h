@@ -20,6 +20,7 @@
 #include <memory>
 #include <queue>
 #include <thread>
+#include <random>
 #include <fstream>
 #include <sstream>
 #include "VirtualObject.h"

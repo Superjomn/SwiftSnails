@@ -1,6 +1,7 @@
 #include <iostream>
-#include "utils/all.h"
+#include "../../utils/all.h"
 #include "../../core/system/node_init.h"
+#include "../../core/system/server/init.h"
 #include "../../core/system/worker/init_config.h"
 using namespace swift_snails;
 using namespace std;

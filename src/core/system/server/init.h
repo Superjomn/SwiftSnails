@@ -9,6 +9,7 @@
 #include "../../../utils/all.h"
 #include "../../transfer/transfer.h"
 #include "../../parameter/hashfrag.h"
+#include "../../parameter/sparsetable.h"
 #include "../message_classes.h"
 #include "../ServerWorkerRoute.h"
 
@@ -31,8 +32,9 @@ public:
     typedef Grad grad_t;
     typedef SparseTable<key_t, val_t> table_t;
     typedef std::pair<key_t, val_t> pull_val_t;
+	typedef Transfer<ServerWorkerRoute> transfer_t;
 
-    explicit ServerWorkerRoute() 
+    explicit ServerInitPullMethod() 
     { }
 
     void operator() () {
@@ -44,8 +46,8 @@ protected:
     void register_pull_message_class() {
         transfer_t::msgcls_handler_t handler = pull_handler;
 
-        global_transfer.message_class().add(
-            MSG_CLS.WORKER_PULL_REQUEST, 
+        gtransfer.message_class().add(
+            WORKER_PULL_REQUEST, 
             std::move(handler)
         );
     }
@@ -56,11 +58,11 @@ private:
         {
             // read request
             std::vector<pull_val_t> req_items;
-            while(! req.cont.read_finished()) {
+            while(! req->cont.read_finished()) {
                 key_t key;
                 val_t val;
-                req.cont >> key;
-                req.cont >> val;
+                req->cont >> key;
+                req->cont >> val;
                 req_items.emplace_back(std::move(key), std::move(val));
             }
             // query parameters
@@ -69,16 +71,18 @@ private:
                 val_t& val = item.second;
                 pull_access->get_pull_value(key, val);
                 // put response
-                rsp.cont << key;
-                rsp.cont << val;
+                rsp->cont << key;
+                rsp->cont << val;
             }
         };
 
 
 private:
     Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
-    auto& sparse_table = global_sparse_table<key_t, value_t>();
-    auto& pull_access = make_pull_access<table_t, AccessMethod>(sparse_table);
+
+    SparseTable<key_t, val_t>& sparse_table = global_sparse_table<key_t, val_t>();
+
+    std::unique_ptr<PullAccessAgent<table_t, AccessMethod> >& pull_access = make_pull_access<table_t, AccessMethod>(sparse_table);
 
 };  // class ServerInitPullMethod
 
@@ -96,6 +100,7 @@ public:
     typedef Grad grad_t;
     typedef SparseTable<key_t, val_t> table_t;
     typedef std::pair<key_t, grad_t> push_val_t;
+	typedef Transfer<ServerWorkerRoute> transfer_t;
 
     explicit ServerInitPushMethod() 
     { }
@@ -109,8 +114,8 @@ protected:
     void register_push_message_class() {
         transfer_t::msgcls_handler_t handler = push_handler;
 
-        global_transfer.message_class().add(
-            MSG_CLS.WORKER_PUSH_REQUEST, 
+        gtransfer.message_class().add(
+            WORKER_PUSH_REQUEST, 
             std::move(handler)
         );
     }
@@ -121,11 +126,11 @@ private:
         [this] (std::shared_ptr<Request> req,  std::shared_ptr<Request>& rsp)
         {
             //std::vector<push_val_t> req_items;
-            while(! req.cont.read_finished()) {
+            while(! req->cont.read_finished()) {
                 key_t key;
                 grad_t grad;
-                req.cont >> key;
-                req.cont >> grad;
+                req->cont >> key;
+                req->cont >> grad;
                 //req_items.emplace_back(std::move(key), std::move(grad));
                 push_access->apply_pull_value(key, grad);
             }
@@ -134,8 +139,10 @@ private:
 private:
 
     Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
-    auto& sparse_table = global_sparse_table<key_t, value_t>();
-    auto& push_access = make_push_access<table_t, AccessMethod>(sparse_table);
+
+    SparseTable<key_t, val_t>& sparse_table = global_sparse_table<key_t, val_t>();
+
+    std::unique_ptr<PushAccessAgent<table_t, AccessMethod> >& push_access = make_push_access<table_t, AccessMethod>(sparse_table);
 
 
 };  // class ServerInitPushMethod

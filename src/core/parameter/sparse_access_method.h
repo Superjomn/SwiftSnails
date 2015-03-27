@@ -20,7 +20,7 @@ public:
 
     virtual void init_param(const key_t& key, pull_param_t &param) = 0;
     virtual void get_pull_value(const key_t &key, const pull_param_t &param, pull_val_t &val) = 0;
-    virtual void apply_pull_value(const key_t &key, pull_param_t &param, const pull_val_t& val) = 0;
+    //virtual void apply_pull_value(const key_t &key, pull_param_t &param, const pull_val_t& val) = 0;
     //virtual void get_default_param(const key_t &key, pull_param_t &val) = 0;
 
 };  // class PullAccessMethod

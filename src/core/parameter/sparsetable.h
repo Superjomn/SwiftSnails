@@ -100,6 +100,9 @@ private:
 };  // class SparseTable
 
 
+
+
+
 template<typename Table, typename AccessMethod>
 class PullAccessAgent {
 public:
@@ -192,6 +195,12 @@ private:
 };  // class PushAccessAgent
 
 
+template<class Key, class Value>
+SparseHashMap<Key, Value>& global_sparse_table() {
+    static SparseTable<Key, Value> table;
+    return table;
+}
+
 template<typename Table, typename AccessMethod>
 auto make_pull_access(Table &table)
 -> std::unique_ptr< PullAccessAgent<Table, AccessMethod>>
@@ -212,3 +221,4 @@ auto make_push_access(Table &table)
 }
 
 };  // end namespace swift_snails
+

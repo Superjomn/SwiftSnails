@@ -1,10 +1,12 @@
 #include <iostream>
-#include "../../utils/CMDLine.h"
+#include "../../utils/all.h"
 #include "../../core/system/node_init.h"
 #include "../../core/system/worker/init_config.h"
+#include "access_method.h"
 using namespace swift_snails;
 using namespace std;
 using namespace fms;
+using namespace logistic_regression;
 
 int main(int argc, char* argv[]) {
     // init config
