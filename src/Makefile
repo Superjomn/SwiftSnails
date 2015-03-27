@@ -26,6 +26,9 @@ master: master.cpp
 worker: worker.cpp
 	$(CXX) worker.cpp $(THIRD_INCPATH) -L$(GTEST_HOME)/lib/.libs -Xlinker $(THIRD_LIB)  $(CXXFLAGS) -o $(BIN)/worker
 
+server: server.cpp
+	$(CXX) server.cpp $(THIRD_INCPATH) -L$(GTEST_HOME)/lib/.libs -Xlinker $(THIRD_LIB)  $(CXXFLAGS) -o $(BIN)/server
+
 
 clean:
 	rm -f $(BIN)/*
