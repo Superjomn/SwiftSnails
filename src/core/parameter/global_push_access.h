@@ -8,10 +8,11 @@ namespace swift_snails {
 /*
  * push local grads to remote parameter servers
  */
-template<typename Key, typename Grad>
+template<typename Key, typename Val, typename Grad>
 class GlobalPushAccess : public VirtualObject {
 public:
     typedef Key key_t;
+    typedef Val val_t;
     typedef Grad grad_t;
     typedef std::pair<key_t, grad_t> push_val_t;
 
@@ -72,10 +73,14 @@ protected:
 private:
     auto &param_cache = global_param_cache<key_t, val_t, grad_t>();
 
-
 };  // end class GlobalPushAccess
 
 
+template <class Key, class Val, class Grad>
+GlobalPushAccess<Key, Val, Grad>& global_push_access() {
+    static GlobalPushAccess<Key, Val, Grad> access;
+    return access;
+}
 
 
 };  // end namespace swift_snails
