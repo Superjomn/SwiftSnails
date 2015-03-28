@@ -35,7 +35,7 @@ SS的目标是实现一个适用于大规模机器学习的分布式的并行参
 C++11 
 glog
 google-sparsehash
-Hadoop C API
+Eigen
 
 开发&&测试
 ------------
