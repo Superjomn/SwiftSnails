@@ -8,10 +8,8 @@ namespace swift_snails {
  *  key-value
  *  key-grad
  */
-template<class Key, class Val, class Grad, class GradPramProcMethod>
+template<class Key, class Val, class Grad>
 class GlobalPullAccess : public VirtualObject {
-
-GradPramProcMethod _cache_access;
 
 public:
     typedef Key key_t;
@@ -82,6 +80,13 @@ protected:
 private:
     auto &param_cache = global_param_cache<key_t, val_t, grad_t>();
 };  // class GlobalPullAccess
+
+
+template <class Key, class Val, class Grad>
+GlobalPullAccess<Key, Val, Grad>& global_pull_access() {
+    static GlobalPullAccess<Key, Val, Grad> access;
+    return access;
+}
 
 
 };  // end namespace swift_snails
