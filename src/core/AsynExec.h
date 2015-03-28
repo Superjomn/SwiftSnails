@@ -8,6 +8,7 @@
 #ifndef SwiftSnails_core_AsynExec_h_
 #define SwiftSnails_core_AsynExec_h_
 #include "../utils/common.h"
+#include "../utils/Barrier.h"
 #include "BasicChannel.h"
 #include "common.h"
 
@@ -115,6 +116,39 @@ private:
         }
     }; // end struct MultiWorker
 }; // class AsynExec
+
+
+/* 
+ * start N threads to run one task
+ */
+void async_exec( 
+    int thread_num, 
+    AsynExec::task_t &&part_task,
+    std::shared_ptr<AsynExec::channel_t> channel
+    ) 
+{
+    StateBarrier barrier;   
+    std::atomic<int> task_finish_cout{0};
+
+    AsynExec::task_t _task = [&part_task, &task_finish_cout, thread_num, &barrier] {
+        part_task();
+        // this task complete
+        task_finish_cout ++;
+        if(task_finish_cout == thread_num) {
+            barrier.set_state_valid();
+            barrier.try_unblock();
+        }
+    };
+
+    for(int i = 0; i < thread_num; i ++) {
+        auto __task = _task;
+        channel->push(std::move(__task));
+    }
+
+    barrier.block();
+}
+    
+
 
 
 }; // end namespace swift_snails
