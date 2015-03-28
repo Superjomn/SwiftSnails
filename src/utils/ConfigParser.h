@@ -32,6 +32,10 @@ public:
             CHECK(!value.empty());
             return std::move(stoi(value));
         }
+        float to_float() const {
+            CHECK(!value.empty());
+            return std::move(stof(value));
+        }
         std::string to_string() const {
             return value;
         }
