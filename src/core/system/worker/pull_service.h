@@ -33,11 +33,18 @@ protected:
                 return num_iters > 0 && num_iters % _period == 0;
             });
 
-        global_pull_access().pull();
+        pull_access.pull();
     }
 
 private:
-    auto& param_cache = global_param_cache<key_t, val_t, grad_t>();
+
+    typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
+    param_cache_t& param_cache = global_param_cache<key_t, val_t, grad_t>();
+
+    typedef GlobalPullAccess<key_t, val_t, grad_t> pull_access_t;
+
+    pull_access_t& pull_access = global_pull_access<key_t, val_t, grad_t>();
+
     int _period = 0;
 
 };  // class PushService

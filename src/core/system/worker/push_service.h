@@ -1,7 +1,7 @@
 #pragma once
 #include "../../../utils/all.h"
 #include "../../parameter/hashfrag.h"
-#include "../../parameter/global_pull_access.h"
+#include "../../parameter/global_push_access.h"
 
 namespace swift_snails {
 
@@ -29,11 +29,17 @@ public:
                 return num_iters > 0 && num_iters % _period == 0;
             });
 
-        global_pull_access().push();
+        push_access.push();
     }
 
 private:
-    auto& param_cache = global_param_cache<key_t, val_t, grad_t>();
+
+    typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
+    typedef GlobalPushAccess<key_t, val_t, grad_t> push_access_t;
+
+    param_cache_t& param_cache = global_param_cache<key_t, val_t, grad_t>();
+    push_access_t& push_access = global_push_access<key_t, val_t, grad_t>();
+
     int _period = 0;
 
 };  // class PushService
