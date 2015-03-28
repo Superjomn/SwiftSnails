@@ -7,6 +7,8 @@ void worker_init_configs() {
     /*
      * push_period: push every N times
      * pull_period: pull  every N times
+     * data_path: path of the dataset
+     * async_channel_thread_num: number of threads in the async channel
      */
     std::string configs = 
         " \
@@ -17,6 +19,8 @@ void worker_init_configs() {
         init_timeout \
         push_period \
         pull_period \
+        data_path \
+        async_channel_thread_num \
         ";
     init_configs(configs);
 }
