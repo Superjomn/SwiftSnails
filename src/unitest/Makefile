@@ -10,6 +10,7 @@ GTEST_HOME=$(LOCAL_ROOT)/gtest
 
 THIRD_INCPATH=-I$(LOCAL_ROOT)/glog/include \
 	-I$(LOCAL_ROOT)/zeromq/include \
+	-I$(LOCAL_ROOT) \
 	-I/usr/local/Cellar/google-sparsehash/2.0.2/include \
 	-I/usr/include/pthread \
 	-I$(GTEST_HOME)/include

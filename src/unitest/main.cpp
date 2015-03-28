@@ -15,6 +15,9 @@
 #include "core/BasicChannel_test.h"
 #include "core/AsynExec_test.h"
 
+// third
+#include "third/eigen_test.h"
+
 // transfer
 #include "core/transfer/Route_test.h"
 #include "core/transfer/transfer_test.h"

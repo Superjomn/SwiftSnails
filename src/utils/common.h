@@ -26,6 +26,7 @@
 #include "VirtualObject.h"
 #include "glog/logging.h"
 #include "zmq.h"
+#include "Eigen/Dense"
 
 namespace swift_snails {
 // common types
@@ -36,7 +37,6 @@ typedef int             int32_t;
 typedef unsigned int    uint32_t;
 typedef long long       int64_t;
 typedef unsigned long long   uint64_t;
-
 typedef uint32_t        index_t;
 
 // for repeat patterns
@@ -62,6 +62,9 @@ inline int guarded_pclose(FILE* stream) {
     std::lock_guard<std::mutex> lock(global_fork_mutex());
     return pclose(stream);
 }
+
+
+typedef Eigen::Matrix<double, Eigen::Dynamic, 1> Vec;
 
 };
 
