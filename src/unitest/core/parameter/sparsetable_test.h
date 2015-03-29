@@ -62,4 +62,42 @@ TEST(SparseTable, complex_value_struct) {
     table.assign(23232, a);
 }
 
+TEST(SparseTable, output) {
+    SparseTable<int, int> table;
+    for(int i = 0; i < 100; i ++) {
+        table.assign(i, i+1);
+    }
 
+    table.output();
+}
+
+namespace _sparse_table_test {
+
+struct Val {
+    int a;
+    float b;
+
+    friend ostream& operator<< (ostream &os, const Val& val) {
+        os << val.a << " " << val.b;
+        return os;
+    }
+};
+
+};
+
+TEST(SparseTable, complex_output) {
+
+    using namespace _sparse_table_test;
+
+    SparseTable<index_t, Val> table;
+
+    for(int i = 0; i < 100; i ++) {
+        Val val;
+        val.a = i;
+        val.b = i + 0.5;
+
+        table.assign(i, std::move(val));
+    }
+
+    table.output();
+}

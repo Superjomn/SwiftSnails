@@ -39,6 +39,16 @@ public:
         return _shard_id;
     }
 
+    // Attention: should define value's output method first
+    friend std::ostream& operator<< (std::ostream& os, SparseTableShard &shard)
+    {
+        for(auto& item : shard.data() ) {
+            os << item.first << "\t";
+            os << item.second << std::endl;
+        }
+        return os;
+    }
+
 private:
     SparseHashMap<key_t, value_t> _data;
     int _shard_id = -1;
@@ -76,6 +86,14 @@ public:
     void assign (const key_t& key, const value_t &val) {
         int shard_id = to_shard_id(key);
         shard(shard_id).data()[key] = val;
+    }
+    /*
+     * output parameters to ostream
+     */
+    void output() {
+        for(int i = 0; i < shard_num(); i++) {
+            std::cout << shard(i);
+        }
     }
 
     index_t size() const {
@@ -196,7 +214,7 @@ private:
 
 
 template<class Key, class Value>
-SparseHashMap<Key, Value>& global_sparse_table() {
+SparseTable<Key, Value>& global_sparse_table() {
     static SparseTable<Key, Value> table;
     return table;
 }
