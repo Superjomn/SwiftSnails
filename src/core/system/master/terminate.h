@@ -45,7 +45,8 @@ protected:
 
     void wait_for_all_workers_finish() {
         // worker finish work and the master get the info
-        transfer_t::msgcls_handler_t get_worker_finish_work = [this, &_wait_workers_to_finish_barrier](std::shared_ptr<Request> request, Request& response) {
+        transfer_t::msgcls_handler_t get_worker_finish_work = \
+        [this](std::shared_ptr<Request> request, Request& response) {
             int node_id = request->meta.client_id;
             LOG(WARNING) << "node " << node_id << " finish work !";
             _num_finished_workers ++;
@@ -90,7 +91,7 @@ private:
 
     int _worker_num = 0;
     int _server_num = 0;
-    auto& gtransfer = global_transfer<ServerWorkerRoute>();
+    transfer_t& gtransfer = global_transfer<ServerWorkerRoute>();
     std::atomic<int> _num_finished_workers{0};
     std::atomic<int> _num_finished_servers{0};
     StateBarrier _wait_workers_to_finish_barrier;
