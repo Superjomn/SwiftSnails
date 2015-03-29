@@ -39,6 +39,8 @@ typedef long long       int64_t;
 typedef unsigned long long   uint64_t;
 typedef uint32_t        index_t;
 
+typedef std::function<void()> voidf_t;
+
 // for repeat patterns
 #define SS_REPEAT1(X) SS_REPEAT_PATTERN(X)
 #define SS_REPEAT2(X, args...) SS_REPEAT_PATTERN(X) SS_REPEAT1(args)

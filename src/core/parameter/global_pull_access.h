@@ -17,7 +17,7 @@ public:
     typedef Grad grad_t;
     typedef std::pair<key_t, val_t> pull_val_t;
 
-    void pull() {
+    void pull(voidf_t rsp_callback = voidf_t() ) {
         // node_id : vals
         std::map<int, std::vector<pull_val_t> > node_reqs;
         arrange_local_vals(node_reqs);
@@ -30,55 +30,61 @@ protected:
         auto &vals = param_cache.params();
         for( auto& item : vals) {
             auto& key = item.first;
-            auto& val = item.second;
+            //auto& val = item.second;
 
-            int node_id = global_hashfrag().to_node_id(item.key);
+            int node_id = global_hashfrag<key_t>().to_node_id(key);
             if(node_reqs.count(node_id) == 0) {
                 node_reqs[node_id] = std::move(std::vector<pull_val_t>());
             }
             node_reqs[node_id].push_back(item);
         }
     }
-
+    /*
+     * @extra_rsp_callback will be called after 
+     * send()'s response_recall_back finished
+     */
     void send(
-        //std::shared_ptr<RecvParcel> &recv_parcel, 
-        std::map<int, std::vector<pull_val_t> &items
+        std::map<int, std::vector<pull_val_t>> &items,
+        voidf_t extra_rsp_callback = voidf_t()
         ) 
     {
         for( auto& item : items) {
-            int &node_id = item.first;
+            int node_id = item.first;
             auto &values = item.second;
 
             Request req;
-            req.message_class = MSG_CLS.WORKER_PULL_REQUEST;
+            req.meta.message_class = WORKER_PULL_REQUEST;
             for(auto& value : values) {
                 req.cont << value.first;
                 req.cont << value.second;
             }
             // get remote parameters
             // rewrite to local cache
-            req.call_back_handler = [](std::shard_ptr<Request> rsp) {
+            req.call_back_handler = [this, extra_rsp_callback](std::shared_ptr<Request> rsp) {
                 key_t key;
                 val_t val;
                 // write local cache 
-                auto& params = global_param_cache().params();
+                auto& params = param_cache.params();
                 // TODO put rwlock inside? 
-                rwlock_write_guard lk (global_param_cache.rwlock());
-                while(! rsp.cont.read_finished()) {
-                    rsp.cont >> key;
-                    rsp.cont >> val;
+                rwlock_write_guard lk (param_cache.rwlock());
+                while(! rsp->cont.read_finished()) {
+                    rsp->cont >> key;
+                    rsp->cont >> val;
                     params[key] = std::move(val);
                 }
-                //recv_parcel->try_wake_up();
+
+                if(extra_rsp_callback) extra_rsp_callback();
             };
 
-            global_transfer().send(node_id, std::move(req));
+            gtransfer.send(std::move(req), node_id);
             //recv_parcel->send(node_id);
         }
     }
 
 private:
-    auto &param_cache = global_param_cache<key_t, val_t, grad_t>();
+    typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
+    param_cache_t &param_cache = global_param_cache<key_t, val_t, grad_t>();
+    Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
 };  // class GlobalPullAccess
 
 

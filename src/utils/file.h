@@ -9,6 +9,7 @@
 #include "common.h"
 #include "string.h"
 
+namespace swift_snails {
 // thread-safe
 void scan_file_by_line (
         FILE *file, 
@@ -34,4 +35,6 @@ void scan_file_by_line (
         }
     }
 }
+
+};  // end namespace swift_snails
     

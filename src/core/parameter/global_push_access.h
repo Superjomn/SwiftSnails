@@ -35,7 +35,7 @@ protected:
             auto& key = item.first;
             auto& grad = item.second;
 
-            int node_id = global_hashfrag().to_node_id(item.key);
+            int node_id = global_hashfrag<key_t>().to_node_id(item.key);
             if(node_reqs.count(node_id) == 0) {
                 node_reqs[node_id] = std::move(std::vector<push_val_t>());
             }
@@ -43,13 +43,13 @@ protected:
         }
     }
 
-    void send(std::map<int, std::vector<push_val_t>& items) {
+    void send(std::map<int, std::vector<push_val_t>>& items) {
         for (auto& item : items) {
             int node_id = item.first;
             auto &grads = item.second;
 
             Request req;
-            req.message_classes = MSG_CLS.WORKER_PUSH_REQUEST;
+            req.meta.message_class = WORKER_PUSH_REQUEST;
             for(auto& grad : grads) {
                 req.cont << grad.first; // key
                 req.cont << grad.second;// grad value
@@ -57,7 +57,8 @@ protected:
             // nothing to do after grads are pushed
             req.call_back_handler = [](std::shared_ptr<Request> rsp) {
                 LOG(INFO) << "Grads are pushed";
-            }
+            };
+            gtransfer.send(node_id, std::move(req));
         }
     }
     /*
@@ -71,7 +72,9 @@ protected:
     }
 
 private:
-    auto &param_cache = global_param_cache<key_t, val_t, grad_t>();
+    typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
+    param_cache_t &param_cache = global_param_cache<key_t, val_t, grad_t>();
+    Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
 
 };  // end class GlobalPushAccess
 

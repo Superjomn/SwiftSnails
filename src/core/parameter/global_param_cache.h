@@ -10,10 +10,10 @@ public:
     typedef Key  key_t;
     typedef Val  val_t;
     // update local Grad to remote
-    virtual update_param(const key_t& key, val_t& val, const grad_t& grad) = 0;
-    virtual merge_grad(const key_t& key, grad_t& grad, const grad_t& other) = 0;
+    virtual void update_param(const key_t& key, val_t& val, const grad_t& grad) = 0;
+    virtual void merge_grad(const key_t& key, grad_t& grad, const grad_t& other) = 0;
     // after PULL , rewrite local parameter cache
-    virtual rewrite_param(const key_t& key, val_t &val, const val_t &remote_val) = 0;
+    virtual void rewrite_param(const key_t& key, val_t &val, const val_t &remote_val) = 0;
 };
 /*
  * Key: key of parameter
@@ -87,7 +87,7 @@ private:
     std::map<key_t, val_t> _params;
     std::map<key_t, grad_t> _grads;
     // number of iterations
-    std::atomic<int> _num_iters = 0;
+    std::atomic<int> _num_iters{0};
     std::mutex _iter_mutex;
     std::condition_variable _iter_cond;
     // tell the service threads to terminate
