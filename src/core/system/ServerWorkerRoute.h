@@ -20,11 +20,13 @@ public:
         if(is_server) {
             id = _server_num ++;
         	register_node(id, std::move(addr));
+            _server_ids.push_back(id);
         } else {
             id = id_max_range - ++_worker_num;
             register_node(id, std::move(addr));
+            _worker_ids.push_back(id);
         }
-        CHECK(id >= 0);
+        CHECK_GE(id, 0);
         return id;
     }
 
@@ -73,10 +75,18 @@ public:
     int worker_num() const {
         return _worker_num;
     }
+    const std::vector<int>& server_ids() {
+        return _server_ids;
+    }
+    const std::vector<int>& worker_ids() {
+        return _worker_ids;
+    }
 
 private:
     int _server_num = 0;
     int _worker_num = 0;
+    std::vector<int> _server_ids;
+    std::vector<int> _worker_ids;
     const int id_max_range = std::numeric_limits<int>::max();
 };
 
