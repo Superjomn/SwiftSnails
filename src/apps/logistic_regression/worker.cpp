@@ -33,10 +33,9 @@ public:
     typedef pair<key_t, val_t> rcd_t;
 
     explicit Algorithm() {
-        _path = global_config().get_config("data_path").to_string();
+        //_path = global_config().get_config("data_path").to_string();
         _num_iters = global_config().get_config("num_iters").to_int32();
         learning_rate = global_config().get_config("learning_rate").to_float();
-        CHECK(_path.empty() ) << "data_path config need to be inited";
         // init async channel
         int _async_channel_thread_num = global_config().get_config("async_channel_thread_num").to_int32();
         CHECK_GT(_async_channel_thread_num, 0);
@@ -45,14 +44,16 @@ public:
     }
 
 
-    void operator() () {
+    void operator() (const std::string &data_path) {
         init_local_param_keys(_async_channel_thread_num);
         first_pull_to_init_local_param();
-        train();
+        train(data_path);
     }
 
     // batch train
-    void train() {
+    void train(const std::string &data_path) {
+        _path = data_path;
+        CHECK(_path.empty() ) << "data_path config need to be inited";
         for(int i = 0; i < _num_iters; i ++) {
             LOG(WARNING) << i << " th iteration";
             train_iter(_async_channel_thread_num);
@@ -204,8 +205,9 @@ private:
 int main(int argc, char* argv[]) {
     // init config
     CMDLine cmdline(argc, argv);
-    string param_config_path = cmdline.registerParameter("config", "path of config file");
     string param_help = cmdline.registerParameter("help", "this screen");
+    string param_config_path = cmdline.registerParameter("config", "path of config file");
+    string param_data_path = cmdline.registerParameter("data", "path of dataset, text only!");
     // parse parameters
     if(cmdline.hasParameter(param_help) || argc == 1) {
         cout << endl;
@@ -215,6 +217,10 @@ int main(int argc, char* argv[]) {
         cmdline.print_help();
         cout << endl;
         cout << endl;
+        return 0;
+    }
+    if(!cmdline.hasParameter(param_config_path)) {
+        LOG(ERROR) << "missing parameter: config";
         return 0;
     }
     if(!cmdline.hasParameter(param_config_path)) {
@@ -237,7 +243,7 @@ int main(int argc, char* argv[]) {
 
     // begin to train
     Algorithm alg;
-    alg();
+    alg(param_data_path);
 
     ClientTerminate terminate;
     terminate();

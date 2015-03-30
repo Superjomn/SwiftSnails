@@ -19,7 +19,6 @@ void worker_init_configs() {
         init_timeout \
         push_period \
         pull_period \
-        data_path \
         async_channel_thread_num \
         ";
     init_configs(configs);
