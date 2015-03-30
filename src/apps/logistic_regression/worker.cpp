@@ -2,6 +2,7 @@
 #include "../../utils/all.h"
 #include "../../core/system/node_init.h"
 #include "../../core/system/worker/init_config.h"
+#include "../../core/system/worker/terminate.h"
 #include "../../core/parameter/global_pull_access.h"
 #include "../../core/parameter/global_push_access.h"
 #include "access_method.h"
@@ -47,6 +48,7 @@ public:
     void operator() () {
         init_local_param_keys(_async_channel_thread_num);
         first_pull_to_init_local_param();
+        train();
     }
 
     // batch train
@@ -232,6 +234,13 @@ int main(int argc, char* argv[]) {
 
     node_transfer_init(false);
     node_hashfrag_init();
+
+    // begin to train
+    Algorithm alg;
+    alg();
+
+    ClientTerminate terminate;
+    terminate();
     
     return 0;
 };

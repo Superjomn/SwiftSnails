@@ -3,11 +3,14 @@
 #include "../../core/system/node_init.h"
 #include "../../core/system/server/init.h"
 #include "../../core/system/worker/init_config.h"
+#include "../../core/system/server/terminate.h"
 using namespace swift_snails;
 using namespace std;
 using namespace fms;
 
 int main(int argc, char* argv[]) {
+    typedef index_t key_t;
+    typedef float val_t;
     // init config
     CMDLine cmdline(argc, argv);
     string param_config_path = cmdline.registerParameter("config", "path of config file");
@@ -39,6 +42,9 @@ int main(int argc, char* argv[]) {
 
     node_transfer_init(true);
     node_hashfrag_init();
+
+    ServerTerminate<key_t, val_t> terminate;
+    terminate();
     
     return 0;
 };

@@ -14,6 +14,7 @@
 #include "core/Message_test.h"
 #include "core/BasicChannel_test.h"
 #include "core/AsynExec_test.h"
+#include "core/system/master/terminate_test.h"
 
 // third
 #include "third/eigen_test.h"
