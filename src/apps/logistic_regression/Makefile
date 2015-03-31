@@ -1,5 +1,5 @@
-CXX=g++-4.9
-#CXX=g++
+#CXX=g++-4.9
+CXX=g++
 CC=gcc
 BIN=./bin
 
@@ -8,8 +8,7 @@ CXXFLAGS= -g -pipe -Wextra -Wall -Wno-parentheses \
   -Wno-literal-suffix \
   -Wno-unused-parameter \
   -Wno-unused-local-typedefs \
-  -w \
--pthread -lpthread -DHAVE_PCAP -lgtest -lgtest_main -std=c++11 -lzmq -lglog
+  -pthread -lpthread -DHAVE_PCAP -lgtest -lgtest_main -std=c++11 -lzmq -lglog
 
 LOCAL_ROOT=../../../third/local
 GTEST_HOME=$(LOCAL_ROOT)/gtest
@@ -25,7 +24,7 @@ THIRD_LIB=-L$(LOCAL_ROOT)/glog/lib/  -L$(LOCAL_ROOT)/zeromq/lib/
 
 .PHONY:all clean test cur
 
-ALL: master worker
+ALL: master worker server
 
 master: master.cpp
 	$(CXX) master.cpp $(THIRD_INCPATH) -L$(GTEST_HOME)/lib/.libs -Xlinker $(THIRD_LIB)  $(CXXFLAGS) -o $(BIN)/master

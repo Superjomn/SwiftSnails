@@ -57,7 +57,7 @@ protected:
 
 private:
     transfer_t::msgcls_handler_t pull_handler = \
-        [this] (std::shared_ptr<Request> req,  std::shared_ptr<Request>& rsp)
+        [this] (std::shared_ptr<Request> req, Request& rsp)
         {
             // read request
             std::vector<pull_val_t> req_items;
@@ -74,8 +74,8 @@ private:
                 val_t& val = item.second;
                 pull_access->get_pull_value(key, val);
                 // put response
-                rsp->cont << key;
-                rsp->cont << val;
+                rsp.cont << key;
+                rsp.cont << val;
             }
         };
 
@@ -85,7 +85,7 @@ private:
 
     SparseTable<key_t, val_t>& sparse_table; 
 
-    std::unique_ptr<PullAccessAgent<table_t, AccessMethod> >& pull_access; 
+    std::unique_ptr<PullAccessAgent<table_t, AccessMethod> > pull_access; 
 
 };  // class ServerInitPullMethod
 
@@ -129,7 +129,7 @@ protected:
 private:
 
     transfer_t::msgcls_handler_t push_handler = \
-        [this] (std::shared_ptr<Request> req,  std::shared_ptr<Request>& rsp)
+        [this] (std::shared_ptr<Request> req,  Request& rsp)
         {
             //std::vector<push_val_t> req_items;
             while(! req->cont.read_finished()) {
@@ -138,7 +138,7 @@ private:
                 req->cont >> key;
                 req->cont >> grad;
                 //req_items.emplace_back(std::move(key), std::move(grad));
-                push_access->apply_pull_value(key, grad);
+                push_access->apply_push_value(key, grad);
             }
         };
     
@@ -148,7 +148,7 @@ private:
 
     SparseTable<key_t, val_t>& sparse_table;
 
-    std::unique_ptr<PushAccessAgent<table_t, AccessMethod> >& push_access;
+    std::unique_ptr<PushAccessAgent<table_t, AccessMethod> > push_access;
 
 
 };  // class ServerInitPushMethod

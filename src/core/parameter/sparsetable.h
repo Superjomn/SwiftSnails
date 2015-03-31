@@ -134,15 +134,15 @@ public:
 
     explicit PullAccessAgent() {
     }
-    void init(table_t& table, const AccessMethod& method)
+    void init(table_t& table, AccessMethod& method)
     {
         _table = &table;
         _access_method = &method;
     }
 
-    explicit PullAccessAgent(table_t& table, const AccessMethod& method) :
+    explicit PullAccessAgent(table_t& table, AccessMethod& method) :
         _table(&table),
-        _access_method(method)
+        _access_method(&method)
     { }
 
     int to_shard_id(const key_t& key) {
@@ -167,7 +167,7 @@ public:
 
 private:
     table_t     *_table;
-    AccessMethod _access_method;
+    AccessMethod *_access_method;
 };  // class AccessAgent
 
 
@@ -184,31 +184,31 @@ public:
 
     explicit PushAccessAgent() {
     }
-    void init(table_t& table, const access_method_t& access_method) {
+    void init(table_t& table, access_method_t& access_method) {
         _table = &table;
         _access_method = &access_method;
     }
 
-    explicit PushAccessAgent(table_t& table, const access_method_t& access_method) :
+    explicit PushAccessAgent(table_t& table, access_method_t& access_method) :
         _table(&table), 
-        _access_method(access_method)
+        _access_method(&access_method)
     { }
 
     void merge_push_value(const key_t &key, push_val_t &push_val, const push_val_t &other_push_val) {
-        _access_method.merge_push_value(key, push_val, other_push_val);
+        _access_method->merge_push_value(key, push_val, other_push_val);
     }
     // update parameters with the value from remote worker nodes
     void apply_push_value(const key_t& key, const push_val_t& push_val)
     {
-        push_param_t *param;
+        push_param_t *param = nullptr;
         // TODO improve this in fix mode?
-        CHECK( find(key, param) ) << "new key should be inited before";
-        _access_method.apply_push_value(key, *param, push_val);
+        CHECK( _table->find(key, param) ) << "new key should be inited before";
+        _access_method->apply_push_value(key, *param, push_val);
     }
 
 private:
     table_t         *_table = nullptr;
-    access_method_t _access_method;
+    access_method_t *_access_method = nullptr;
 
 };  // class PushAccessAgent
 
