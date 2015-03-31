@@ -1,4 +1,5 @@
 #include <climits>
+#include "../../utils/common.h"
 #include "../../utils/file.h"
 #include "gtest/gtest.h"
 using namespace std;

@@ -58,7 +58,7 @@ protected:
             req.call_back_handler = [](std::shared_ptr<Request> rsp) {
                 LOG(INFO) << "Grads are pushed";
             };
-            gtransfer.send(node_id, std::move(req));
+            gtransfer.send(std::move(req), node_id);
         }
     }
     /*

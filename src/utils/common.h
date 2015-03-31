@@ -16,6 +16,7 @@
 #include <set>
 #include <vector>
 #include <mutex>
+#include <atomic>
 #include <condition_variable>
 #include <memory>
 #include <queue>

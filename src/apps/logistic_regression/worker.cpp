@@ -187,9 +187,9 @@ private:
     string _path;
     std::shared_ptr<AsynExec::channel_t> _async_channel;
 
-    typedef GlobalPullAccess<key_t, val_t, grad_t> pull_access_t;
-    typedef GlobalPushAccess<key_t, val_t, grad_t> push_access_t;
-    typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
+    using pull_access_t = GlobalPullAccess<key_t, val_t, grad_t> ;
+    using push_access_t = GlobalPushAccess<key_t, val_t, grad_t> ;
+    using param_cache_t = GlobalParamCache<key_t, val_t, grad_t> ;
 
     param_cache_t &param_cache = global_param_cache<key_t, val_t, grad_t>();
 

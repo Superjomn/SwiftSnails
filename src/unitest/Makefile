@@ -1,9 +1,9 @@
-CXX=g++
+CXX=g++-4.9
 CC=gcc
 BIN=./bin
 
 #CXXFLAGS= -static -g -std=c++11 -pthread -lpthread -Wall -DHAVE_PCAP -lgtest -lgtest_main
-CXXFLAGS= -g -std=c++11 -pthread -lpthread -Wall -DHAVE_PCAP -lgtest -lgtest_main
+CXXFLAGS= -g -std=c++11 -pthread -lpthread -Wall -lgtest -lgtest_main
 
 LOCAL_ROOT=../../third/local
 GTEST_HOME=$(LOCAL_ROOT)/gtest
