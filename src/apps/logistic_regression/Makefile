@@ -1,4 +1,5 @@
-CXX=g++-4.9
+#CXX=g++-4.9
+CXX=g++
 CC=gcc
 BIN=./bin
 
