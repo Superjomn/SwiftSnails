@@ -17,7 +17,9 @@ class ClientTerminate {
 public:
 	typedef Transfer<ServerWorkerRoute> transfer_t;
 
-    explicit ClientTerminate() {
+    explicit ClientTerminate() : \
+        gtransfer(global_transfer<ServerWorkerRoute>())
+    {
     }
 
     void operator() () {
@@ -43,7 +45,7 @@ protected:
     }
     
 private:
-    transfer_t& gtransfer = global_transfer<ServerWorkerRoute>();
+    transfer_t& gtransfer; 
     StateBarrier _wait_rsp_barrier;
 
 };  // class ClientTerminate

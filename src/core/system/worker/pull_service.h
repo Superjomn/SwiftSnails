@@ -15,7 +15,10 @@ public:
     typedef Val val_t;
     typedef Grad grad_t;
 
-    explicit PullService() {
+    explicit PullService() : \
+        param_cache(global_param_cache<key_t, val_t, grad_t>()),
+        pull_access(global_pull_access<key_t, val_t, grad_t>())
+    {
         _period = global_config().get_config("pull_period").to_int32();
         CHECK(_period > 0);
     }
@@ -39,11 +42,9 @@ protected:
 private:
 
     typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
-    param_cache_t& param_cache = global_param_cache<key_t, val_t, grad_t>();
-
     typedef GlobalPullAccess<key_t, val_t, grad_t> pull_access_t;
-
-    pull_access_t& pull_access = global_pull_access<key_t, val_t, grad_t>();
+    param_cache_t& param_cache;
+    pull_access_t& pull_access; 
 
     int _period = 0;
 

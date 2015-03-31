@@ -16,6 +16,11 @@ public:
     typedef Grad grad_t;
     typedef std::pair<key_t, grad_t> push_val_t;
 
+    GlobalPushAccess() : \
+        param_cache(global_param_cache<key_t, val_t, grad_t>()),
+        gtransfer(global_transfer<ServerWorkerRoute>())
+    { }
+
     void push() {
         // nodeid to reqs
         std::map<int, std::vector<push_val_t> > node_reqs;
@@ -73,8 +78,8 @@ protected:
 
 private:
     typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
-    param_cache_t &param_cache = global_param_cache<key_t, val_t, grad_t>();
-    Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
+    param_cache_t &param_cache; 
+    Transfer<ServerWorkerRoute>& gtransfer; 
 
 };  // end class GlobalPushAccess
 

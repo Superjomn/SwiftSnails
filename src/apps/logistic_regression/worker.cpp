@@ -32,7 +32,11 @@ public:
     typedef float grad_t;
     typedef pair<key_t, val_t> rcd_t;
 
-    explicit Algorithm() {
+    explicit Algorithm() : \
+        param_cache(global_param_cache<key_t, val_t, grad_t>()),
+        pull_access(global_pull_access<key_t, val_t, grad_t>()),
+        push_access(global_push_access<key_t, val_t, grad_t>())
+    {
         //_path = global_config().get_config("data_path").to_string();
         _num_iters = global_config().get_config("num_iters").to_int32();
         learning_rate = global_config().get_config("learning_rate").to_float();
@@ -191,10 +195,9 @@ private:
     using push_access_t = GlobalPushAccess<key_t, val_t, grad_t> ;
     using param_cache_t = GlobalParamCache<key_t, val_t, grad_t> ;
 
-    param_cache_t &param_cache = global_param_cache<key_t, val_t, grad_t>();
-
-    pull_access_t& pull_access = global_pull_access<key_t, val_t, grad_t>();
-    push_access_t& push_access = global_push_access<key_t, val_t, grad_t>();
+    param_cache_t &param_cache;
+    pull_access_t& pull_access;
+    push_access_t& push_access;
     
     int _async_channel_thread_num = 0;
     int num_feas = 0;

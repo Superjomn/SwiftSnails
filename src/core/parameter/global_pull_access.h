@@ -17,6 +17,11 @@ public:
     typedef Grad grad_t;
     typedef std::pair<key_t, val_t> pull_val_t;
 
+    GlobalPullAccess() : \
+        param_cache(global_param_cache<key_t, val_t, grad_t>()),
+        gtransfer(global_transfer<ServerWorkerRoute>())
+    { }
+
     void pull(voidf_t rsp_callback = voidf_t() ) {
         // node_id : vals
         std::map<int, std::vector<pull_val_t> > node_reqs;
@@ -83,8 +88,8 @@ protected:
 
 private:
     typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
-    param_cache_t &param_cache = global_param_cache<key_t, val_t, grad_t>();
-    Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
+    param_cache_t &param_cache; 
+    Transfer<ServerWorkerRoute>& gtransfer; 
 };  // class GlobalPullAccess
 
 

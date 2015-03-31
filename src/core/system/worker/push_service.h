@@ -16,7 +16,10 @@ public:
     typedef Val val_t;
     typedef Grad grad_t;
 
-    explicit PushService() {
+    explicit PushService() : \
+        param_cache(global_param_cache<key_t, val_t, grad_t>()),
+        push_access( global_push_access<key_t, val_t, grad_t>())
+    {
         _period = global_config().get_config("push_period").to_int32();
         CHECK(_period > 0);
     }
@@ -37,8 +40,8 @@ private:
     typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
     typedef GlobalPushAccess<key_t, val_t, grad_t> push_access_t;
 
-    param_cache_t& param_cache = global_param_cache<key_t, val_t, grad_t>();
-    push_access_t& push_access = global_push_access<key_t, val_t, grad_t>();
+    param_cache_t& param_cache; 
+    push_access_t& push_access;
 
     int _period = 0;
 
