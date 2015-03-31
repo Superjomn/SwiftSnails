@@ -83,29 +83,34 @@ public:
                 }
             };
 
-        AsynExec::task_t task = [file, &file_mut, &handle_line] {
+        AsynExec::task_t task = [&file, &file_mut, handle_line] {
             auto _handle_line = handle_line;
             scan_file_by_line(file, file_mut, std::move(_handle_line) );
         };
 
         async_exec(thread_num, std::move(task), async_channel());
         std::fclose(file);
+        LOG(INFO) << "to get number of features";
         // get num of features
         for(auto& key : keys) {
             if(key > num_feas) num_feas = key;
         }
+        param_cache.init_keys(keys);
         num_feas ++;
+        LOG(INFO) << "finish init_local_param_keys";
     }
 
     // should init local parameter cache's keys
     void first_pull_to_init_local_param() {
+        LOG(WARNING) << "first_pull_to_init_local_param";
         StateBarrier barrier;
         voidf_t extra_rsp_callback = [&barrier] {
             barrier.set_state_valid();
             barrier.try_unblock();
         };
-        pull_access.pull();
+        pull_access.pull(extra_rsp_callback);
         barrier.block();
+        LOG(WARNING) << "finish first_pull_to_init_local_param";
     }
 
 protected:

@@ -23,16 +23,21 @@ public:
     { }
 
     void pull(voidf_t rsp_callback = voidf_t() ) {
+        LOG(INFO) << "pull() from server";
         // node_id : vals
         std::map<int, std::vector<pull_val_t> > node_reqs;
+        LOG(INFO) << "to arrange_local_vals";
         arrange_local_vals(node_reqs);
+        LOG(INFO) << "to send pull requests";
         // send message to each nodes
-        send(node_reqs);
+        send(node_reqs, rsp_callback);
     }
 
 protected:
     void arrange_local_vals(std::map<int, std::vector<pull_val_t> > &node_reqs) {
+        CHECK(! param_cache.params().empty()) << "local param cache should be inited";
         auto &vals = param_cache.params();
+        LOG(INFO) << "param_cache get " << vals.size() << " keys";
         for( auto& item : vals) {
             auto& key = item.first;
             //auto& val = item.second;
@@ -43,6 +48,7 @@ protected:
             }
             node_reqs[node_id].push_back(item);
         }
+        LOG(INFO) << "split local keys to " << node_reqs.size() << " parts";
     }
     /*
      * @extra_rsp_callback will be called after 
@@ -57,6 +63,8 @@ protected:
             int node_id = item.first;
             auto &values = item.second;
 
+            LOG(INFO) << "to send to " << node_id;
+
             Request req;
             req.meta.message_class = WORKER_PULL_REQUEST;
             for(auto& value : values) {
@@ -66,6 +74,8 @@ protected:
             // get remote parameters
             // rewrite to local cache
             req.call_back_handler = [this, extra_rsp_callback](std::shared_ptr<Request> rsp) {
+                LOG(INFO) << "pull response arrived";
+
                 key_t key;
                 val_t val;
                 // write local cache 
@@ -80,6 +90,8 @@ protected:
 
                 if(extra_rsp_callback) extra_rsp_callback();
             };
+
+            LOG(INFO) << "send pull req to " << node_id;
 
             gtransfer.send(std::move(req), node_id);
             //recv_parcel->send(node_id);

@@ -134,15 +134,13 @@ public:
 
     explicit PullAccessAgent() {
     }
-    void init(table_t& table, AccessMethod& method)
+    void init(table_t& table)
     {
         _table = &table;
-        _access_method = &method;
     }
 
-    explicit PullAccessAgent(table_t& table, AccessMethod& method) :
-        _table(&table),
-        _access_method(&method)
+    explicit PullAccessAgent(table_t& table) :
+        _table(&table)
     { }
 
     int to_shard_id(const key_t& key) {
@@ -154,20 +152,20 @@ public:
     void get_pull_value(const key_t& key, pull_val_t &val) {
         pull_param_t param;
         if (! _table->find(key, param)) {
-            _access_method->init_param(key, param);
+            _access_method.init_param(key, param);
             _table->assign(key, param);
         }
-        _access_method->get_pull_value(key, param, val);
+        _access_method.get_pull_value(key, param, val);
     }
     // client side
     // set local parameters with the value from remote nodes
     void apply_pull_value(const key_t &key, pull_param_t &param, const pull_val_t& val) {
-        _access_method->apply_pull_value(key, param, val);
+        _access_method.apply_pull_value(key, param, val);
     }
 
 private:
     table_t     *_table;
-    AccessMethod *_access_method;
+    AccessMethod _access_method;
 };  // class AccessAgent
 
 
@@ -178,24 +176,21 @@ public:
     typedef typename Table::key_t   key_t;
     typedef typename Table::value_t value_t;
 
-    typedef AccessMethod   access_method_t;
     typedef typename AccessMethod::push_val_t push_val_t;
     typedef typename AccessMethod::push_param_t push_param_t;
 
     explicit PushAccessAgent() {
     }
-    void init(table_t& table, access_method_t& access_method) {
+    void init(table_t& table) {
         _table = &table;
-        _access_method = &access_method;
     }
 
-    explicit PushAccessAgent(table_t& table, access_method_t& access_method) :
-        _table(&table), 
-        _access_method(&access_method)
+    explicit PushAccessAgent(table_t& table) : \
+        _table(&table) 
     { }
 
     void merge_push_value(const key_t &key, push_val_t &push_val, const push_val_t &other_push_val) {
-        _access_method->merge_push_value(key, push_val, other_push_val);
+        _access_method.merge_push_value(key, push_val, other_push_val);
     }
     // update parameters with the value from remote worker nodes
     void apply_push_value(const key_t& key, const push_val_t& push_val)
@@ -203,12 +198,12 @@ public:
         push_param_t *param = nullptr;
         // TODO improve this in fix mode?
         CHECK( _table->find(key, param) ) << "new key should be inited before";
-        _access_method->apply_push_value(key, *param, push_val);
+        _access_method.apply_push_value(key, *param, push_val);
     }
 
 private:
     table_t         *_table = nullptr;
-    access_method_t *_access_method = nullptr;
+    AccessMethod    _access_method;
 
 };  // class PushAccessAgent
 
@@ -224,7 +219,7 @@ auto make_pull_access(Table &table)
 -> std::unique_ptr< PullAccessAgent<Table, AccessMethod>>
 {
     AccessMethod method;
-    std::unique_ptr<PullAccessAgent<Table, AccessMethod>> res(new PullAccessAgent<Table, AccessMethod>(table, method));
+    std::unique_ptr<PullAccessAgent<Table, AccessMethod>> res(new PullAccessAgent<Table, AccessMethod>(table));
     return std::move(res);
 }
 
@@ -234,7 +229,7 @@ auto make_push_access(Table &table)
 -> std::unique_ptr< PushAccessAgent<Table, AccessMethod>>
 {
     AccessMethod method;
-    std::unique_ptr<PushAccessAgent<Table, AccessMethod>> res(new PushAccessAgent<Table, AccessMethod>(table, method));
+    std::unique_ptr<PushAccessAgent<Table, AccessMethod>> res(new PushAccessAgent<Table, AccessMethod>(table));
     return std::move(res);
 }
 
