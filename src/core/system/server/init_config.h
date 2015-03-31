@@ -11,6 +11,7 @@ void server_init_configs() {
         " \
         listen_addr \
         async_exec_num \
+        shard_num \
         listen_thread_num \
         master_addr \
         init_timeout \

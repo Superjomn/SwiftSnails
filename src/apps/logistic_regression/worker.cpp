@@ -37,11 +37,10 @@ public:
         pull_access(global_pull_access<key_t, val_t, grad_t>()),
         push_access(global_push_access<key_t, val_t, grad_t>())
     {
-        //_path = global_config().get_config("data_path").to_string();
         _num_iters = global_config().get_config("num_iters").to_int32();
         learning_rate = global_config().get_config("learning_rate").to_float();
         // init async channel
-        int _async_channel_thread_num = global_config().get_config("async_channel_thread_num").to_int32();
+        _async_channel_thread_num = global_config().get_config("async_channel_thread_num").to_int32();
         CHECK_GT(_async_channel_thread_num, 0);
         AsynExec as(_async_channel_thread_num);
         _async_channel = as.open();
@@ -49,6 +48,7 @@ public:
 
 
     void operator() (const std::string &data_path) {
+        set_data_path(data_path);
         init_local_param_keys(_async_channel_thread_num);
         first_pull_to_init_local_param();
         train(data_path);
@@ -56,8 +56,7 @@ public:
 
     // batch train
     void train(const std::string &data_path) {
-        _path = data_path;
-        CHECK(_path.empty() ) << "data_path config need to be inited";
+        set_data_path(data_path);
         for(int i = 0; i < _num_iters; i ++) {
             LOG(WARNING) << i << " th iteration";
             train_iter(_async_channel_thread_num);
@@ -69,7 +68,8 @@ public:
         DLOG(INFO) << "start " << thread_num << " threads to gather keys";
         CHECK_GT(thread_num, 0);
         // make sure the following task wait for the init period
-        FILE* file = std::fopen(_path.c_str(), "r");
+        FILE* file = std::fopen(data_path().c_str(), "r");
+        CHECK(file) << "file: open " << data_path() << " failed!";
         LineFileReader line_reader;
         std::mutex file_mut;
 
@@ -142,7 +142,8 @@ protected:
     void train_iter(int thread_num) {
 
         LOG(INFO) << "train file with " << thread_num << " threads";
-        FILE* file = fopen(_path.c_str(), "r");
+        LOG(INFO) << "to open data:\t" << data_path();
+        FILE* file = fopen(data_path().c_str(), "r");
         LineFileReader line_reader;
         std::mutex file_mut;
 
@@ -187,8 +188,18 @@ protected:
         return _async_channel;
     }
 
+    void set_data_path(const std::string &path) {
+        _data_path = path;
+        CHECK( ! _data_path.empty()) << "data path is empty!";
+    }
+
+    const std::string& data_path() {
+        CHECK(! _data_path.empty()) << "data path should be inited!";
+        return _data_path;
+    }
+
 private:
-    string _path;
+    std::string _data_path;
     std::shared_ptr<AsynExec::channel_t> _async_channel;
 
     using pull_access_t = GlobalPullAccess<key_t, val_t, grad_t> ;
@@ -226,11 +237,14 @@ int main(int argc, char* argv[]) {
         LOG(ERROR) << "missing parameter: config";
         return 0;
     }
-    if(!cmdline.hasParameter(param_config_path)) {
-        LOG(ERROR) << "missing parameter: config";
+    if(!cmdline.hasParameter(param_data_path)) {
+        LOG(ERROR) << "missing parameter: data";
         return 0;
     }
     std::string config_path = cmdline.getValue(param_config_path);
+    std::string data_path = cmdline.getValue(param_data_path);
+
+    LOG(WARNING) << "get data set:\t" << data_path;
 
     worker_init_configs();
 
@@ -246,7 +260,7 @@ int main(int argc, char* argv[]) {
 
     // begin to train
     Algorithm alg;
-    alg(param_data_path);
+    alg(data_path);
 
     ClientTerminate terminate;
     terminate();

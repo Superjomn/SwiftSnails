@@ -66,6 +66,10 @@ protected:
 
     void send_route_to_workers() {
 
+        LOG(INFO) << "get \t" << registered_server_num << "\tservers";
+        LOG(INFO) << "get \t" << registered_node_num - registered_server_num<< "\tworkers";
+        LOG(WARNING) << "to send routes to workers";
+
         for(auto& r : gtransfer.route().send_addrs()) {
             // TODO make response copy ? 
             // change to reduce ? 

@@ -21,6 +21,7 @@ void worker_init_configs() {
         push_period \
         pull_period \
         async_channel_thread_num \
+        learning_rate \
         ";
     init_configs(configs);
 }
