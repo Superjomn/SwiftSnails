@@ -34,7 +34,10 @@ public:
     typedef std::pair<key_t, val_t> pull_val_t;
 	typedef Transfer<ServerWorkerRoute> transfer_t;
 
-    explicit ServerInitPullMethod() 
+    explicit ServerInitPullMethod() : \
+        gtransfer(global_transfer<ServerWorkerRoute>()) ,
+        sparse_table(global_sparse_table<key_t, val_t>()),
+        pull_access(make_pull_access<table_t, AccessMethod>(sparse_table))
     { }
 
     void operator() () {
@@ -78,11 +81,11 @@ private:
 
 
 private:
-    Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
+    Transfer<ServerWorkerRoute>& gtransfer;
 
-    SparseTable<key_t, val_t>& sparse_table = global_sparse_table<key_t, val_t>();
+    SparseTable<key_t, val_t>& sparse_table; 
 
-    std::unique_ptr<PullAccessAgent<table_t, AccessMethod> >& pull_access = make_pull_access<table_t, AccessMethod>(sparse_table);
+    std::unique_ptr<PullAccessAgent<table_t, AccessMethod> >& pull_access; 
 
 };  // class ServerInitPullMethod
 
@@ -102,7 +105,10 @@ public:
     typedef std::pair<key_t, grad_t> push_val_t;
 	typedef Transfer<ServerWorkerRoute> transfer_t;
 
-    explicit ServerInitPushMethod() 
+    explicit ServerInitPushMethod() : \
+        gtransfer(global_transfer<ServerWorkerRoute>()),
+        sparse_table(global_sparse_table<key_t, val_t>()),
+        push_access(make_push_access<table_t, AccessMethod>(sparse_table))
     { }
 
     void operator() () {
@@ -138,11 +144,11 @@ private:
     
 private:
 
-    Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
+    Transfer<ServerWorkerRoute>& gtransfer; 
 
-    SparseTable<key_t, val_t>& sparse_table = global_sparse_table<key_t, val_t>();
+    SparseTable<key_t, val_t>& sparse_table;
 
-    std::unique_ptr<PushAccessAgent<table_t, AccessMethod> >& push_access = make_push_access<table_t, AccessMethod>(sparse_table);
+    std::unique_ptr<PushAccessAgent<table_t, AccessMethod> >& push_access;
 
 
 };  // class ServerInitPushMethod

@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
     if(cmdline.hasParameter(param_help) || argc == 1) {
         cout << endl;
         cout << "===================================================================" << endl;
-        cout << "server main program";
+        cout << "server main program" << endl;
         cout << "===================================================================" << endl;
         cmdline.print_help();
         cout << endl;

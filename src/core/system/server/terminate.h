@@ -17,9 +17,13 @@ template<class Key, class Value>
 class ServerTerminate {
 public:
 	typedef Transfer<ServerWorkerRoute> transfer_t;
+    typedef Key key_t;
+    typedef Value val_t;
 
-    explicit ServerTerminate() {
-    }
+    explicit ServerTerminate() : \
+        gtransfer(global_transfer<ServerWorkerRoute>()) ,
+        sparse_table(global_sparse_table<key_t, val_t>())
+    { }
 
     void operator() () {
         wait_for_master_terminate_message();
@@ -32,7 +36,7 @@ protected:
         transfer_t::msgcls_handler_t handler = \
         [this](std::shared_ptr<Request> request, Request& response) {
             // export local parameter to pipe
-            gtable.output();
+            sparse_table.output();
 
             _wait_master_terminate_barrier.set_state_valid();
             _wait_master_terminate_barrier.try_unblock();
@@ -44,9 +48,11 @@ protected:
     }
    
 private:
-    transfer_t& gtransfer = global_transfer<ServerWorkerRoute>();
-    typedef SparseTable<Key, Value> table_t;
-    table_t& gtable = global_sparse_table<Key, Value>();
+
+    Transfer<ServerWorkerRoute>& gtransfer; 
+
+    SparseTable<key_t, val_t>& sparse_table;
+
     StateBarrier _wait_master_terminate_barrier;
 
 };  // class ServerTerminate
