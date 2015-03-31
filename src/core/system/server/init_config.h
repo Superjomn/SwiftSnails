@@ -3,12 +3,9 @@
 
 namespace swift_snails {
 
-void worker_init_configs() {
+void server_init_configs() {
     /*
-     * push_period: push every N times
-     * pull_period: pull  every N times
-     * data_path: path of the dataset
-     * async_channel_thread_num: number of threads in the async channel
+     * frag_num: number of fragments
      */
     std::string configs = 
         " \
@@ -16,14 +13,12 @@ void worker_init_configs() {
         async_exec_num \
         listen_thread_num \
         master_addr \
-        num_iters \
         init_timeout \
-        push_period \
-        pull_period \
-        async_channel_thread_num \
+        frag_num \
         ";
     init_configs(configs);
 }
+
 
 
 };  // end namespace swift_snails
