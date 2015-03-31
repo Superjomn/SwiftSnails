@@ -31,6 +31,8 @@ protected:
 
     // send finish message to master
     void worker_send_finish_message() {
+        LOG(WARNING) << ".. worker_send_finish_message";
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
         Request req;
         req.meta.message_class = WORKER_FINISH_WORK;
         req.call_back_handler = [this] (std::shared_ptr<Request> response) { 

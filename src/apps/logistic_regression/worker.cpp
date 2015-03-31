@@ -70,14 +70,15 @@ public:
         // make sure the following task wait for the init period
         FILE* file = std::fopen(data_path().c_str(), "r");
         CHECK(file) << "file: open " << data_path() << " failed!";
-        LineFileReader line_reader;
         std::mutex file_mut;
 
         std::set<key_t> keys;
+        std::mutex keys_mut;
 
         std::function<void(const std::string& line)> handle_line \
-            = [this, &keys] (const std::string& line) {
+            = [this, &keys, &keys_mut] (const std::string& line) {
                 auto rcd = parse_record(line);
+                std::lock_guard<std::mutex> lk(keys_mut);
                 for(auto &item : rcd.feas) {
                     keys.emplace(item.first);
                 }

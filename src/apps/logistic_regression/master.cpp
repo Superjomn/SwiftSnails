@@ -40,6 +40,8 @@ int main(int argc, char* argv[]) {
     master_transfer_init();
 
     MasterTerminate terminate;
+    terminate.set_worker_num(master_transfer_init.worker_num());
+    terminate.set_server_num(master_transfer_init.server_num());
     terminate();
 
 

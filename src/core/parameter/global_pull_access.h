@@ -85,6 +85,7 @@ protected:
                 while(! rsp->cont.read_finished()) {
                     rsp->cont >> key;
                     rsp->cont >> val;
+                    DLOG(INFO) << "get param from server:\t" << key << "\t" << val;
                     params[key] = std::move(val);
                 }
 
