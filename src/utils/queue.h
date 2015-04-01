@@ -77,6 +77,51 @@ public:
 }; // end class threadsafe_queue
 
 
+template<class T>
+class queue_with_capacity {
+private:
+    std::queue<std::shared_ptr<T>> data_queue;
+    size_t capacity{0};
+    std::condition_variable push_cond;
+    std::condition_variable pop_cond;
+    std::atomic<bool> no_more_flag{false};
+    std::mutex mut;
+
+    queue_with_capacity(size_t capacity) : 
+        capacity(capacity)
+    { }
+
+    void push(T&& v) {
+        std::unique_lock<std::mutex> lk(mut);
+        push_cond.wait( lk, 
+            [this] { return data_queue.size() <= capacity; });
+        std::shared_ptr<T> data (
+            std::make_shared<T>(std::move(v)));
+        data_queue.push(data);
+        pop_cond.notify_one();
+    }
+
+    /*
+     * return true if value is valid
+     * return false if queue is closed
+     */
+    bool pop(T& value) {
+        std::unique_lock<std::mutex> lk(mut);
+        pop_cond.wait(lk, [this] { 
+            return !data_queue.empty() || no_more_flag; });
+        if(data_queue.empty() && no_more_flag) return false;
+        value = std::move(*data_queue.front());
+        data_queue.pop();
+        return true;
+    }
+
+    bool set_no_more_input() {
+        no_more_flag = true;
+    }
+
+};
+
+
 };  // end namespace swift_snails
 
 
