@@ -68,6 +68,8 @@ public:
         return _iter_mutex;
     }
     
+    // should be called after each iteration
+    // to support pull and push service
     void inc_num_iters() {
         _num_iters ++;
         _iter_cond.notify_all();    // ? notify_one ? 
@@ -78,8 +80,9 @@ public:
     bool terminate_flag() {
         return _terminate_flag;
     }
-    void terminate_service_threads() {
+    void terminate_service_deamons() {
         _terminate_flag = true;
+        _iter_cond.notify_all();
     }
 
 private:
@@ -88,10 +91,10 @@ private:
     std::map<key_t, grad_t> _grads;
     // number of iterations
     std::atomic<int> _num_iters{0};
-    std::mutex _iter_mutex;
+    mutable std::mutex _iter_mutex;
     std::condition_variable _iter_cond;
-    // tell the service threads to terminate
-    bool _terminate_flag = false;
+    // tell the push and pull service deamons to terminate
+    std::atomic<bool> _terminate_flag{false};
 };
 
 

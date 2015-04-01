@@ -5,6 +5,8 @@
 #include "../../core/system/worker/terminate.h"
 #include "../../core/parameter/global_pull_access.h"
 #include "../../core/parameter/global_push_access.h"
+#include "../../core/system/worker/pull_service.h"
+#include "../../core/system/worker/push_service.h"
 #include "access_method.h"
 
 using namespace swift_snails;
@@ -51,8 +53,15 @@ public:
         set_data_path(data_path);
         init_local_param_keys(_async_channel_thread_num);
         first_pull_to_init_local_param();
+        start_deamon_service();
         train(data_path);
         try_push();
+    }
+    
+    // start pull and push service
+    void start_deamon_service() {
+        pull_service.start_service();
+        //push_service.start_service();
     }
 
     // batch train
@@ -61,6 +70,7 @@ public:
         for(int i = 0; i < _num_iters; i ++) {
             LOG(WARNING) << i << " th iteration";
             train_iter(_async_channel_thread_num);
+            param_cache.inc_num_iters();
         }
     }
 
@@ -170,7 +180,7 @@ protected:
     void train_iter(int thread_num) {
 
         LOG(INFO) << "train file with " << thread_num << " threads";
-        LOG(INFO) << "to open data:\t" << data_path();
+        //LOG(INFO) << "to open data:\t" << data_path();
         FILE* file = fopen(data_path().c_str(), "r");
         LineFileReader line_reader;
         std::mutex file_mut;
@@ -188,6 +198,7 @@ protected:
 
         async_exec(thread_num, std::move(task), async_channel());
         std::fclose(file);
+
     }
 
     // parse record with target
@@ -237,7 +248,10 @@ private:
     param_cache_t &param_cache;
     pull_access_t& pull_access;
     push_access_t& push_access;
-    
+
+    PullService<key_t, val_t, grad_t> pull_service;
+    //PushService<key_t, val_t, grad_t> push_service;
+
     int _async_channel_thread_num = 0;
     int num_feas = 0;
     int _num_iters = 0;
@@ -281,16 +295,17 @@ int main(int argc, char* argv[]) {
 
     NodeTransferInit node_transfer_init;
     NodeHashfragInit node_hashfrag_init;
+    Algorithm alg;
+    ClientTerminate<index_t, float, float> terminate;
 
 
     node_transfer_init(false);
+
     node_hashfrag_init();
 
     // begin to train
-    Algorithm alg;
     alg(data_path);
 
-    ClientTerminate terminate;
     terminate();
     
     return 0;

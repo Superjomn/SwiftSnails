@@ -10,24 +10,37 @@
 #include "../../transfer/transfer.h"
 #include "../message_classes.h"
 #include "../ServerWorkerRoute.h"
+#include "../../parameter/global_param_cache.h"
 
 namespace swift_snails {
 
+template<class Key, class Val, class Grad>
 class ClientTerminate {
 public:
+    typedef Key key_t;
+    typedef Val val_t;
+    typedef Grad grad_t;
 	typedef Transfer<ServerWorkerRoute> transfer_t;
 
     explicit ClientTerminate() : \
-        gtransfer(global_transfer<ServerWorkerRoute>())
+        gtransfer(global_transfer<ServerWorkerRoute>()),
+        param_cache(global_param_cache<key_t, val_t, grad_t>())
     {
     }
 
     void operator() () {
+        terminate_deamons(); 
         worker_send_finish_message(); 
         LOG(WARNING) << "Worker terminate normally";
     }
 
 protected:
+    
+    // terminate push and pull service
+    void terminate_deamons() {
+        LOG(WARNING) << "... terminate all service deamons";
+        param_cache.terminate_service_deamons();
+    }
 
     // send finish message to master
     void worker_send_finish_message() {
@@ -47,8 +60,10 @@ protected:
     }
     
 private:
+    typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
     transfer_t& gtransfer; 
     StateBarrier _wait_rsp_barrier;
+    param_cache_t &param_cache;
 
 };  // class ClientTerminate
 

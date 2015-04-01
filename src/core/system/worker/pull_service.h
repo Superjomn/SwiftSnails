@@ -24,19 +24,28 @@ public:
     }
 
     void start_service() {
-        start(param_cache.terminate_flag());
-    }
+        LOG(WARNING) << ".. start pull deamon service";
+        LOG(INFO)    << ">  pull service period:\t" << _period;
 
-protected:
-    void service_with_wait() {
-        param_cache.iter_cond().wait(
-            param_cache.iter_mutex(),
-            [this] {
-                int num_iters = param_cache.num_iters();
-                return num_iters > 0 && num_iters % _period == 0;
-            });
-
-        pull_access.pull();
+        auto service_with_wait = [this] {
+            //std::unique_lock<std::mutex> lk(param_cache.iter_mutex());
+            std::unique_lock<std::mutex> lk(mut);
+            while(! param_cache.terminate_flag()) {
+                DLOG(INFO) << ">  pull service deamon waiting";
+                param_cache.iter_cond().wait(
+                    lk, 
+                    [this] {
+                        int num_iters = param_cache.num_iters();
+                        return param_cache.terminate_flag() || (num_iters > 0 && num_iters % _period == 0);
+                    });
+                if(param_cache.terminate_flag()) return;
+                DLOG(INFO) << ">  pull-service deamon to pull ...";
+                pull_access.pull();
+            }
+        };
+        std::thread t(std::move(service_with_wait));
+        t.detach();
+        //start(param_cache.terminate_flag(), service_with_wait);
     }
 
 private:
@@ -45,6 +54,8 @@ private:
     typedef GlobalPullAccess<key_t, val_t, grad_t> pull_access_t;
     param_cache_t& param_cache;
     pull_access_t& pull_access; 
+
+    std::mutex mut;
 
     int _period = 0;
 

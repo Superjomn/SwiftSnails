@@ -24,21 +24,38 @@ public:
         CHECK(_period > 0);
     }
 
-    void service_with_wait() {
-        param_cache.iter_cond().wait(
-            param_cache.iter_mutex(),
-            [this] {
-                int num_iters = param_cache.num_iters();
-                return num_iters > 0 && num_iters % _period == 0;
-            });
+    void start_service() {
+        LOG(WARNING) << ".. start push deamon service";
+        LOG(INFO)    << ">  push service period:\t" << _period;
 
-        push_access.push();
+        auto service_with_wait = [this] {
+            std::unique_lock<std::mutex> lk(mut);
+            while(! param_cache.terminate_flag()) {
+                DLOG(INFO) << ">  pull service deamon waiting";
+                param_cache.iter_cond().wait(
+                    lk,
+                    [this] {
+                        int num_iters = param_cache.num_iters();
+                        return num_iters > 0 && num_iters % _period == 0;
+                    });
+
+                push_access.push();
+                DLOG(INFO) << ">  push-service deamon to push ...";
+            }
+        };
+        std::thread t(std::move(service_with_wait));
+        t.detach();
+
+        //start(param_cache.terminate_flag(), service_with_wait);
     }
+
 
 private:
 
     typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
     typedef GlobalPushAccess<key_t, val_t, grad_t> push_access_t;
+
+    std::mutex mut;
 
     param_cache_t& param_cache; 
     push_access_t& push_access;

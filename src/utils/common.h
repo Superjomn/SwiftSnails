@@ -26,6 +26,7 @@
 #include <sstream>
 #include "VirtualObject.h"
 #include "glog/logging.h"
+#include "glog/raw_logging.h"
 #include "zmq.h"
 #include "Eigen/Dense"
 

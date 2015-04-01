@@ -43,7 +43,7 @@ public:
      * the pop thread can use this flag to tell whether exit
     */
     bool pop(T& value) {
-        LOG(INFO) << std::this_thread::get_id() << " pop job " << _closed;
+        //LOG(INFO) << std::this_thread::get_id() << " pop job " << _closed;
         if(_closed) return false;
         std::unique_lock<std::mutex> lk(mut);
         data_cond.wait(
@@ -58,7 +58,7 @@ public:
      * the waiting threads can use this flag to tell whether exit
      */
     std::shared_ptr<T> pop() {
-        LOG(INFO) << std::this_thread::get_id() << " pop job";
+        //LOG(INFO) << std::this_thread::get_id() << " pop job";
         if(_closed) return std::shared_ptr<T>();
         std::unique_lock<std::mutex> lk(mut);
         data_cond.wait(
