@@ -93,7 +93,8 @@ public:
         // cache the recall_back
         // when the sent message's reply is received 
         // the call_back handler will be called
-        { std::lock_guard<SpinLock> lock(_send_mut);
+        { std::lock_guard<SpinLock> lock(_msg_handlers_mut);
+            LOG(INFO) << "to register call_back_handler";
             CHECK(_msg_handlers.emplace(msg_id, std::move(request.call_back_handler)).second);
             LOG(INFO) << "call_back_handler is registered";
         }
@@ -259,11 +260,11 @@ private:
     
     Route _route;
 
-    index_t _msg_id_counter = 0;
+    std::atomic<index_t> _msg_id_counter{0};
     std::shared_ptr<AsynExec::channel_t> _async_channel;
     std::map<index_t, Request::response_call_back_t> _msg_handlers;
 
-    SpinLock    _send_mut;
+    //SpinLock    _send_mut;
     SpinLock    _msg_handlers_mut;
     MessageClass<msgcls_handler_t> _message_class;
 
