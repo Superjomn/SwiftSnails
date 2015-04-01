@@ -31,15 +31,17 @@ public:
             //std::unique_lock<std::mutex> lk(param_cache.iter_mutex());
             std::unique_lock<std::mutex> lk(mut);
             while(! param_cache.terminate_flag()) {
-                DLOG(INFO) << ">  pull service deamon waiting";
-                param_cache.iter_cond().wait(
+                //DLOG(INFO) << ">  pull service deamon waiting";
+                param_cache.iter_pull_cond().wait(
                     lk, 
                     [this] {
                         int num_iters = param_cache.num_iters();
-                        return param_cache.terminate_flag() || (num_iters > 0 && num_iters % _period == 0);
+                        return param_cache.terminate_flag() || 
+                            (num_iters > 0 && last_pulled_iter != num_iters && num_iters % _period == 0);
                     });
                 if(param_cache.terminate_flag()) return;
-                DLOG(INFO) << ">  pull-service deamon to pull ...";
+                last_pulled_iter = param_cache.num_iters();
+                RAW_LOG_INFO(">  %d iter pull-service deamon to pull ...", last_pulled_iter);
                 pull_access.pull();
             }
         };
@@ -58,6 +60,8 @@ private:
     std::mutex mut;
 
     int _period = 0;
+    // record last iter to avoid pulling continuously
+    int last_pulled_iter{0};
 
 };  // class PushService
 

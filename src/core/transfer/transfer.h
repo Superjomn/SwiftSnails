@@ -89,25 +89,25 @@ public:
         }
         // convert Request to underlying Package
         Package package(request);
-        LOG(INFO) << "send package";
+        //LOG(INFO) << "send package";
         // cache the recall_back
         // when the sent message's reply is received 
         // the call_back handler will be called
         { std::lock_guard<SpinLock> lock(_msg_handlers_mut);
-            LOG(INFO) << "to register call_back_handler";
+            //LOG(INFO) << "to register call_back_handler";
             CHECK(_msg_handlers.emplace(msg_id, std::move(request.call_back_handler)).second);
-            LOG(INFO) << "call_back_handler is registered";
+            //LOG(INFO) << "call_back_handler is registered";
         }
 
         // send the package
         Route& route = _route;
 
         {
-            LOG(INFO) << "to lock send_mutex";
+            //LOG(INFO) << "to lock send_mutex";
             std::lock_guard<std::mutex> lock(
                 * route.send_mutex(to_id)
             );
-            LOG(INFO) << "zmq to send message";
+            //LOG(INFO) << "zmq to send message";
             PCHECK(ignore_signal_call(zmq_msg_send, &package.meta.zmg(), route.sender(to_id), ZMQ_SNDMORE) >= 0);
             PCHECK(ignore_signal_call(zmq_msg_send, &package.cont.zmg(), route.sender(to_id), 0) >= 0);
         }

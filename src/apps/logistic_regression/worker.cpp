@@ -95,13 +95,14 @@ public:
                 }
             };
 
-        AsynExec::task_t task = [&file, &file_mut, handle_line] {
+        AsynExec::task_t task = [file, &file_mut, handle_line] {
             auto _handle_line = handle_line;
             scan_file_by_line(file, file_mut, std::move(_handle_line) );
         };
 
         async_exec(thread_num, std::move(task), async_channel());
         std::fclose(file);
+
         LOG(INFO) << "to get number of features";
         // get num of features
         for(auto& key : keys) {
@@ -182,6 +183,8 @@ protected:
         LOG(INFO) << "train file with " << thread_num << " threads";
         //LOG(INFO) << "to open data:\t" << data_path();
         FILE* file = fopen(data_path().c_str(), "r");
+        CHECK_NOTNULL(file);
+
         LineFileReader line_reader;
         std::mutex file_mut;
 
@@ -250,7 +253,7 @@ private:
     push_access_t& push_access;
 
     PullService<key_t, val_t, grad_t> pull_service;
-    //PushService<key_t, val_t, grad_t> push_service;
+    PushService<key_t, val_t, grad_t> push_service;
 
     int _async_channel_thread_num = 0;
     int num_feas = 0;

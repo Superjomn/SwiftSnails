@@ -32,7 +32,7 @@ public:
             std::unique_lock<std::mutex> lk(mut);
             while(! param_cache.terminate_flag()) {
                 DLOG(INFO) << ">  pull service deamon waiting";
-                param_cache.iter_cond().wait(
+                param_cache.iter_push_cond().wait(
                     lk,
                     [this] {
                         int num_iters = param_cache.num_iters();
@@ -43,6 +43,7 @@ public:
                 DLOG(INFO) << ">  push-service deamon to push ...";
             }
         };
+
         std::thread t(std::move(service_with_wait));
         t.detach();
 
