@@ -14,7 +14,7 @@ public:
         return _data.get_map();
     }
 
-    bool find(const key_t& key, value_t* val) {
+    bool find(const key_t& key, value_t* &val) {
         auto it = data().find(key);
         if (it == data().end()) return false;
         val = &(it->second);
@@ -73,7 +73,7 @@ public:
         return _shards[shard_id];
     }
 
-    bool find(const key_t &key, value_t *val) {
+    bool find(const key_t &key, value_t* &val) {
         int shard_id = to_shard_id(key);
         return shard(shard_id).find(key, val);
     }
@@ -198,6 +198,10 @@ public:
         push_param_t *param = nullptr;
         // TODO improve this in fix mode?
         CHECK( _table->find(key, param) ) << "new key should be inited before";
+        CHECK_NOTNULL(param);
+        DLOG(INFO) << "to apply push val: key:\t" << key 
+                   << "\tparam\t" << *param 
+                   << "\tpush_val\t" << push_val;
         _access_method.apply_push_value(key, *param, push_val);
     }
 

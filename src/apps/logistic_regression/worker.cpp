@@ -52,6 +52,7 @@ public:
         init_local_param_keys(_async_channel_thread_num);
         first_pull_to_init_local_param();
         train(data_path);
+        try_push();
     }
 
     // batch train
@@ -103,7 +104,7 @@ public:
 
     // should init local parameter cache's keys
     void first_pull_to_init_local_param() {
-        LOG(WARNING) << "first_pull_to_init_local_param";
+        LOG(WARNING) << "... first_pull_to_init_local_param";
         StateBarrier barrier;
         voidf_t extra_rsp_callback = [&barrier] {
             barrier.set_state_valid();
@@ -111,7 +112,20 @@ public:
         };
         pull_access.pull(extra_rsp_callback);
         barrier.block();
-        LOG(WARNING) << "finish first_pull_to_init_local_param";
+        LOG(WARNING) << "... finish first_pull_to_init_local_param";
+    }
+
+    void try_push() {
+        LOG(WARNING) << "... try to push";
+        StateBarrier barrier;
+        voidf_t extra_rsp_callback = [&barrier] {
+            barrier.set_state_valid();
+            barrier.try_unblock();
+        };
+
+        push_access.push(extra_rsp_callback);
+        barrier.block();
+        LOG(WARNING) << "... finish try push";
     }
 
 protected:
