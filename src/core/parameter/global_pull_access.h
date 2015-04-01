@@ -22,7 +22,7 @@ public:
         gtransfer(global_transfer<ServerWorkerRoute>())
     { }
 
-    void pull(voidf_t rsp_callback = voidf_t() ) {
+    size_t pull(voidf_t rsp_callback = voidf_t() ) {
         LOG(INFO) << "pull() from server";
         // node_id : vals
         std::map<int, std::vector<pull_val_t> > node_reqs;
@@ -31,6 +31,7 @@ public:
         LOG(INFO) << "to send pull requests";
         // send message to each nodes
         send(node_reqs, rsp_callback);
+        return node_reqs.size();
     }
 
 protected:

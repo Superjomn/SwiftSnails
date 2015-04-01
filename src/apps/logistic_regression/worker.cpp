@@ -106,11 +106,19 @@ public:
     void first_pull_to_init_local_param() {
         LOG(WARNING) << "... first_pull_to_init_local_param";
         StateBarrier barrier;
-        voidf_t extra_rsp_callback = [&barrier] {
-            barrier.set_state_valid();
-            barrier.try_unblock();
+        size_t to_server_num = 0;
+        std::atomic<size_t> pull_rsp_num{0};
+
+        voidf_t extra_rsp_callback = [&barrier, &pull_rsp_num, &to_server_num] {
+            pull_rsp_num ++;
+            DLOG(INFO) << "get pull response, to_server_num\t" << to_server_num
+                       << "\tpull_rsp_num\t" << pull_rsp_num;
+            if(pull_rsp_num == to_server_num) {
+                barrier.set_state_valid();
+                barrier.try_unblock();
+            }
         };
-        pull_access.pull(extra_rsp_callback);
+        to_server_num = pull_access.pull(extra_rsp_callback);
         barrier.block();
         LOG(WARNING) << "... finish first_pull_to_init_local_param";
     }
