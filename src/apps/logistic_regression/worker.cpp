@@ -61,7 +61,7 @@ public:
     // start pull and push service
     void start_deamon_service() {
         pull_service.start_service();
-        //push_service.start_service();
+        push_service.start_service();
     }
 
     // batch train
