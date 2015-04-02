@@ -98,7 +98,9 @@ private:
  */
 class NodeHashfragInit {
 public:
-    explicit NodeHashfragInit() 
+    explicit NodeHashfragInit() : \
+        hashfrag(global_hashfrag<index_t>()),
+        gtransfer(global_transfer<ServerWorkerRoute>())
     { }
 
     void operator() () {
@@ -140,8 +142,8 @@ protected:
 
 private:
 
-    BasicHashFrag<index_t> &hashfrag = global_hashfrag<index_t>();
-    Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
+    BasicHashFrag<index_t> &hashfrag; 
+    Transfer<ServerWorkerRoute> &gtransfer; 
     StateBarrier hashfrag_init_barrier;
 
 

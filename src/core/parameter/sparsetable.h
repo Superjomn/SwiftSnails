@@ -14,7 +14,7 @@ public:
         return _data.get_map();
     }
 
-    bool find(const key_t& key, value_t* val) {
+    bool find(const key_t& key, value_t* &val) {
         auto it = data().find(key);
         if (it == data().end()) return false;
         val = &(it->second);
@@ -37,6 +37,16 @@ public:
     }
     int shard_id() const {
         return _shard_id;
+    }
+
+    // Attention: should define value's output method first
+    friend std::ostream& operator<< (std::ostream& os, SparseTableShard &shard)
+    {
+        for(auto& item : shard.data() ) {
+            os << item.first << "\t";
+            os << item.second << std::endl;
+        }
+        return os;
     }
 
 private:
@@ -63,7 +73,7 @@ public:
         return _shards[shard_id];
     }
 
-    bool find(const key_t &key, value_t *val) {
+    bool find(const key_t &key, value_t* &val) {
         int shard_id = to_shard_id(key);
         return shard(shard_id).find(key, val);
     }
@@ -76,6 +86,14 @@ public:
     void assign (const key_t& key, const value_t &val) {
         int shard_id = to_shard_id(key);
         shard(shard_id).data()[key] = val;
+    }
+    /*
+     * output parameters to ostream
+     */
+    void output() {
+        for(int i = 0; i < shard_num(); i++) {
+            std::cout << shard(i);
+        }
     }
 
     index_t size() const {
@@ -116,15 +134,13 @@ public:
 
     explicit PullAccessAgent() {
     }
-    void init(table_t& table, const AccessMethod& method)
+    void init(table_t& table)
     {
         _table = &table;
-        _access_method = &method;
     }
 
-    explicit PullAccessAgent(table_t& table, const AccessMethod& method) :
-        _table(&table),
-        _access_method(method)
+    explicit PullAccessAgent(table_t& table) :
+        _table(&table)
     { }
 
     int to_shard_id(const key_t& key) {
@@ -136,15 +152,15 @@ public:
     void get_pull_value(const key_t& key, pull_val_t &val) {
         pull_param_t param;
         if (! _table->find(key, param)) {
-            _access_method->init_param(key, param);
+            _access_method.init_param(key, param);
             _table->assign(key, param);
         }
-        _access_method->get_pull_value(key, param, val);
+        _access_method.get_pull_value(key, param, val);
     }
     // client side
     // set local parameters with the value from remote nodes
     void apply_pull_value(const key_t &key, pull_param_t &param, const pull_val_t& val) {
-        _access_method->apply_pull_value(key, param, val);
+        _access_method.apply_pull_value(key, param, val);
     }
 
 private:
@@ -160,20 +176,17 @@ public:
     typedef typename Table::key_t   key_t;
     typedef typename Table::value_t value_t;
 
-    typedef AccessMethod   access_method_t;
     typedef typename AccessMethod::push_val_t push_val_t;
     typedef typename AccessMethod::push_param_t push_param_t;
 
     explicit PushAccessAgent() {
     }
-    void init(table_t& table, const access_method_t& access_method) {
+    void init(table_t& table) {
         _table = &table;
-        _access_method = &access_method;
     }
 
-    explicit PushAccessAgent(table_t& table, const access_method_t& access_method) :
-        _table(&table), 
-        _access_method(access_method)
+    explicit PushAccessAgent(table_t& table) : \
+        _table(&table) 
     { }
 
     void merge_push_value(const key_t &key, push_val_t &push_val, const push_val_t &other_push_val) {
@@ -182,21 +195,25 @@ public:
     // update parameters with the value from remote worker nodes
     void apply_push_value(const key_t& key, const push_val_t& push_val)
     {
-        push_param_t *param;
+        push_param_t *param = nullptr;
         // TODO improve this in fix mode?
-        CHECK( find(key, param) ) << "new key should be inited before";
+        CHECK( _table->find(key, param) ) << "new key should be inited before";
+        CHECK_NOTNULL(param);
+        DLOG(INFO) << "to apply push val: key:\t" << key 
+                   << "\tparam\t" << *param 
+                   << "\tpush_val\t" << push_val;
         _access_method.apply_push_value(key, *param, push_val);
     }
 
 private:
     table_t         *_table = nullptr;
-    access_method_t _access_method;
+    AccessMethod    _access_method;
 
 };  // class PushAccessAgent
 
 
 template<class Key, class Value>
-SparseHashMap<Key, Value>& global_sparse_table() {
+SparseTable<Key, Value>& global_sparse_table() {
     static SparseTable<Key, Value> table;
     return table;
 }
@@ -206,7 +223,7 @@ auto make_pull_access(Table &table)
 -> std::unique_ptr< PullAccessAgent<Table, AccessMethod>>
 {
     AccessMethod method;
-    std::unique_ptr<PullAccessAgent<Table, AccessMethod>> res(new PullAccessAgent<Table, AccessMethod>(table, method));
+    std::unique_ptr<PullAccessAgent<Table, AccessMethod>> res(new PullAccessAgent<Table, AccessMethod>(table));
     return std::move(res);
 }
 
@@ -216,7 +233,7 @@ auto make_push_access(Table &table)
 -> std::unique_ptr< PushAccessAgent<Table, AccessMethod>>
 {
     AccessMethod method;
-    std::unique_ptr<PushAccessAgent<Table, AccessMethod>> res(new PushAccessAgent<Table, AccessMethod>(table, method));
+    std::unique_ptr<PushAccessAgent<Table, AccessMethod>> res(new PushAccessAgent<Table, AccessMethod>(table));
     return std::move(res);
 }
 

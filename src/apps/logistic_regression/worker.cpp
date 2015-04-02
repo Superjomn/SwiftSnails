@@ -2,8 +2,11 @@
 #include "../../utils/all.h"
 #include "../../core/system/node_init.h"
 #include "../../core/system/worker/init_config.h"
+#include "../../core/system/worker/terminate.h"
 #include "../../core/parameter/global_pull_access.h"
 #include "../../core/parameter/global_push_access.h"
+#include "../../core/system/worker/pull_service.h"
+#include "../../core/system/worker/push_service.h"
 #include "access_method.h"
 
 using namespace swift_snails;
@@ -31,29 +34,43 @@ public:
     typedef float grad_t;
     typedef pair<key_t, val_t> rcd_t;
 
-    explicit Algorithm() {
-        _path = global_config().get_config("data_path").to_string();
+    explicit Algorithm() : \
+        param_cache(global_param_cache<key_t, val_t, grad_t>()),
+        pull_access(global_pull_access<key_t, val_t, grad_t>()),
+        push_access(global_push_access<key_t, val_t, grad_t>())
+    {
         _num_iters = global_config().get_config("num_iters").to_int32();
         learning_rate = global_config().get_config("learning_rate").to_float();
-        CHECK(_path.empty() ) << "data_path config need to be inited";
         // init async channel
-        int _async_channel_thread_num = global_config().get_config("async_channel_thread_num").to_int32();
+        _async_channel_thread_num = global_config().get_config("async_channel_thread_num").to_int32();
         CHECK_GT(_async_channel_thread_num, 0);
         AsynExec as(_async_channel_thread_num);
         _async_channel = as.open();
     }
 
 
-    void operator() () {
+    void operator() (const std::string &data_path) {
+        set_data_path(data_path);
         init_local_param_keys(_async_channel_thread_num);
         first_pull_to_init_local_param();
+        start_deamon_service();
+        train(data_path);
+        try_push();
+    }
+    
+    // start pull and push service
+    void start_deamon_service() {
+        pull_service.start_service();
+        push_service.start_service();
     }
 
     // batch train
-    void train() {
+    void train(const std::string &data_path) {
+        set_data_path(data_path);
         for(int i = 0; i < _num_iters; i ++) {
             LOG(WARNING) << i << " th iteration";
             train_iter(_async_channel_thread_num);
+            param_cache.inc_num_iters();
         }
     }
 
@@ -62,43 +79,71 @@ public:
         DLOG(INFO) << "start " << thread_num << " threads to gather keys";
         CHECK_GT(thread_num, 0);
         // make sure the following task wait for the init period
-        FILE* file = std::fopen(_path.c_str(), "r");
-        LineFileReader line_reader;
+        FILE* file = std::fopen(data_path().c_str(), "r");
+        CHECK(file) << "file: open " << data_path() << " failed!";
         std::mutex file_mut;
 
         std::set<key_t> keys;
+        std::mutex keys_mut;
 
         std::function<void(const std::string& line)> handle_line \
-            = [this, &keys] (const std::string& line) {
+            = [this, &keys, &keys_mut] (const std::string& line) {
                 auto rcd = parse_record(line);
+                std::lock_guard<std::mutex> lk(keys_mut);
                 for(auto &item : rcd.feas) {
                     keys.emplace(item.first);
                 }
             };
 
-        AsynExec::task_t task = [file, &file_mut, &handle_line] {
+        AsynExec::task_t task = [file, &file_mut, handle_line] {
             auto _handle_line = handle_line;
             scan_file_by_line(file, file_mut, std::move(_handle_line) );
         };
 
         async_exec(thread_num, std::move(task), async_channel());
         std::fclose(file);
+
+        RAW_LOG(INFO, "to get number of features");
         // get num of features
         for(auto& key : keys) {
             if(key > num_feas) num_feas = key;
         }
+        param_cache.init_keys(keys);
         num_feas ++;
+        RAW_LOG(INFO, "finish init_local_param_keys");
     }
 
     // should init local parameter cache's keys
     void first_pull_to_init_local_param() {
+        RAW_LOG(WARNING, "... first_pull_to_init_local_param");
+        StateBarrier barrier;
+        size_t to_server_num = 0;
+        std::atomic<size_t> pull_rsp_num{0};
+
+        voidf_t extra_rsp_callback = [&barrier, &pull_rsp_num, &to_server_num] {
+            pull_rsp_num ++;
+            RAW_LOG(INFO, "get pull response, to_server_num\t%zu pull_rsp_num\t %d" , to_server_num , int(pull_rsp_num));
+            if(pull_rsp_num == to_server_num) {
+                barrier.set_state_valid();
+                barrier.try_unblock();
+            }
+        };
+        to_server_num = pull_access.pull(extra_rsp_callback);
+        barrier.block();
+        RAW_LOG(WARNING, "... finish first_pull_to_init_local_param");
+    }
+
+    void try_push() {
+        RAW_LOG(WARNING, "... try to push");
         StateBarrier barrier;
         voidf_t extra_rsp_callback = [&barrier] {
             barrier.set_state_valid();
             barrier.try_unblock();
         };
-        pull_access.pull();
+
+        push_access.push(extra_rsp_callback);
         barrier.block();
+        RAW_LOG(WARNING, "... finish try push");
     }
 
 protected:
@@ -135,7 +180,10 @@ protected:
     void train_iter(int thread_num) {
 
         LOG(INFO) << "train file with " << thread_num << " threads";
-        FILE* file = fopen(_path.c_str(), "r");
+        //LOG(INFO) << "to open data:\t" << data_path();
+        FILE* file = fopen(data_path().c_str(), "r");
+        CHECK_NOTNULL(file);
+
         LineFileReader line_reader;
         std::mutex file_mut;
 
@@ -152,6 +200,7 @@ protected:
 
         async_exec(thread_num, std::move(task), async_channel());
         std::fclose(file);
+
     }
 
     // parse record with target
@@ -180,19 +229,31 @@ protected:
         return _async_channel;
     }
 
+    void set_data_path(const std::string &path) {
+        _data_path = path;
+        CHECK( ! _data_path.empty()) << "data path is empty!";
+    }
+
+    const std::string& data_path() {
+        CHECK(! _data_path.empty()) << "data path should be inited!";
+        return _data_path;
+    }
+
 private:
-    string _path;
+    std::string _data_path;
     std::shared_ptr<AsynExec::channel_t> _async_channel;
 
-    typedef GlobalPullAccess<key_t, val_t, grad_t> pull_access_t;
-    typedef GlobalPushAccess<key_t, val_t, grad_t> push_access_t;
-    typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
+    using pull_access_t = GlobalPullAccess<key_t, val_t, grad_t> ;
+    using push_access_t = GlobalPushAccess<key_t, val_t, grad_t> ;
+    using param_cache_t = GlobalParamCache<key_t, val_t, grad_t> ;
 
-    param_cache_t &param_cache = global_param_cache<key_t, val_t, grad_t>();
+    param_cache_t &param_cache;
+    pull_access_t& pull_access;
+    push_access_t& push_access;
 
-    pull_access_t& pull_access = global_pull_access<key_t, val_t, grad_t>();
-    push_access_t& push_access = global_push_access<key_t, val_t, grad_t>();
-    
+    PullService<key_t, val_t, grad_t> pull_service;
+    PushService<key_t, val_t, grad_t> push_service;
+
     int _async_channel_thread_num = 0;
     int num_feas = 0;
     int _num_iters = 0;
@@ -202,8 +263,9 @@ private:
 int main(int argc, char* argv[]) {
     // init config
     CMDLine cmdline(argc, argv);
-    string param_config_path = cmdline.registerParameter("config", "path of config file");
     string param_help = cmdline.registerParameter("help", "this screen");
+    string param_config_path = cmdline.registerParameter("config", "path of config file");
+    string param_data_path = cmdline.registerParameter("data", "path of dataset, text only!");
     // parse parameters
     if(cmdline.hasParameter(param_help) || argc == 1) {
         cout << endl;
@@ -219,7 +281,14 @@ int main(int argc, char* argv[]) {
         LOG(ERROR) << "missing parameter: config";
         return 0;
     }
+    if(!cmdline.hasParameter(param_data_path)) {
+        LOG(ERROR) << "missing parameter: data";
+        return 0;
+    }
     std::string config_path = cmdline.getValue(param_config_path);
+    std::string data_path = cmdline.getValue(param_data_path);
+
+    LOG(WARNING) << "get data set:\t" << data_path;
 
     worker_init_configs();
 
@@ -228,10 +297,18 @@ int main(int argc, char* argv[]) {
 
     NodeTransferInit node_transfer_init;
     NodeHashfragInit node_hashfrag_init;
+    Algorithm alg;
+    ClientTerminate<index_t, float, float> terminate;
 
 
     node_transfer_init(false);
+
     node_hashfrag_init();
+
+    // begin to train
+    alg(data_path);
+
+    terminate();
     
     return 0;
 };

@@ -45,6 +45,7 @@ public:
     }
 
     size_t size() const {
+        rwlock_read_guard lk(_rwlock);
         return _params.size();
     }
     // not thread-safe
@@ -61,16 +62,22 @@ public:
         return _rwlock;
     }
 
-    std::condition_variable& iter_cond() {
-        return _iter_cond;
+    std::condition_variable& iter_pull_cond() {
+        return _iter_pull_cond;
+    }
+    std::condition_variable& iter_push_cond() {
+        return _iter_push_cond;
     }
     std::mutex& iter_mutex() {
         return _iter_mutex;
     }
     
+    // should be called after each iteration
+    // to support pull and push service
     void inc_num_iters() {
         _num_iters ++;
-        _iter_cond.notify_all();    // ? notify_one ? 
+        _iter_pull_cond.notify_all();    // ? notify_one ? 
+        _iter_push_cond.notify_all();    // ? notify_one ? 
     }
     std::atomic<int>& num_iters() {
         return _num_iters;
@@ -78,8 +85,10 @@ public:
     bool terminate_flag() {
         return _terminate_flag;
     }
-    void terminate_service_threads() {
+    void terminate_service_deamons() {
         _terminate_flag = true;
+        _iter_pull_cond.notify_all();
+        _iter_push_cond.notify_all();
     }
 
 private:
@@ -88,10 +97,11 @@ private:
     std::map<key_t, grad_t> _grads;
     // number of iterations
     std::atomic<int> _num_iters{0};
-    std::mutex _iter_mutex;
-    std::condition_variable _iter_cond;
-    // tell the service threads to terminate
-    bool _terminate_flag = false;
+    mutable std::mutex _iter_mutex;
+    std::condition_variable _iter_pull_cond;
+    std::condition_variable _iter_push_cond;
+    // tell the push and pull service deamons to terminate
+    std::atomic<bool> _terminate_flag{false};
 };
 
 

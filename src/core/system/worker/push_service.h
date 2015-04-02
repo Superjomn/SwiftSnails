@@ -16,31 +16,55 @@ public:
     typedef Val val_t;
     typedef Grad grad_t;
 
-    explicit PushService() {
+    explicit PushService() : \
+        param_cache(global_param_cache<key_t, val_t, grad_t>()),
+        push_access( global_push_access<key_t, val_t, grad_t>())
+    {
         _period = global_config().get_config("push_period").to_int32();
         CHECK(_period > 0);
     }
 
-    void service_with_wait() {
-        param_cache.iter_cond().wait(
-            param_cache.iter_mutex(),
-            [this] {
-                int num_iters = param_cache.num_iters();
-                return num_iters > 0 && num_iters % _period == 0;
-            });
+    void start_service() {
+        RAW_LOG(WARNING, ".. start push deamon service");
+        RAW_LOG(INFO, ">  push service period:\t%d",  _period);
 
-        push_access.push();
+        auto service_with_wait = [this] {
+            std::unique_lock<std::mutex> lk(mut);
+            while(! param_cache.terminate_flag()) {
+                param_cache.iter_push_cond().wait(
+                    lk,
+                    [this] {
+                        int num_iters = param_cache.num_iters();
+                        return param_cache.terminate_flag() || 
+                            (num_iters > 0 && last_pulled_iter != num_iters && num_iters % _period == 0);
+                    });
+
+                if(param_cache.terminate_flag()) return;
+                last_pulled_iter = param_cache.num_iters();
+                RAW_LOG_INFO(">  %d iter push-service deamon to pull ...", last_pulled_iter);
+                push_access.push();
+            }
+        };
+
+        std::thread t(std::move(service_with_wait));
+        t.detach();
+
+        //start(param_cache.terminate_flag(), service_with_wait);
     }
+
 
 private:
 
     typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
     typedef GlobalPushAccess<key_t, val_t, grad_t> push_access_t;
 
-    param_cache_t& param_cache = global_param_cache<key_t, val_t, grad_t>();
-    push_access_t& push_access = global_push_access<key_t, val_t, grad_t>();
+    std::mutex mut;
+
+    param_cache_t& param_cache; 
+    push_access_t& push_access;
 
     int _period = 0;
+    int last_pulled_iter = 0;
 
 };  // class PushService
 

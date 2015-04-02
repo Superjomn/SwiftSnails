@@ -27,7 +27,18 @@ enum MSG_CLS {
     /*
      * worker push local grad to server
      */
-    WORKER_PUSH_REQUEST
+    WORKER_PUSH_REQUEST,
+    /*
+     * worker finish task and terminate
+     * send message to tell the master
+     * when all workers finish their work
+     * the master will tell all servers to terminate
+     */
+    WORKER_FINISH_WORK,
+    /*
+     * the master tell servers to terminate
+     */
+    SERVER_TOLD_TO_TERMINATE
 };  // end enum MSG_CLS
 
 

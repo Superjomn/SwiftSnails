@@ -36,7 +36,10 @@ public:
     typedef PushParam  push_param_t;
 
     virtual void merge_push_value(const key_t& key, push_val_t &push_val, const push_val_t &other_push_val) = 0;
-
+    /*
+     * @push_param : ref to param value of sparsetable
+     * @push_val:    the grad pushed by worker
+     */
     virtual void apply_push_value(const key_t& key, push_param_t &push_param, const push_val_t &push_val) = 0;
 
 };  // class PushAccessMethod

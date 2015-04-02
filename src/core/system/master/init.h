@@ -29,6 +29,7 @@ public:
         LOG(WARNING) << "local register server ...";
         std::string addr = gtransfer.recv_addr();
         gtransfer.route().register_node_(true, std::move(addr));
+        gtransfer.set_client_id(0); // master's client id is 0
     }
 
     void operator() () {
@@ -39,13 +40,21 @@ public:
         send_route_to_workers();
 
         init_hashfrag();
-        wait_to_terminate();
+        //wait_to_terminate();
     }
+
+    int worker_num() {
+        return registered_node_num - registered_server_num;
+    }
+    int server_num() {
+        return registered_server_num;
+    }
+
 
 protected:
 
     void register_message_class() {
-        LOG(WARNING) << "register message class ...";
+        LOG(WARNING) << "... register message class ...";
     	auto handler = node_init_address;
         gtransfer.message_class().add(NODE_INIT_ADDRESS, std::move(handler));
 
@@ -55,6 +64,7 @@ protected:
     }
 
     void wait_for_workers_register_route() {
+        LOG(WARNING) << "... wait_for_workers_register_route";
         int timeout = global_config().get_config("master_time_out").to_int32();
         LOG(WARNING) << "master will wait for " << timeout << " s";
 
@@ -65,6 +75,11 @@ protected:
     }
 
     void send_route_to_workers() {
+        LOG(WARNING) << "... send_route_to_workers";
+
+        LOG(INFO) << "get \t" << registered_server_num << "\tservers";
+        LOG(INFO) << "get \t" << registered_node_num - registered_server_num<< "\tworkers";
+        LOG(WARNING) << "to send routes to workers";
 
         for(auto& r : gtransfer.route().send_addrs()) {
             // TODO make response copy ? 
@@ -85,6 +100,7 @@ protected:
     }
     
     void init_hashfrag() {
+        LOG(WARNING) << "... init_hashfrag";
         // TODO to make key's type changeble
         hashfrag.set_num_nodes(registered_server_num);
         hashfrag.init();
@@ -99,7 +115,6 @@ protected:
         });
         _terminate_barrier.block();
     }
-
 protected:
     // message-class handlers   ---------------------------------
     // node register address to master

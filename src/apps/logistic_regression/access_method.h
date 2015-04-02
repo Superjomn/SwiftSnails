@@ -42,7 +42,7 @@ public:
         push_val += other_push_val;
     }
 
-    virtual void apply_pull_value(const key_t& key, push_param_t &push_param, const push_val_t &push_val)
+    virtual void apply_push_value(const key_t& key, push_param_t &push_param, const push_val_t &push_val)
     {
         push_param += push_val;
     }

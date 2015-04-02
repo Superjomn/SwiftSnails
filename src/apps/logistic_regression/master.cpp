@@ -2,6 +2,7 @@
 #include "../../utils/all.h"
 #include "../../core/system/master/init.h"
 #include "../../core/system/master/init_config.h"
+#include "../../core/system/master/terminate.h"
 using namespace swift_snails;
 using namespace std;
 using namespace fms;
@@ -37,6 +38,11 @@ int main(int argc, char* argv[]) {
     MasterTransferInit master_transfer_init;
 
     master_transfer_init();
+
+    MasterTerminate terminate;
+    terminate.set_worker_num(master_transfer_init.worker_num());
+    terminate.set_server_num(master_transfer_init.server_num());
+    terminate();
 
 
     return 0;

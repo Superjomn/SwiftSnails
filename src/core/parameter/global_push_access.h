@@ -16,12 +16,17 @@ public:
     typedef Grad grad_t;
     typedef std::pair<key_t, grad_t> push_val_t;
 
-    void push() {
+    GlobalPushAccess() : \
+        param_cache(global_param_cache<key_t, val_t, grad_t>()),
+        gtransfer(global_transfer<ServerWorkerRoute>())
+    { }
+
+    void push(voidf_t extra_rsp_callback = voidf_t()) {
         // nodeid to reqs
         std::map<int, std::vector<push_val_t> > node_reqs;
         arrange_local_grads(node_reqs);
 
-        send(node_reqs);
+        send(node_reqs, extra_rsp_callback);
 
         reset_local_grads();
     }
@@ -35,7 +40,7 @@ protected:
             auto& key = item.first;
             auto& grad = item.second;
 
-            int node_id = global_hashfrag<key_t>().to_node_id(item.key);
+            int node_id = global_hashfrag<key_t>().to_node_id(key);
             if(node_reqs.count(node_id) == 0) {
                 node_reqs[node_id] = std::move(std::vector<push_val_t>());
             }
@@ -43,7 +48,10 @@ protected:
         }
     }
 
-    void send(std::map<int, std::vector<push_val_t>>& items) {
+    void send(
+            std::map<int, std::vector<push_val_t>>& items,
+            voidf_t extra_rsp_callback
+    ) {
         for (auto& item : items) {
             int node_id = item.first;
             auto &grads = item.second;
@@ -55,10 +63,11 @@ protected:
                 req.cont << grad.second;// grad value
             }
             // nothing to do after grads are pushed
-            req.call_back_handler = [](std::shared_ptr<Request> rsp) {
-                LOG(INFO) << "Grads are pushed";
+            req.call_back_handler = [extra_rsp_callback](std::shared_ptr<Request> rsp) {
+                RAW_DLOG(INFO, "Grads are pushed");
+                if(extra_rsp_callback) extra_rsp_callback();
             };
-            gtransfer.send(node_id, std::move(req));
+            gtransfer.send(std::move(req), node_id);
         }
     }
     /*
@@ -67,14 +76,15 @@ protected:
     void reset_local_grads() {
         rwlock_write_guard(param_cache.rwlock());
         for(auto& item : param_cache.params()) {
-            item.second.reset();    // set to 0
+            //item.second.reset();    // set to 0
+            item.second = std::move(val_t());
         }
     }
 
 private:
     typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
-    param_cache_t &param_cache = global_param_cache<key_t, val_t, grad_t>();
-    Transfer<ServerWorkerRoute>& gtransfer = global_transfer<ServerWorkerRoute>();
+    param_cache_t &param_cache; 
+    Transfer<ServerWorkerRoute>& gtransfer; 
 
 };  // end class GlobalPushAccess
 

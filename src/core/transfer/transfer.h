@@ -89,24 +89,25 @@ public:
         }
         // convert Request to underlying Package
         Package package(request);
-        LOG(INFO) << "send package";
+        //LOG(INFO) << "send package";
         // cache the recall_back
         // when the sent message's reply is received 
         // the call_back handler will be called
-        { std::lock_guard<SpinLock> lock(_send_mut);
+        { std::lock_guard<SpinLock> lock(_msg_handlers_mut);
+            //LOG(INFO) << "to register call_back_handler";
             CHECK(_msg_handlers.emplace(msg_id, std::move(request.call_back_handler)).second);
-            LOG(INFO) << "call_back_handler is registered";
+            //LOG(INFO) << "call_back_handler is registered";
         }
 
         // send the package
         Route& route = _route;
 
         {
-            LOG(INFO) << "to lock send_mutex";
+            //LOG(INFO) << "to lock send_mutex";
             std::lock_guard<std::mutex> lock(
                 * route.send_mutex(to_id)
             );
-            LOG(INFO) << "zmq to send message";
+            //LOG(INFO) << "zmq to send message";
             PCHECK(ignore_signal_call(zmq_msg_send, &package.meta.zmg(), route.sender(to_id), ZMQ_SNDMORE) >= 0);
             PCHECK(ignore_signal_call(zmq_msg_send, &package.cont.zmg(), route.sender(to_id), 0) >= 0);
         }
@@ -132,10 +133,10 @@ public:
             std::shared_ptr<Request> request = std::make_shared<Request>(std::move(package));
 
             if(request->is_response()) {
-                LOG(INFO) << "receive a response, message_id: " << request->meta.message_id;
+                RAW_DLOG(INFO, "receive a request, message_class: %d", request->meta.message_class);
                 handle_response(request);
             } else {
-                LOG(INFO) << "receive a request, message_class: " << request->meta.message_class;
+                RAW_DLOG(INFO, "receive a request, message_id: %d, client_id: %d", request->meta.message_id, request->meta.client_id);
                 handle_request(request);
             }
         }
@@ -160,14 +161,14 @@ public:
                 // response flag
                 response.meta.message_class = -1;
 
-                LOG(INFO) << "send response to client " << request->meta.client_id;
+                RAW_DLOG(INFO, "send response to client %d", request->meta.client_id);
                 // only send response with content
                 // empty response will not be sent, and master should
                 // send a response with content later
                 if(response.cont.size() > 0) {
                     send_response(std::move(response),  request->meta.client_id);
                 } else {
-                    LOG(INFO) << "empty response, not send";
+                    RAW_DLOG(INFO, "empty response, not send");
                 }
             }
         );
@@ -259,11 +260,11 @@ private:
     
     Route _route;
 
-    index_t _msg_id_counter = 0;
+    std::atomic<index_t> _msg_id_counter{0};
     std::shared_ptr<AsynExec::channel_t> _async_channel;
     std::map<index_t, Request::response_call_back_t> _msg_handlers;
 
-    SpinLock    _send_mut;
+    //SpinLock    _send_mut;
     SpinLock    _msg_handlers_mut;
     MessageClass<msgcls_handler_t> _message_class;
 
