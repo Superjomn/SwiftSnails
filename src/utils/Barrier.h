@@ -95,8 +95,9 @@ public:
     { }
 
     void block() {
+        CHECK(!unblock_state);
         std::unique_lock<std::mutex> lk(mut);
-        cond.wait(lk, [this]{ return unblock_state; });
+        cond.wait(lk, [this]{ return unblock_state == true; });
     }
     /*
      * when time out , this handler will be called;
@@ -116,7 +117,7 @@ public:
     }
 
     void try_unblock() {
-        cond.notify_all();
+        cond.notify_one();
     }
 
     void set_state_valid() {
@@ -124,10 +125,34 @@ public:
     }
 
 private:
-    bool unblock_state = false;
+    std::atomic<bool> unblock_state{false};
     std::condition_variable cond;
     std::mutex mut;
 };
+
+/*
+ * the count should be the main thread + child threads
+ */
+class CounterBarrier
+{
+private:
+    std::mutex _mutex;
+    std::condition_variable _cv;
+    std::size_t _count;
+public:
+    explicit Barrier(std::size_t count) : _count{count} { }
+
+    void wait()
+    {
+        std::unique_lock<std::mutex> lock{_mutex};
+        if (--_count == 0) {
+            _cv.notify_all();
+        } else {
+            _cv.wait(lock, [this] { return _count == 0; });
+        }
+    }
+};
+
 
 
 };  // end namespace swift_snails

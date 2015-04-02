@@ -58,6 +58,7 @@ protected:
             LOG(WARNING) << "get response from master and init route, set client_id to\t" << response->meta.client_id;
             // init route
             response->cont >> gtransfer.route();
+            RAW_LOG(WARNING, "get client_id: %d", response->meta.client_id);
             gtransfer.set_client_id(response->meta.client_id);
             // timeout's unit is seconds
             route_init_barrier.set_state_valid();

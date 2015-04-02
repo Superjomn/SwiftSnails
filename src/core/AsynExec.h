@@ -127,17 +127,13 @@ void async_exec(
     std::shared_ptr<AsynExec::channel_t> channel
     ) 
 {
-    StateBarrier barrier;   
-    std::atomic<int> task_finish_cout{0};
+    CounterBarrier barrier(thread_num + 1);   
 
-    AsynExec::task_t _task = [&part_task, &task_finish_cout, thread_num, &barrier] {
+    AsynExec::task_t _task = [&part_task, thread_num, &barrier] {
         part_task();
         // this task complete
-        task_finish_cout ++;
-        if(task_finish_cout == thread_num) {
-            barrier.set_state_valid();
-            barrier.try_unblock();
-        }
+        RAW_LOG(INFO, ">  asunc_exec one task finished task_finish_cout");
+        barrier.wait();
     };
 
     for(int i = 0; i < thread_num; i ++) {
@@ -145,7 +141,7 @@ void async_exec(
         channel->push(std::move(__task));
     }
 
-    barrier.block();
+    barrier.wait();
 }
     
 

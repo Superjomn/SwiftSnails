@@ -133,10 +133,10 @@ public:
             std::shared_ptr<Request> request = std::make_shared<Request>(std::move(package));
 
             if(request->is_response()) {
-                RAW_DLOG(INFO, "receive a request, message_class: %d", request->meta.message_class);
+                RAW_DLOG(INFO, "receive a response, message_id: %d", request->meta.message_id);
                 handle_response(request);
             } else {
-                RAW_DLOG(INFO, "receive a request, message_id: %d, client_id: %d", request->meta.message_id, request->meta.client_id);
+                RAW_DLOG(INFO, "receive a request, message_class: %d, client_id: %d", request->meta.message_class, request->meta.client_id);
                 handle_request(request);
             }
         }
@@ -149,7 +149,7 @@ public:
 
         msgcls_handler_t handler = _message_class.get( request->meta.message_class);
         CHECK(!_async_channel->closed());
-        LOG(INFO) << "push task to channel";
+        //LOG(INFO) << "push task to channel";
         _async_channel->push(
             [this, handler, request] {
                 Request response;
@@ -216,7 +216,7 @@ public:
             PCHECK(ignore_signal_call(zmq_msg_send, &package.meta.zmg(), route.sender(to_id), ZMQ_SNDMORE) >= 0);
             PCHECK(ignore_signal_call(zmq_msg_send, &package.cont.zmg(), route.sender(to_id), 0) >= 0);
 
-            LOG(INFO) << "response has been sent";
+            //LOG(INFO) << "response has been sent";
         }
     }
 
