@@ -50,3 +50,41 @@ TEST(_queue, try_pop) {
     }
     producer.join();
 }
+
+
+TEST(queue_with_capacity, init) {
+    queue_with_capacity<int> queue;
+    int num_workers = 1;
+
+    queue.set_capacity(2);
+    auto producer = [&queue] {
+        for(int i = 0; i < 1000; i ++) {
+            LOG(INFO) << "put " << i;
+            queue.push(std::move(i));
+        }
+        queue.end_input(1, -1);
+    };
+
+    auto summer = [&queue] {
+        for(;;) {
+            int j;
+            queue.wait_and_pop(j);
+            LOG(INFO) << "get " << j;
+            if(j == -1) {
+                LOG(INFO) << "summer exit!";
+                break;
+            }
+        }
+    };
+
+    std::thread p1(producer);
+    std::thread p2(producer);
+
+    std::thread s1(summer);
+    std::thread s2(summer);
+
+    p1.join();
+    p2.join();
+    s1.join();
+    s2.join();
+};
