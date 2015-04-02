@@ -130,7 +130,7 @@ class CMDLine {
             }
         }
 
-        const double getValue(const std::string& parameter, const double& default_value) {
+        double getValue(const std::string& parameter, const double& default_value) {
             if (hasParameter(parameter)) {
                 return atof(value[parameter].c_str());
             } else {
@@ -138,7 +138,7 @@ class CMDLine {
             }
         }
 
-        const int getValue(const std::string& parameter, const int& default_value) {
+        int getValue(const std::string& parameter, const int& default_value) {
             if (hasParameter(parameter)) {
                 return atoi(value[parameter].c_str());
             } else {
@@ -146,7 +146,7 @@ class CMDLine {
             }
         }
 
-        const uint getValue(const std::string& parameter, const uint& default_value) {
+        uint getValue(const std::string& parameter, const uint& default_value) {
             if (hasParameter(parameter)) {
                 return atoi(value[parameter].c_str());
             } else {
