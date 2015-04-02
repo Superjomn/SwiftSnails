@@ -180,27 +180,46 @@ protected:
     void train_iter(int thread_num) {
 
         LOG(INFO) << "train file with " << thread_num << " threads";
+        const int line_buffer_queue_capacity = global_config().get_config("line_buffer_queue_capacity").to_int32();
         //LOG(INFO) << "to open data:\t" << data_path();
+        queue_with_capacity<std::string> queue(line_buffer_queue_capacity);
         FILE* file = fopen(data_path().c_str(), "r");
         CHECK_NOTNULL(file);
 
-        LineFileReader line_reader;
-        std::mutex file_mut;
 
-        std::function<void(const std::string& line)> handle_line \
-            = [this] (const std::string& line) {
+        auto line_trainner = [this, &queue] {
+            for(;;) {
+                std::string line;
+                queue.wait_and_pop(line);
+                if(line.empty()) {
+                    RAW_LOG(INFO, ">  line_trainner get empty line");
+                    break;
+                }
                 auto rcds = parse_record(line);
+                //RAW_DLOG(INFO, "learn a record");
                 learn_one_record(std::move(rcds));
-            };
-
-        AsynExec::task_t task = [file, &file_mut, &handle_line] {
-            auto _handle_line = handle_line;
-            scan_file_by_line(file, file_mut, std::move(_handle_line) );
+            }
+            RAW_LOG(INFO, ">  one line_trainner out!");
         };
+        
+        auto producer = [this, &queue, file, thread_num] {
 
-        async_exec(thread_num, std::move(task), async_channel());
+            LineFileReader line_reader; 
+
+            while(line_reader.getline(file)) {
+                std::string line = line_reader.get();
+                queue.push(std::move(line));
+                //RAW_DLOG(INFO, "line_reader push a line to queue");
+            }
+            queue.end_input(thread_num, "");
+        };
+        std::thread t (std::move(producer));
+
+        async_exec(thread_num, std::move(line_trainner), async_channel());
+        //line_trainner();
+        RAW_LOG(INFO, ">  after asyn_exec, to join producer thread");
+        t.join();
         std::fclose(file);
-
     }
 
     // parse record with target

@@ -60,7 +60,7 @@ public:
         std::shared_ptr<T> data (
             std::make_shared<T>(std::move(new_value)));
         std::lock_guard<std::mutex> lk(mut);
-        data_queue.push(data);
+        data_queue.push(std::move(data));
         data_cond.notify_one();
     }
 
@@ -80,45 +80,45 @@ public:
 template<class T>
 class queue_with_capacity {
 private:
-    std::queue<std::shared_ptr<T>> data_queue;
+    threadsafe_queue<T> queue;
     size_t capacity{0};
     std::condition_variable push_cond;
-    std::condition_variable pop_cond;
-    std::atomic<bool> no_more_flag{false};
     std::mutex mut;
 
-    queue_with_capacity(size_t capacity) : 
+public:
+    explicit queue_with_capacity(size_t capacity) : 
         capacity(capacity)
     { }
+
+    explicit queue_with_capacity() {
+    }
+    void set_capacity(size_t capacity) {
+        this->capacity = capacity;
+    }
 
     void push(T&& v) {
         std::unique_lock<std::mutex> lk(mut);
         push_cond.wait( lk, 
-            [this] { return data_queue.size() <= capacity; });
-        std::shared_ptr<T> data (
-            std::make_shared<T>(std::move(v)));
-        data_queue.push(data);
-        pop_cond.notify_one();
+            [this] { return queue.size() <= capacity; });
+        queue.push(v);
     }
-
     /*
-     * return true if value is valid
-     * return false if queue is closed
+     * if the workers get empty value
+     * then terminate
      */
-    bool pop(T& value) {
-        std::unique_lock<std::mutex> lk(mut);
-        pop_cond.wait(lk, [this] { 
-            return !data_queue.empty() || no_more_flag; });
-        if(data_queue.empty() && no_more_flag) return false;
-        value = std::move(*data_queue.front());
-        data_queue.pop();
-        return true;
+    void wait_and_pop(T& value) {
+        queue.wait_and_pop(value);
+        std::lock_guard<std::mutex> lk(mut);
+        push_cond.notify_one();
     }
-
-    bool set_no_more_input() {
-        no_more_flag = true;
+    /*
+     * input empty values to tell working threads to exit
+     */
+    void end_input(int x, T empty_v) {
+        for( int i = 0; i < x; i ++) {
+            queue.push(empty_v);
+        }
     }
-
 };
 
 
