@@ -36,12 +36,12 @@ public:
                     [this] {
                         int num_iters = param_cache.num_iters();
                         return param_cache.terminate_flag() || 
-                            (num_iters > 0 && last_pulled_iter != num_iters && num_iters % _period == 0);
+                            (num_iters > 0 && last_pushed_iter != num_iters && num_iters % _period == 0);
                     });
 
                 if(param_cache.terminate_flag()) return;
-                last_pulled_iter = param_cache.num_iters();
-                RAW_LOG_INFO(">  %d iter push-service deamon to pull ...", last_pulled_iter);
+                last_pushed_iter = param_cache.num_iters();
+                RAW_LOG_INFO(">  %d iter push-service deamon to push ...", last_push_iter);
                 push_access.push();
             }
         };
@@ -64,7 +64,7 @@ private:
     push_access_t& push_access;
 
     int _period = 0;
-    int last_pulled_iter = 0;
+    int last_push_iter = 0;
 
 };  // class PushService
 

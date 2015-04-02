@@ -95,7 +95,6 @@ public:
     { }
 
     void block() {
-        CHECK(!unblock_state);
         std::unique_lock<std::mutex> lk(mut);
         cond.wait(lk, [this]{ return unblock_state == true; });
     }
@@ -124,6 +123,10 @@ public:
         unblock_state = true;
     }
 
+    bool valid_state() {
+        return unblock_state;
+    }
+
 private:
     std::atomic<bool> unblock_state{false};
     std::condition_variable cond;
@@ -140,7 +143,7 @@ private:
     std::condition_variable _cv;
     std::size_t _count;
 public:
-    explicit Barrier(std::size_t count) : _count{count} { }
+    explicit CounterBarrier(std::size_t count) : _count{count} { }
 
     void wait()
     {

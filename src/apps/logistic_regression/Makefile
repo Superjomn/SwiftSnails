@@ -8,7 +8,7 @@ CXXFLAGS= -g -pipe -Wextra -Wall -Wno-parentheses \
   -Wno-literal-suffix \
   -Wno-unused-parameter \
   -Wno-unused-local-typedefs \
-  -pthread -lpthread -DHAVE_PCAP -lgtest -lgtest_main -std=c++11 -lzmq -lglog
+  -lpthread -std=c++11 -pthread -DHAVE_PCAP -lgtest -lgtest_main  -lzmq -lglog
 
 LOCAL_ROOT=../../../third/local
 GTEST_HOME=$(LOCAL_ROOT)/gtest

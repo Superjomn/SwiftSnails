@@ -135,7 +135,11 @@ protected:
         // barrier with timeout
         hashfrag_init_barrier.time_limit(1000 * timeout, []{
             //LOG(ERROR) << "[worker] init timeout!";
-            CHECK(1 == 2) << "[worker] askfor hashfrag timeout!";
+            if(! hashfrag_init_barrier.valid_state()) {
+                CHECK(1 == 2) << "[worker] askfor hashfrag timeout!";
+            } else {
+                RAW_LOG(WARNING, "node_init deamon exit");
+            }
         });
         hashfrag_init_barrier.block();
     }
