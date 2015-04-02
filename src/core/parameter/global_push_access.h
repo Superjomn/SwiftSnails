@@ -64,7 +64,7 @@ protected:
             }
             // nothing to do after grads are pushed
             req.call_back_handler = [extra_rsp_callback](std::shared_ptr<Request> rsp) {
-                LOG(INFO) << "Grads are pushed";
+                RAW_DLOG(INFO, "Grads are pushed");
                 if(extra_rsp_callback) extra_rsp_callback();
             };
             gtransfer.send(std::move(req), node_id);

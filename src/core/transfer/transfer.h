@@ -133,10 +133,10 @@ public:
             std::shared_ptr<Request> request = std::make_shared<Request>(std::move(package));
 
             if(request->is_response()) {
-                LOG(INFO) << "receive a response, message_id: " << request->meta.message_id;
+                RAW_DLOG(INFO, "receive a request, message_class: %d", request->meta.message_class);
                 handle_response(request);
             } else {
-                LOG(INFO) << "receive a request, message_class: " << request->meta.message_class;
+                RAW_DLOG(INFO, "receive a request, message_id: %d, client_id: %d", request->meta.message_id, request->meta.client_id);
                 handle_request(request);
             }
         }
@@ -161,14 +161,14 @@ public:
                 // response flag
                 response.meta.message_class = -1;
 
-                LOG(INFO) << "send response to client " << request->meta.client_id;
+                RAW_DLOG(INFO, "send response to client %d", request->meta.client_id);
                 // only send response with content
                 // empty response will not be sent, and master should
                 // send a response with content later
                 if(response.cont.size() > 0) {
                     send_response(std::move(response),  request->meta.client_id);
                 } else {
-                    LOG(INFO) << "empty response, not send";
+                    RAW_DLOG(INFO, "empty response, not send");
                 }
             }
         );

@@ -103,27 +103,26 @@ public:
         async_exec(thread_num, std::move(task), async_channel());
         std::fclose(file);
 
-        LOG(INFO) << "to get number of features";
+        RAW_LOG(INFO, "to get number of features");
         // get num of features
         for(auto& key : keys) {
             if(key > num_feas) num_feas = key;
         }
         param_cache.init_keys(keys);
         num_feas ++;
-        LOG(INFO) << "finish init_local_param_keys";
+        RAW_LOG(INFO, "finish init_local_param_keys");
     }
 
     // should init local parameter cache's keys
     void first_pull_to_init_local_param() {
-        LOG(WARNING) << "... first_pull_to_init_local_param";
+        RAW_LOG(WARNING, "... first_pull_to_init_local_param");
         StateBarrier barrier;
         size_t to_server_num = 0;
         std::atomic<size_t> pull_rsp_num{0};
 
         voidf_t extra_rsp_callback = [&barrier, &pull_rsp_num, &to_server_num] {
             pull_rsp_num ++;
-            DLOG(INFO) << "get pull response, to_server_num\t" << to_server_num
-                       << "\tpull_rsp_num\t" << pull_rsp_num;
+            RAW_LOG(INFO, "get pull response, to_server_num\t%zu pull_rsp_num\t %d" , to_server_num , int(pull_rsp_num));
             if(pull_rsp_num == to_server_num) {
                 barrier.set_state_valid();
                 barrier.try_unblock();
@@ -131,11 +130,11 @@ public:
         };
         to_server_num = pull_access.pull(extra_rsp_callback);
         barrier.block();
-        LOG(WARNING) << "... finish first_pull_to_init_local_param";
+        RAW_LOG(WARNING, "... finish first_pull_to_init_local_param");
     }
 
     void try_push() {
-        LOG(WARNING) << "... try to push";
+        RAW_LOG(WARNING, "... try to push");
         StateBarrier barrier;
         voidf_t extra_rsp_callback = [&barrier] {
             barrier.set_state_valid();
@@ -144,7 +143,7 @@ public:
 
         push_access.push(extra_rsp_callback);
         barrier.block();
-        LOG(WARNING) << "... finish try push";
+        RAW_LOG(WARNING, "... finish try push");
     }
 
 protected:

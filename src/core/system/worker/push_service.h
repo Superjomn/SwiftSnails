@@ -25,8 +25,8 @@ public:
     }
 
     void start_service() {
-        LOG(WARNING) << ".. start push deamon service";
-        LOG(INFO)    << ">  push service period:\t" << _period;
+        RAW_LOG(WARNING, ".. start push deamon service");
+        RAW_LOG(INFO, ">  push service period:\t%d",  _period);
 
         auto service_with_wait = [this] {
             std::unique_lock<std::mutex> lk(mut);

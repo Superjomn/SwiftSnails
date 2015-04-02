@@ -24,8 +24,8 @@ public:
     }
 
     void start_service() {
-        LOG(WARNING) << ".. start pull deamon service";
-        LOG(INFO)    << ">  pull service period:\t" << _period;
+        RAW_LOG(WARNING, ".. start pull deamon service");
+        RAW_LOG(INFO, ">  pull service period:\t%d", _period);
 
         auto service_with_wait = [this] {
             //std::unique_lock<std::mutex> lk(param_cache.iter_mutex());
@@ -41,7 +41,7 @@ public:
                     });
                 if(param_cache.terminate_flag()) return;
                 last_pulled_iter = param_cache.num_iters();
-                RAW_LOG_INFO(">  %d iter pull-service deamon to pull ...", last_pulled_iter);
+                RAW_DLOG(INFO, ">  %d iter pull-service deamon to pull ...", last_pulled_iter);
                 pull_access.pull();
             }
         };

@@ -23,12 +23,12 @@ public:
     { }
 
     size_t pull(voidf_t rsp_callback = voidf_t() ) {
-        LOG(INFO) << "pull() from server";
+        RAW_DLOG(INFO, "pull() from server");
         // node_id : vals
         std::map<int, std::vector<pull_val_t> > node_reqs;
-        LOG(INFO) << "to arrange_local_vals";
+        RAW_DLOG(INFO, "to arrange_local_vals");
         arrange_local_vals(node_reqs);
-        LOG(INFO) << "to send pull requests";
+        RAW_DLOG(INFO, "to send pull requests");
         // send message to each nodes
         send(node_reqs, rsp_callback);
         return node_reqs.size();
@@ -38,7 +38,7 @@ protected:
     void arrange_local_vals(std::map<int, std::vector<pull_val_t> > &node_reqs) {
         CHECK(! param_cache.params().empty()) << "local param cache should be inited";
         auto &vals = param_cache.params();
-        RAW_LOG_INFO("param_cache get\t%d\tkeys", vals.size() );
+        RAW_LOG_INFO("param_cache get\t%lu\tkeys", vals.size() );
 
         { rwlock_read_guard lk(param_cache.rwlock());
             for( auto& item : vals) {
@@ -53,7 +53,7 @@ protected:
             }
         }
 
-        RAW_LOG_INFO("split local keys to %d parts", node_reqs.size());
+        RAW_LOG_INFO("split local keys to %lu parts", node_reqs.size());
     }
     /*
      * @extra_rsp_callback will be called after 
