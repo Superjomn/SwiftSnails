@@ -136,13 +136,17 @@ public:
     void try_push() {
         RAW_LOG(WARNING, "... try to push");
         StateBarrier barrier;
-        voidf_t extra_rsp_callback = [&barrier] {
-            barrier.set_state_valid();
-            barrier.try_unblock();
+        std::atomic<size_t> num_reqs{0};
+        voidf_t extra_rsp_callback = [&barrier, &num_reqs] {
+            if(-- num_reqs  == 0) {
+                barrier.set_state_valid();
+                barrier.try_unblock();
+            }
         };
 
-        push_access.push(extra_rsp_callback);
+        num_reqs = push_access.push_without_reset(extra_rsp_callback);
         barrier.block();
+        push_access.reset_local_grads();
         RAW_LOG(WARNING, "... finish try push");
     }
 
@@ -192,14 +196,14 @@ protected:
                 std::string line;
                 queue.wait_and_pop(line);
                 if(line.empty()) {
-                    RAW_LOG(INFO, ">  line_trainner get empty line");
+                    //RAW_LOG(INFO, ">  line_trainner get empty line");
                     break;
                 }
                 auto rcds = parse_record(line);
                 //RAW_DLOG(INFO, "learn a record");
                 learn_one_record(std::move(rcds));
             }
-            RAW_LOG(INFO, ">  one line_trainner out!");
+            //RAW_LOG(INFO, ">  one line_trainner out!");
         };
         
         auto producer = [this, &queue, file, thread_num] {
@@ -318,7 +322,6 @@ int main(int argc, char* argv[]) {
     NodeHashfragInit node_hashfrag_init;
     Algorithm alg;
     ClientTerminate<index_t, float, float> terminate;
-
 
     node_transfer_init(false);
 

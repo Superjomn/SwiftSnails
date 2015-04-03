@@ -1,5 +1,6 @@
 #CXX=g++-4.9
 CXX=g++
+#CXX="/Users/apple/LocalApps/gcc48/bin/g++"
 CC=gcc
 BIN=./bin
 

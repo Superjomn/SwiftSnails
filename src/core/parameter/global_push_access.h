@@ -31,6 +31,26 @@ public:
         reset_local_grads();
     }
 
+    size_t push_without_reset(voidf_t extra_rsp_callback = voidf_t()) {
+        // nodeid to reqs
+        std::map<int, std::vector<push_val_t> > node_reqs;
+        arrange_local_grads(node_reqs);
+
+        return send(node_reqs, extra_rsp_callback);
+
+        //reset_local_grads();
+    }
+    /*
+     * set local grads to zero(initial status)
+     */
+    void reset_local_grads() {
+        rwlock_write_guard(param_cache.rwlock());
+        for(auto& item : param_cache.params()) {
+            //item.second.reset();    // set to 0
+            item.second = std::move(val_t());
+        }
+    }
+
 protected:
 
     void arrange_local_grads(std::map<int, std::vector<push_val_t>>& node_reqs) {
@@ -48,7 +68,7 @@ protected:
         }
     }
 
-    void send(
+    size_t send(
             std::map<int, std::vector<push_val_t>>& items,
             voidf_t extra_rsp_callback
     ) {
@@ -69,16 +89,7 @@ protected:
             };
             gtransfer.send(std::move(req), node_id);
         }
-    }
-    /*
-     * set local grads to zero(initial status)
-     */
-    void reset_local_grads() {
-        rwlock_write_guard(param_cache.rwlock());
-        for(auto& item : param_cache.params()) {
-            //item.second.reset();    // set to 0
-            item.second = std::move(val_t());
-        }
+        return items.size();
     }
 
 private:

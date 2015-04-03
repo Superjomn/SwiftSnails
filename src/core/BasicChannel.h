@@ -48,7 +48,10 @@ public:
         std::unique_lock<std::mutex> lk(mut);
         data_cond.wait(
                 lk, [this] { return !data_queue.empty() || _closed; });
-        if(_closed) return false;
+        if(_closed) {
+            value = T();
+            return false;
+        }
         value = std::move(*data_queue.front());
         data_queue.pop();
         return true;

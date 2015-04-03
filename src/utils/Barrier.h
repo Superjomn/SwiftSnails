@@ -141,13 +141,13 @@ class CounterBarrier
 private:
     std::mutex _mutex;
     std::condition_variable _cv;
-    std::size_t _count;
+    std::atomic<int> _count;
 public:
-    explicit CounterBarrier(std::size_t count) : _count{count} { }
+    explicit CounterBarrier(int count) : _count{count} { }
 
     void wait()
     {
-        std::unique_lock<std::mutex> lock{_mutex};
+        std::unique_lock<std::mutex> lock(_mutex);
         if (--_count == 0) {
             _cv.notify_all();
         } else {
