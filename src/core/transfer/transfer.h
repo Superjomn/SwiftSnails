@@ -99,6 +99,9 @@ public:
             //LOG(INFO) << "call_back_handler is registered";
         }
 
+        CHECK(_route.send_addrs().count(to_id) > 0) 
+            << "no node_id " << to_id << " in the route";
+
         // send the package
         Route& route = _route;
 
