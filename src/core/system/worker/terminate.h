@@ -34,7 +34,6 @@ public:
         RAW_LOG(WARNING, "###################################");
         RAW_LOG(WARNING, "     Worker terminate normally");
         RAW_LOG(WARNING, "###################################");
-        std::exit(EXIT_FAILURE);
     }
 
 protected:
