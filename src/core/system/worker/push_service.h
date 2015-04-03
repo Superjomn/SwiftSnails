@@ -21,6 +21,7 @@ public:
         push_access( global_push_access<key_t, val_t, grad_t>())
     {
         _period = global_config().get_config("push_period").to_int32();
+        _num_iters = global_config().get_config("num_iters").to_int32();
         CHECK(_period > 0);
     }
 
@@ -36,11 +37,15 @@ public:
                     [this] {
                         int num_iters = param_cache.num_iters();
                         return param_cache.terminate_flag() || 
-                            (num_iters > 0 && last_pushed_iter != num_iters && num_iters % _period == 0);
+                               num_iters == _num_iters ||
+                            (num_iters > 0 && last_push_iter != num_iters && num_iters % _period == 0);
                     });
 
-                if(param_cache.terminate_flag()) return;
-                last_pushed_iter = param_cache.num_iters();
+                if(param_cache.terminate_flag() || _num_iters == param_cache.num_iters() ) {
+                    RAW_LOG(WARNING, ".. push deamon thread terminate!");
+                    return;
+                }
+                last_push_iter = param_cache.num_iters();
                 RAW_LOG_INFO(">  %d iter push-service deamon to push ...", last_push_iter);
                 push_access.push();
             }
@@ -64,6 +69,7 @@ private:
     push_access_t& push_access;
 
     int _period = 0;
+    int _num_iters = 0;
     int last_push_iter = 0;
 
 };  // class PushService

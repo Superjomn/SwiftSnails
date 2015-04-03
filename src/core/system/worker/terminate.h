@@ -31,20 +31,22 @@ public:
     void operator() () {
         terminate_deamons(); 
         worker_send_finish_message(); 
-        LOG(WARNING) << "Worker terminate normally";
+        RAW_LOG(WARNING, "###################################");
+        RAW_LOG(WARNING, "     Worker terminate normally");
+        RAW_LOG(WARNING, "###################################");
     }
 
 protected:
     
     // terminate push and pull service
     void terminate_deamons() {
-        LOG(WARNING) << "... terminate all service deamons";
+        RAW_LOG(WARNING, "... to terminate all service deamons");
         param_cache.terminate_service_deamons();
     }
 
     // send finish message to master
     void worker_send_finish_message() {
-        LOG(WARNING) << ".. worker_send_finish_message";
+        RAW_LOG(WARNING, ".. worker_send_finish_message");
         std::this_thread::sleep_for(std::chrono::milliseconds(5000));
         Request req;
         req.meta.message_class = WORKER_FINISH_WORK;
@@ -56,7 +58,7 @@ protected:
         gtransfer.send(std::move(req), 0);
         _wait_rsp_barrier.block();
 
-        LOG(WARNING) << "worker terminate!";
+        RAW_LOG(WARNING, "worker terminate!");
     }
     
 private:

@@ -20,6 +20,7 @@ public:
         pull_access(global_pull_access<key_t, val_t, grad_t>())
     {
         _period = global_config().get_config("pull_period").to_int32();
+        _num_iters = global_config().get_config("num_iters").to_int32();
         CHECK(_period > 0);
     }
 
@@ -37,9 +38,13 @@ public:
                     [this] {
                         int num_iters = param_cache.num_iters();
                         return param_cache.terminate_flag() || 
-                            (num_iters > 0 && last_pulled_iter != num_iters && num_iters % _period == 0);
+                                num_iters == _num_iters ||
+                                (num_iters > 0 && last_pulled_iter != num_iters && num_iters % _period == 0);
                     });
-                if(param_cache.terminate_flag()) return;
+                if(param_cache.terminate_flag() || param_cache.num_iters() == _num_iters) {
+                    RAW_LOG(WARNING, ".. pull deamon thread terminate!");
+                    return;
+                }
                 last_pulled_iter = param_cache.num_iters();
                 RAW_DLOG(INFO, ">  %d iter pull-service deamon to pull ...", last_pulled_iter);
                 pull_access.pull();
@@ -60,6 +65,7 @@ private:
     std::mutex mut;
 
     int _period = 0;
+    int _num_iters = 0;
     // record last iter to avoid pulling continuously
     int last_pulled_iter{0};
 

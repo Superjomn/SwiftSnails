@@ -102,12 +102,12 @@ private:
             task_t func;
             bool valid;
 
-            //LOG(INFO) << "thread " << std::this_thread::get_id() << " started";
+            LOG(INFO) << "thread " << std::this_thread::get_id() << " started";
             while ((valid = channel.pop(func))) {
                 //LOG(INFO) << std::this_thread::get_id() << " job's valid: " << valid;
                 func();
             }
-            //LOG(INFO) << "thread " << std::this_thread::get_id() << " exit";
+            LOG(INFO) << "thread " << std::this_thread::get_id() << " exit";
         }
         ~MultiWorker() {
             for( auto &t : threads) {

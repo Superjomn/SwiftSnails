@@ -133,7 +133,7 @@ protected:
         int timeout = global_config().get_config("init_timeout").to_int32();
         LOG(WARNING) << "[worker] ask for hashfrag will wait for\t" << timeout <<" s";
         // barrier with timeout
-        hashfrag_init_barrier.time_limit(1000 * timeout, []{
+        hashfrag_init_barrier.time_limit(1000 * timeout, [this]{
             //LOG(ERROR) << "[worker] init timeout!";
             if(! hashfrag_init_barrier.valid_state()) {
                 CHECK(1 == 2) << "[worker] askfor hashfrag timeout!";

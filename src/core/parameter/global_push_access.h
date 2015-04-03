@@ -38,7 +38,7 @@ protected:
         // split grads to different nodes
         for(auto& item : grads) {
             auto& key = item.first;
-            auto& grad = item.second;
+            //auto& grad = item.second;
 
             int node_id = global_hashfrag<key_t>().to_node_id(key);
             if(node_reqs.count(node_id) == 0) {
