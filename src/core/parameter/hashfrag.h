@@ -39,7 +39,10 @@ public:
         int num_frag_each_node = int(num_frags() / num_nodes() );
         for(int i = 0; i < num_frags(); i ++) {
             // skip case: node_id=0 which is master's id
-            _map_table[i] = index_t(i / num_frag_each_node) + 1;
+            int id = index_t(i / num_frag_each_node) + 1;
+            if (id < 1) id = 1;
+            if (id > num_nodes()) id = num_nodes();
+            _map_table[i]  = id;
         }
     }
 
