@@ -1,3 +1,10 @@
+//
+//  SwiftWorker.h
+//  core
+//
+//  Created by Chunwei on 4/4/15.
+//  Copyright (c) 2014 Chunwei. All rights reserved.
+//
 #pragma once
 #include "../../utils/all.h"
 #include "../system/node_init.h"
@@ -7,7 +14,6 @@
 #include "../parameter/global_push_access.h"
 #include "../system/worker/pull_service.h"
 #include "../system/worker/push_service.h"
-#include "access_method.h"
 
 namespace swift_snails {
 
