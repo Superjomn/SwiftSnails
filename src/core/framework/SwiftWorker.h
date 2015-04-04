@@ -1,12 +1,12 @@
 #pragma once
 #include "../../utils/all.h"
-#include "../../core/system/node_init.h"
-#include "../../core/system/worker/init_config.h"
-#include "../../core/system/worker/terminate.h"
-#include "../../core/parameter/global_pull_access.h"
-#include "../../core/parameter/global_push_access.h"
-#include "../../core/system/worker/pull_service.h"
-#include "../../core/system/worker/push_service.h"
+#include "../system/node_init.h"
+#include "../system/worker/init_config.h"
+#include "../system/worker/terminate.h"
+#include "../parameter/global_pull_access.h"
+#include "../parameter/global_push_access.h"
+#include "../system/worker/pull_service.h"
+#include "../system/worker/push_service.h"
 #include "access_method.h"
 
 namespace swift_snails {
