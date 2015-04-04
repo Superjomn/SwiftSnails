@@ -49,11 +49,16 @@ using push_access_t = GlobalPushAccess<key_t, val_t, grad_t> ;
 using param_cache_t = GlobalParamCache<key_t, val_t, grad_t> ;
 
 public:
-    explicit SwiftWorker() : \
+    explicit SwiftWorker(std::string& config_path, Algorithm& alg) : \
+        alg(alg),
         param_cache(global_param_cache<key_t, val_t, grad_t>()),
         pull_access(global_pull_access<key_t, val_t, grad_t>()),
         push_access(global_push_access<key_t, val_t, grad_t>())
     {
+        CHECK(!config_path.empty());
+        worker_init_configs();
+        global_config().load_conf(config_path);
+        global_config().parse();
         // init configs
         _num_iters = global_config().get_config("num_iters").to_int32();
         CHECK_GT(_num_iters, 0);
@@ -66,12 +71,18 @@ public:
     }
 
     void operator() {
+        // route init
+        node_transfer_init(false);
+        node_hashfrag_init();
         init_local_param_keys(_async_channel_thread_num);
         first_pull_to_init_local_param();
         start_deamon_service();
         // API
         alg.train();
+        // final push local grad to paramter servers
         final_push();
+        // terminate local task
+        terminate();
     }
 
 protected:
@@ -145,8 +156,11 @@ private:
     int _num_iters{0};
     float _learning_rate{0.01};
     int _async_channel_thread_num{1};
-    Algorithm alg;
-
+    // control modules
+    Algorithm &alg;
+    NodeTransferInit node_transfer_init;
+    NodeHashfragInit node_hashfrag_init;
+    ClientTerminate<key_t, val_t, grad_t> terminate;
 };  // class Framework
 
 };  // end namespace swift_snails
