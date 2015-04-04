@@ -116,37 +116,13 @@ public:
     // should init local parameter cache's keys
     void first_pull_to_init_local_param() {
         RAW_LOG(WARNING, "... first_pull_to_init_local_param");
-        StateBarrier barrier;
-        size_t to_server_num = 0;
-        std::atomic<size_t> pull_rsp_num{0};
-
-        voidf_t extra_rsp_callback = [&barrier, &pull_rsp_num, &to_server_num] {
-            pull_rsp_num ++;
-            RAW_LOG(INFO, "get pull response, to_server_num\t%zu pull_rsp_num\t %d" , to_server_num , int(pull_rsp_num));
-            if(pull_rsp_num == to_server_num) {
-                barrier.set_state_valid();
-                barrier.try_unblock();
-            }
-        };
-        to_server_num = pull_access.pull(extra_rsp_callback);
-        barrier.block();
+        pull_access.pull_with_barrier();
         RAW_LOG(WARNING, "... finish first_pull_to_init_local_param");
     }
 
     void try_push() {
         RAW_LOG(WARNING, "... try to push");
-        StateBarrier barrier;
-        std::atomic<size_t> num_reqs{0};
-        voidf_t extra_rsp_callback = [&barrier, &num_reqs] {
-            if(-- num_reqs  == 0) {
-                barrier.set_state_valid();
-                barrier.try_unblock();
-            }
-        };
-
-        num_reqs = push_access.push_without_reset(extra_rsp_callback);
-        barrier.block();
-        push_access.reset_local_grads();
+        push_access.push_with_barrier();
         RAW_LOG(WARNING, "... finish try push");
     }
 

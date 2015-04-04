@@ -31,6 +31,25 @@ public:
         reset_local_grads();
     }
 
+    void push_with_barrier() {
+        StateBarrier barrier;
+        std::atomic<size_t> num_reqs{0};
+
+        std::map<int, std::vector<push_val_t> > node_reqs;
+        num_reqs = arrange_local_grads(node_reqs);
+
+        voidf_t extra_rsp_callback = [&barrier, &num_reqs] {
+            if(-- num_reqs  == 0) {
+                barrier.set_state_valid();
+                barrier.try_unblock();
+            }
+        };
+
+        send(node_reqs, extra_rsp_callback);
+        barrier.block();
+        reset_local_grads();
+    }
+    /*
     size_t push_without_reset(voidf_t extra_rsp_callback = voidf_t()) {
         // nodeid to reqs
         std::map<int, std::vector<push_val_t> > node_reqs;
@@ -40,9 +59,12 @@ public:
 
         //reset_local_grads();
     }
+    */
     /*
      * set local grads to zero(initial status)
      */
+protected:
+
     void reset_local_grads() {
         rwlock_write_guard(param_cache.rwlock());
         for(auto& item : param_cache.params()) {
@@ -51,9 +73,8 @@ public:
         }
     }
 
-protected:
 
-    void arrange_local_grads(std::map<int, std::vector<push_val_t>>& node_reqs) {
+    size_t arrange_local_grads(std::map<int, std::vector<push_val_t>>& node_reqs) {
         auto &grads = param_cache.grads();
         // split grads to different nodes
         for(auto& item : grads) {
@@ -66,6 +87,7 @@ protected:
             }
             node_reqs[node_id].push_back(item);
         }
+        return node_reqs.size();
     }
 
     size_t send(
