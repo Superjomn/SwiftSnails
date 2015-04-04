@@ -22,7 +22,7 @@ public:
         gtransfer(global_transfer<ServerWorkerRoute>())
     { }
 
-    size_t pull(voidf_t rsp_callback = voidf_t() ) {
+    void pull(voidf_t rsp_callback = voidf_t() ) {
         RAW_DLOG(INFO, "pull() from server");
         // node_id : vals
         std::map<int, std::vector<pull_val_t> > node_reqs;
@@ -31,11 +31,26 @@ public:
         RAW_DLOG(INFO, "to send pull requests");
         // send message to each nodes
         send(node_reqs, rsp_callback);
-        return node_reqs.size();
+    }
+
+    void pull_with_barrier() {
+        StateBarrier barrier;
+        std::atomic<size_t> num_reqs{0};
+        std::map<int, std::vector<pull_val_t> > node_reqs;
+        num_reqs = arrange_local_vals(node_reqs);
+
+        voidf_t extra_rsp_callback = [&barrier, &num_reqs] {
+            if(-- num_reqs == 0) {
+                barrier.set_state_valid();
+                barrier.try_unblock();
+            }
+        };
+        send(node_reqs, extra_rsp_callback);
+        barrier.block();
     }
 
 protected:
-    void arrange_local_vals(std::map<int, std::vector<pull_val_t> > &node_reqs) {
+    size_t arrange_local_vals(std::map<int, std::vector<pull_val_t> > &node_reqs) {
         CHECK(! param_cache.params().empty()) << "local param cache should be inited";
         auto &vals = param_cache.params();
         RAW_LOG_INFO("param_cache get\t%lu\tkeys", vals.size() );
@@ -52,8 +67,8 @@ protected:
                 node_reqs[node_id].push_back(item);
             }
         }
-
-        RAW_LOG_INFO("split local keys to %lu parts", node_reqs.size());
+        //RAW_LOG_INFO("split local keys to %lu parts", node_reqs.size());
+        return node_reqs.size();
     }
     /*
      * @extra_rsp_callback will be called after 
