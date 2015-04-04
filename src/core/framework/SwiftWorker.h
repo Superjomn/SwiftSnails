@@ -24,7 +24,11 @@ public:
     typedef Val     val_t;
     typedef Grad    grad_t;
 
-    explicit BaseAlgorithm() { }
+    explicit BaseAlgorithm() { 
+        _async_channel_thread_num = global_config().get_config("async_channel_thread_num").to_int32();
+        CHECK_GT(_async_channel_thread_num, 0);
+        create_async_channel();
+    }
 
     virtual void train() = 0;
 
@@ -37,8 +41,18 @@ public:
         return _data_path;
     }
 
+protected:
+    void create_async_channel() {
+        AsynExec as(_async_channel_thread_num);
+        _async_channel = as.open();
+    }
+    std::shared_ptr<AsynExec::channel_t>& async_channel() {
+        return _async_channel;
+    }
+
 private:
     std::string _data_path;
+    int _async_channel_thread_num{1};
 
 };  // class BaseAlgorithm
 /*
@@ -70,10 +84,6 @@ public:
         CHECK_GT(_num_iters, 0);
         _learning_rate = global_config().get_config("learning_rate").to_float();
         CHECK_GT(_learning_rate, 0);
-        _async_channel_thread_num = global_config().get_config("async_channel_thread_num").to_int32();
-        CHECK_GT(_async_channel_thread_num, 0);
-
-        create_async_channel();
     }
 
     void operator() {
@@ -92,11 +102,6 @@ public:
     }
 
 protected:
-    void create_async_channel() {
-        AsynExec as(_async_channel_thread_num);
-        _async_channel = as.open();
-    }
-
     // start pull and push service
     // these threads will run background
     void start_deamon_service() {
@@ -161,7 +166,6 @@ protected:
 private:
     int _num_iters{0};
     float _learning_rate{0.01};
-    int _async_channel_thread_num{1};
     // control modules
     Algorithm &alg;
     NodeTransferInit node_transfer_init;
