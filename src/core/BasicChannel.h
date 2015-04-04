@@ -94,7 +94,7 @@ public:
         return _closed;
     }
 
-    void size() const {
+    size_t size() const {
         return data_queue.size();
     }
 
