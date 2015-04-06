@@ -9,9 +9,11 @@ class SwiftMaster {
 public:
     explicit SwiftMaster(const std::string& config_path) {
         // init configs
+        /*
         master_init_configs();
         global_config().load_conf(config_path);
         global_config().parse();
+        */
     }
 
     void operator() () {

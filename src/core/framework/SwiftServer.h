@@ -13,21 +13,24 @@
 #include "../system/server/terminate.h"
 
 namespace swift_snails {
-template<Key, Val, Grad, PullMethod, PushMethod>
+
+template<typename Key, typename Val, typename Grad, typename PullMethod, typename PushMethod>
 class SwiftServer {
+public:
     typedef Key     key_t;
     typedef Val     val_t;
     typedef Grad    grad_t;
-    using table_t = SparseTable<key_t, val_t>;
-    using pull_method_t = PullMethod<table_t, val_t, val_t>;
-    using push_method_t = PushMethod<table_t, grad_t, val_t>;
+    //typedef SparseTable<key_t, val_t> table_t;
+    typedef PullMethod pull_method_t;
+    typedef PushMethod push_method_t ;
 
-public:
     explicit SwiftServer(const std::string &config_path)  {
         // init configs
+        /*
         server_init_configs();
         global_config().load_conf(config_path);
         global_config().parse();
+        */
     }
 
     void operator() () {
