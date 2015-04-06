@@ -76,7 +76,7 @@ public:
     // to_bool()
     const Item& get_config(const std::string &key) {
         auto p = _dic.find(key);
-        CHECK(p != _dic.end()) << "no registered key:\t" << key;
+        CHECK(p != _dic.end()) << "get_config: no registered key:\t" << key;
         return p->second;
     }
 
