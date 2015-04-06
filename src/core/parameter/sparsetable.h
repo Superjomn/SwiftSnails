@@ -9,22 +9,24 @@ public:
     typedef Value   value_t;
     typedef typename SparseHashMap<key_t, value_t>::map_t map_t;
 
-    // not thread safe!
-    map_t& data() {
-        return _data.get_map();
-    }
-
     bool find(const key_t& key, value_t* &val) {
+        rwlock_read_guard lock(_rwlock);
         auto it = data().find(key);
         if (it == data().end()) return false;
         val = &(it->second);
         return true;
     }
     bool find(const key_t& key, value_t &val) {
+        rwlock_read_guard lock(_rwlock);
         auto it = data().find(key);
         if (it == data().end()) return false;
         val = it->second;
         return true;
+    }
+
+    void assign(const key_t& key, const value_t &val) {
+        rwlock_write_guard lock(_rwlock);
+        data()[key] = val; 
     }
 
     index_t size() {
@@ -42,12 +44,20 @@ public:
     // Attention: should define value's output method first
     friend std::ostream& operator<< (std::ostream& os, SparseTableShard &shard)
     {
+        rwlock_read_guard lk(shard._rwlock);
         for(auto& item : shard.data() ) {
             os << item.first << "\t";
             os << item.second << std::endl;
         }
         return os;
     }
+
+protected:
+    // not thread safe!
+    map_t& data() {
+        return _data.get_map();
+    }
+
 
 private:
     SparseHashMap<key_t, value_t> _data;
@@ -85,7 +95,7 @@ public:
 
     void assign (const key_t& key, const value_t &val) {
         int shard_id = to_shard_id(key);
-        shard(shard_id).data()[key] = val;
+        shard(shard_id).assign(key, val);
     }
     /*
      * output parameters to ostream
