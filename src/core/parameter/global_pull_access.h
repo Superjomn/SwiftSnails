@@ -53,7 +53,7 @@ protected:
     size_t arrange_local_vals(std::map<int, std::vector<pull_val_t> > &node_reqs) {
         CHECK(! param_cache.params().empty()) << "local param cache should be inited";
         auto &vals = param_cache.params();
-        RAW_LOG_INFO("param_cache get\t%lu\tkeys", vals.size() );
+        //RAW_LOG_INFO("param_cache get\t%lu\tkeys", vals.size() );
 
         { rwlock_read_guard lk(param_cache.rwlock());
             for( auto& item : vals) {
@@ -105,7 +105,7 @@ protected:
                     while(! rsp->cont.read_finished()) {
                         rsp->cont >> key;
                         rsp->cont >> val;
-                        RAW_LOG(INFO, "get param from server:\t%d\t%f" , key , val);
+                        //RAW_LOG(INFO, "get param from server:\t%d\t%f" , key , val);
                         params[key] = std::move(val);
                     }
                 }

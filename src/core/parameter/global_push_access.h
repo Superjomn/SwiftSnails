@@ -67,9 +67,10 @@ protected:
 
     void reset_local_grads() {
         rwlock_write_guard(param_cache.rwlock());
-        for(auto& item : param_cache.params()) {
+        for(auto& item : param_cache.grads()) {
             //item.second.reset();    // set to 0
-            item.second = std::move(val_t());
+            //item.second = std::move(val_t());
+            item.second.reset();
         }
     }
 

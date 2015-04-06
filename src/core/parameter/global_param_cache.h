@@ -54,7 +54,7 @@ public:
         return _params;
     }
 
-    std::map<key_t, val_t>& grads() {
+    std::map<key_t, grad_t>& grads() {
         return _grads;
     }
 
