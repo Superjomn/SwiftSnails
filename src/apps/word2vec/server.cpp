@@ -8,7 +8,6 @@ using namespace fms;
 int main(int argc, char* argv[]) {
     typedef uint32_t key_t;
     // init config
-    /*
     CMDLine cmdline(argc, argv);
     string param_config_path = cmdline.registerParameter("config", "path of config file");
     string param_help = cmdline.registerParameter("help", "this screen");
@@ -28,8 +27,6 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     std::string config_path = cmdline.getValue(param_config_path);
-    */
-    std::string config_path = "server.conf";
 
     server_init_configs();
     global_config().register_config("len_vec");

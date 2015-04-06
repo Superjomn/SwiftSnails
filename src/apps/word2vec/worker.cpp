@@ -15,8 +15,7 @@ int main(int argc, char* argv[]) {
     string param_config_path = cmdline.registerParameter("config", "path of config file");
     string param_data_path = cmdline.registerParameter("data", "path of dataset, text only!");
     // parse parameters
-    //if(cmdline.hasParameter(param_help) || argc == 1) {
-    if(cmdline.hasParameter(param_help)) {
+    if(cmdline.hasParameter(param_help) || argc == 1) {
         cout << endl;
         cout << "===================================================================" << endl;
         cout << "master server main program" << endl;
@@ -26,7 +25,6 @@ int main(int argc, char* argv[]) {
         cout << endl;
         return 0;
     }
-    /*
     if(!cmdline.hasParameter(param_config_path)) {
         LOG(ERROR) << "missing parameter: config";
         return 0;
@@ -35,12 +33,11 @@ int main(int argc, char* argv[]) {
         LOG(ERROR) << "missing parameter: data";
         return 0;
     }
-    */
     std::string config_path = "./worker.conf";
+    std::string data_path = "./data.sample";
     if(cmdline.hasParameter(param_config_path)) {
         config_path = cmdline.getValue(param_config_path);
     }
-    std::string data_path = "./data.sample";
     if(cmdline.hasParameter(param_data_path)) {
         data_path = cmdline.getValue(param_data_path);
     }
