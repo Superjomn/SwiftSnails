@@ -16,4 +16,4 @@ def gen_data(num):
         print line
 
 if __name__ == '__main__':
-    gen_data(1000)
+    gen_data(10000)
