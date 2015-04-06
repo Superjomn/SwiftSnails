@@ -199,9 +199,11 @@ public:
         // TODO improve this in fix mode?
         CHECK( _table->find(key, param) ) << "new key should be inited before";
         CHECK_NOTNULL(param);
+        /*
         DLOG(INFO) << "to apply push val: key:\t" << key 
                    << "\tparam\t" << *param 
                    << "\tpush_val\t" << push_val;
+        */
         _access_method.apply_push_value(key, *param, push_val);
     }
 
