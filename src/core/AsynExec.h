@@ -132,6 +132,7 @@ private:
 /* 
  * start N threads to run one task
  */
+/*
 void async_exec( 
     int thread_num, 
     AsynExec::task_t &&part_task,
@@ -154,7 +155,34 @@ void async_exec(
 
     barrier.wait();
 }
+*/
     
+void async_exec( 
+    int thread_num, 
+    AsynExec::task_t &&part_task,
+    std::shared_ptr<AsynExec::channel_t> channel
+    ) 
+{
+    StateBarrier barrier;
+    std::atomic<int> _thread_num {thread_num};
+
+    AsynExec::task_t _task = [&part_task, &_thread_num, &barrier] {
+        part_task();
+        // this task complete
+        RAW_LOG(INFO, ">  asunc_exec one task finished task_finish_cout");
+        if(--_thread_num == 0) {
+            RAW_LOG(INFO, ">  async_exec unblock");
+            barrier.set_state_valid();
+            barrier.try_unblock();
+        }
+    };
+
+    for(int i = 0; i < thread_num; i ++) {
+        auto __task = _task;
+        channel->push(std::move(__task));
+    }
+    barrier.block();
+}
 
 
 
