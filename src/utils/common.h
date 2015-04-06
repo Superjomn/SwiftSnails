@@ -68,7 +68,7 @@ inline int guarded_pclose(FILE* stream) {
 }
 
 
-typedef Eigen::Matrix<double, Eigen::Dynamic, 1> Vec;
+//typedef Eigen::Matrix<double, Eigen::Dynamic, 1> Vec;
 
 };
 
