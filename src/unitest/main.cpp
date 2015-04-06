@@ -8,6 +8,7 @@
 #include "utils/ConfigParser_test.h"
 #include "utils/shell_test.h"
 #include "utils/file_test.h"
+#include "utils/vec1_test.h"
 
 // core/
 #include "core/common_test.h"
