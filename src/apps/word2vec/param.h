@@ -14,20 +14,18 @@ struct Word2VecGrad {
 
     Word2VecGrad(const Word2VecGrad& other) {
         init();
-        for(int i = 0; i < len_vec(); i++) {
-            h_grad()[i] = other.h_grad()[i];
-            v_grad()[i] = other.v_grad()[i];
-            n_h() = other.n_h();
-            n_v() = other.n_v();
-        }
+        h_grad() = other.h_grad();
+        v_grad() = other.v_grad();
+        n_h() = other.n_h();
+        n_v() = other.n_v();
     }
 
     void init() {
         CHECK(_len_vec > 0);
-        if(!_h) {
+        if(h_grad().size() == 0) {
             //RAW_DLOG(INFO, ">  h reset new memory");
-            _h.reset(new Vec(_len_vec));
-            _v.reset(new Vec(_len_vec));
+            h_grad().init(_len_vec);
+            v_grad().init(_len_vec);
         }
     }
 
@@ -40,8 +38,8 @@ struct Word2VecGrad {
     }
 
     void merge_with(const Word2VecGrad &other) {
-        *_h += other.h_grad();
-        *_v += other.v_grad();
+        h_grad() += other.h_grad();
+        v_grad() += other.v_grad();
         n_v() += other.n_v();
         n_h() += other.n_h();
     }
@@ -89,16 +87,16 @@ struct Word2VecGrad {
     }
 
     const Vec& h_grad() const {
-        return *_h;
+        return _h;
     }
     const Vec& v_grad() const {
-        return *_v;
+        return _v;
     }
     Vec& h_grad() {
-        return *_h;
+        return _h;
     }
     Vec& v_grad() {
-        return *_v;
+        return _v;
     }
     int& n_v() {
         return _n_v;
@@ -134,8 +132,8 @@ private:
     static int _len_vec;
     int _n_v{0};
     int _n_h{0};
-    std::unique_ptr<Vec> _h;
-    std::unique_ptr<Vec> _v;
+    Vec _h;
+    Vec _v;
 };  // class Word2VecGrad
 
 
@@ -161,11 +159,11 @@ public:
 
     void init(bool rand_init = false) {
         CHECK(_len_vec > 0);
-        if(!_h) {
-            _h.reset(new Vec(_len_vec));
-            _v.reset(new Vec(_len_vec));
-            _h2sum.reset(new Vec(_len_vec));
-            _v2sum.reset(new Vec(_len_vec));
+        if(_h.size() == 0) {
+            h().init(_len_vec);
+            v().init(_len_vec);
+            h2sum().init(_len_vec);
+            v2sum().init(_len_vec);
         }
         if(rand_init) {
             std::random_device rd;
@@ -194,28 +192,28 @@ public:
     }
 
     const Vec& h() const {
-        return *_h;
+        return _h;
     }
     const Vec& v() const {
-        return *_v;
+        return _v;
     }
     const Vec& h2sum() const {
-        return *_h2sum;
+        return _h2sum;
     }
     const Vec& v2sum() const {
-        return *_v2sum;
+        return _v2sum;
     }
     Vec& h() {
-        return *_h;
+        return _h;
     }
     Vec& v() {
-        return *_v;
+        return _v;
     }
     Vec& h2sum() {
-        return *_h2sum;
+        return _h2sum;
     }
     Vec& v2sum() {
-        return *_v2sum;
+        return _v2sum;
     }
     int len_vec() const {
         return _len_vec;
@@ -234,10 +232,10 @@ public:
     }
 
 private:
-    std::unique_ptr<Vec> _h;
-    std::unique_ptr<Vec> _v;
-    std::unique_ptr<Vec> _h2sum;
-    std::unique_ptr<Vec> _v2sum;
+    Vec _h;
+    Vec _v;
+    Vec _h2sum;
+    Vec _v2sum;
     static int _len_vec;
 };  // class Word2VecParam
 
