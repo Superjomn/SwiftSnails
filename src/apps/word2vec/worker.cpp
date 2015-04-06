@@ -33,24 +33,27 @@ int main(int argc, char* argv[]) {
         LOG(ERROR) << "missing parameter: data";
         return 0;
     }
-    std::string config_path = "./worker.conf";
-    std::string data_path = "./data.sample";
+    std::string config_path;
+    std::string data_path;
     if(cmdline.hasParameter(param_config_path)) {
         config_path = cmdline.getValue(param_config_path);
     }
     if(cmdline.hasParameter(param_data_path)) {
         data_path = cmdline.getValue(param_data_path);
     }
-
+    // register config
     worker_init_configs();
     global_config().register_config("len_vec");
+    global_config().register_config("window");
+    global_config().register_config("negative");
+
     global_config().load_conf(config_path);
     global_config().parse();
 
-    int num_iters = 30;
+    int num_iters = global_config().get_config("num_iters").to_int32();
     int len_vec = global_config().get_config("len_vec").to_int32();
-    int window = 4;
-    int negative = 22;
+    int window = global_config().get_config("window").to_int32();
+    int negative = global_config().get_config("negative").to_int32();
 
     SkipGram alg(num_iters, len_vec, window, negative);
     alg.set_data_path(data_path);
