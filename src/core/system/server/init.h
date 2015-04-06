@@ -123,7 +123,7 @@ protected:
                     grad_t grad;
                     req->cont >> key;
                     req->cont >> grad;
-                    DLOG(INFO) << "apply_push\t" << key << "\t" << grad;
+                    //DLOG(INFO) << "apply_push\t" << key << "\t" << grad;
                     //req_items.emplace_back(std::move(key), std::move(grad));
                     push_access->apply_push_value(key, grad);
                 }
