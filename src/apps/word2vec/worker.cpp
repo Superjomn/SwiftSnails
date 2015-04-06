@@ -1,0 +1,66 @@
+#include "../../core/framework/SwiftWorker.h"
+#include "common.h"
+#include "param.h"
+#include "access_method.h"
+#include "word2vec.h"
+using namespace swift_snails;
+using namespace fms;
+using namespace std;
+
+
+int main(int argc, char* argv[]) {
+    // init config
+    CMDLine cmdline(argc, argv);
+    string param_help = cmdline.registerParameter("help", "this screen");
+    string param_config_path = cmdline.registerParameter("config", "path of config file");
+    string param_data_path = cmdline.registerParameter("data", "path of dataset, text only!");
+    // parse parameters
+    //if(cmdline.hasParameter(param_help) || argc == 1) {
+    if(cmdline.hasParameter(param_help)) {
+        cout << endl;
+        cout << "===================================================================" << endl;
+        cout << "master server main program" << endl;
+        cout << "===================================================================" << endl;
+        cmdline.print_help();
+        cout << endl;
+        cout << endl;
+        return 0;
+    }
+    /*
+    if(!cmdline.hasParameter(param_config_path)) {
+        LOG(ERROR) << "missing parameter: config";
+        return 0;
+    }
+    if(!cmdline.hasParameter(param_data_path)) {
+        LOG(ERROR) << "missing parameter: data";
+        return 0;
+    }
+    */
+    std::string config_path = "./worker.conf";
+    if(cmdline.hasParameter(param_config_path)) {
+        config_path = cmdline.getValue(param_config_path);
+    }
+    std::string data_path = "./data.sample";
+    if(cmdline.hasParameter(param_data_path)) {
+        data_path = cmdline.getValue(param_data_path);
+    }
+
+    worker_init_configs();
+    global_config().register_config("len_vec");
+    global_config().load_conf(config_path);
+    global_config().parse();
+
+    int num_iters = 30;
+    int len_vec = global_config().get_config("len_vec").to_int32();
+    int window = 4;
+    int negative = 22;
+
+    SkipGram alg(num_iters, len_vec, window, negative);
+    alg.set_data_path(data_path);
+
+    SwiftWorker<SkipGram> worker(config_path, alg); 
+    worker();
+
+    return 0;
+}
+
