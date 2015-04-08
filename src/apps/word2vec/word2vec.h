@@ -52,7 +52,10 @@ public:
                 res.feas.push_back(std::make_pair(std::stoi(f), true));
             }
         } catch (...) {
-            RAW_LOG(INFO, "wrong record detected!");
+            //RAW_LOG(INFO, "wrong record detected!");
+        }
+        if(res.feas.size() < 5) {
+            res.feas.clear();
         }
         return std::move(res);
     }

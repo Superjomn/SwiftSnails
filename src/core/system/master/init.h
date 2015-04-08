@@ -36,11 +36,11 @@ public:
         register_message_class();
         CHECK(!gtransfer.async_channel()->closed()) << "channel should not been closed before transfer is deconstructed";
         wait_for_workers_register_route();
+        init_hashfrag();
         // sent route as response to clients
         send_route_to_workers();
-
-        init_hashfrag();
         //wait_to_terminate();
+
     }
 
     int worker_num() {

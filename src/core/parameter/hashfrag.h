@@ -18,6 +18,7 @@ public:
     // num_nodes: initial number of nodes
     explicit BasicHashFrag() 
     { 
+        //_num_frags = global_config().get_config("frag_num").to_int32();
     }
     /*
      * number of nodes should be setted by master
