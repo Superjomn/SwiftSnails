@@ -47,8 +47,12 @@ public:
     rcd_t parse_record(const std::string &line) {
         rcd_t res;
         auto fields = std::move(split(line, " "));
-        for(std::string & f : fields) {
-            res.feas.push_back(std::make_pair(std::stoi(f), true));
+        try {
+            for(std::string & f : fields) {
+                res.feas.push_back(std::make_pair(std::stoi(f), true));
+            }
+        } catch (...) {
+            RAW_LOG(INFO, "wrong record detected!");
         }
         return std::move(res);
     }
@@ -71,7 +75,10 @@ private:
                 queue.wait_and_pop(line);
                 if(line.empty()) break;
                 rcd_t rcd = parse_record(line);
-                learn_record(std::move(rcd.feas));
+                // TODO add config for shortest sentence
+                if(rcd.feas.size() > 4) {
+                    learn_record(std::move(rcd.feas));
+                }
             }
         };
         auto producer = [this, &queue, file, thread_num] {
