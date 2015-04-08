@@ -31,11 +31,11 @@ public:
 
     virtual void train() {
         // init local keys
-        { rwlock_read_guard lk(param_cache.rwlock());
+        //{ rwlock_read_guard lk(param_cache.rwlock());
             for(auto& item : param_cache.params()) {
                 local_keys.push_back(item.first);
             }
-        }
+        //}
 
         for(int i = 0; i < _num_iters; i ++) {
             LOG(WARNING) << i << " th iteration";
@@ -131,11 +131,11 @@ private:
 
     void train_sg_pair(key_t word, key_t word2, const Vec& labels, bool train_w1=true, bool train_w2=true) {
         CHECK_GT(local_keys.size(), 0) << "local_keys should be inited";
-        RWLock& rwlock = param_cache.rwlock();
+        //RWLock& rwlock = param_cache.rwlock();
         Vec l1;
-        { rwlock_read_guard lk(rwlock);
+        //{ rwlock_read_guard lk(rwlock);
             l1 = param_cache.params()[word2].v();
-        }
+        //}
 
         Vec neu1e = Vec(len_vec);
         // generate noise         
@@ -155,9 +155,9 @@ private:
         for(size_t i = 0; i < word_indices.size(); ++i ) {
             key_t id = word_indices[i];
             Vec h;
-            { rwlock_read_guard lk(rwlock);
+            //{ rwlock_read_guard lk(rwlock);
             h = param_cache.params()[id].h();
-            }
+            //}
 
             //RAW_DLOG(INFO,  "h: %s", h.to_str().c_str());
             l2b.push_back(std::move(h));
@@ -184,10 +184,10 @@ private:
                 auto &_h = param_cache.params()[wid].h();
                 CHECK_EQ(_h.size(), Outer[i].size()); 
 
-                { rwlock_write_guard lk(rwlock); 
+                //{ rwlock_write_guard lk(rwlock); 
                     _h += Outer[i] * learning_rate;
                     param_cache.grads()[wid].accu_h(Outer[i]);
-                }
+                //}
             }
         }
 
@@ -202,7 +202,7 @@ private:
         neu1e += gb_dot_l2b;
 
         if(train_w2) {
-            rwlock_write_guard(param_cache.rwlock());
+            //rwlock_write_guard(param_cache.rwlock());
             // update v
             param_cache.params()[word2].v() += neu1e * learning_rate;
             param_cache.grads()[word2].accu_v(neu1e);
