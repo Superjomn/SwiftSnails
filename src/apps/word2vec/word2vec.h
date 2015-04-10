@@ -13,7 +13,7 @@ struct rcd_t {
 
 class SkipGram : public BaseAlgorithm<index_t, Word2VecParam,  Word2VecGrad, rcd_t > {
 public:
-    typedef size_t          key_t;
+    typedef index_t          key_t;
     typedef Word2VecParam   val_t;
     typedef Word2VecGrad    grad_t;
     using param_cache_t = GlobalParamCache<key_t, val_t, grad_t> ;
@@ -37,6 +37,9 @@ public:
                 local_keys.push_back(item.first);
             }
         */
+        get_word_freq(_async_channel_thread_num);
+        init_unigram_table();
+
         for(int i = 0; i < _num_iters; i ++) {
             LOG(WARNING) << i << " th iteration";
             train_iter(_async_channel_thread_num);
@@ -134,22 +137,18 @@ private:
 
     void train_sg_pair(key_t word, key_t word2, const Vec& labels, bool train_w1=true, bool train_w2=true) {
         CHECK_GT(param_cache.local_keys().size(), 0) << "local_keys should be inited";
-        //RWLock& rwlock = param_cache.rwlock();
-        Vec l1;
-        //{ rwlock_read_guard lk(rwlock);
-            l1 = param_cache.params()[word2].v();
-        //}
+        Vec l1 = param_cache.params()[word2].v();
 
         Vec neu1e = Vec(len_vec);
         // generate noise         
         std::mt19937 rng(rd());
-        std::uniform_int_distribution<int> rand(0, local_keys.size());
+        std::uniform_int_distribution<int> rand(0, word_freg.size());
 
         std::vector<key_t> word_indices;
         word_indices.push_back(word);
         while(word_indices.size() < negative + 1) {
-            key_t id = rand(rng);
-            key_t w = local_keys[id];
+            int id = rand(rng);
+            key_t w = table2word_freq[id].first;
             if (w != word) word_indices.push_back(w);
         }
         // prepare l2b
@@ -157,14 +156,8 @@ private:
         std::vector<Vec> l2b;
         for(size_t i = 0; i < word_indices.size(); ++i ) {
             key_t id = word_indices[i];
-            Vec h;
-            //{ rwlock_read_guard lk(rwlock);
-            h = param_cache.params()[id].h();
-            //}
-
-            //RAW_DLOG(INFO,  "h: %s", h.to_str().c_str());
+            Vec h = param_cache.params()[id].h();
             l2b.push_back(std::move(h));
-            //CHECK_GT(l2b[i].size(), 0) << "after push_back((h)";
         }
         // prepare fb
         Vec fb(word_indices.size());
@@ -172,11 +165,7 @@ private:
             CHECK_GT(l2b[i].size(), 0);
             fb[i] = 1.0 / (1.0 + 1.0 / exp(l1.dot(l2b[i])));
         }
-
-        //CHECK_EQ(labels.size(), fb.size());
-        Vec gb = (labels - fb);// * learning_rate;
-
-        //RAW_DLOG(INFO, "%s", gb.to_str().c_str());
+        Vec gb = (labels - fb);
 
         auto Outer = outer(gb, l1);
 
@@ -187,10 +176,8 @@ private:
                 auto &_h = param_cache.params()[wid].h();
                 CHECK_EQ(_h.size(), Outer[i].size()); 
 
-                //{ rwlock_write_guard lk(rwlock); 
-                    _h += Outer[i] * learning_rate;
-                    param_cache.grads()[wid].accu_h(Outer[i]);
-                //}
+                _h += Outer[i] * learning_rate;
+                param_cache.grads()[wid].accu_h(Outer[i]);
             }
         }
 
@@ -205,15 +192,14 @@ private:
         neu1e += gb_dot_l2b;
 
         if(train_w2) {
-            //rwlock_write_guard(param_cache.rwlock());
             // update v
             param_cache.params()[word2].v() += neu1e * learning_rate;
             param_cache.grads()[word2].accu_v(neu1e);
         }
     }
-    /*
+
     void get_word_freq(int thread_num) {
-        LOG(WARNING) << "init local parameter cache";
+        LOG(WARNING) << "... get_word_freq";
         DLOG(INFO) << "start " << thread_num << " threads to gather keys";
         CHECK_GT(thread_num, 0);
         // make sure the following task wait for the init period
@@ -243,6 +229,7 @@ private:
     }
 
     void init_unigram_table() {
+        LOG(INFO) << "... init_unigram_table";
         CHECK_GT(word_freg.size(), 0) << "word_freg should be inited before";
         int a, i;
         double train_words_pow = 0;
@@ -266,7 +253,6 @@ private:
             if(i >= word_freg.size()) i = word_freg.size() - 1;
         }
     }
-    */
 
 private:
     int window{0};
@@ -275,11 +261,11 @@ private:
     int _num_iters{0};
     std::random_device rd;
     param_cache_t &param_cache;
-    std::vector<key_t, size_t> local_keys;
+    std::vector<key_t> local_keys;
     float learning_rate = 0.01;
-    //std::map<key_t, int> word_freg;
-    //std::unique_ptr<int[]> table;
-    //std::unique_ptr<std::pair<key_t, int>[]> table2word_freq;
+    std::map<key_t, int> word_freg;
+    std::unique_ptr<int[]> table;
+    std::unique_ptr<std::pair<key_t, int>[]> table2word_freq;
     int table_size = 1e8;
 };  // class Word2Vec
 
