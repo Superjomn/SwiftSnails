@@ -13,7 +13,7 @@ struct rcd_t {
 
 class SkipGram : public BaseAlgorithm<index_t, Word2VecParam,  Word2VecGrad, rcd_t > {
 public:
-    typedef index_t          key_t;
+    typedef size_t          key_t;
     typedef Word2VecParam   val_t;
     typedef Word2VecGrad    grad_t;
     using param_cache_t = GlobalParamCache<key_t, val_t, grad_t> ;
@@ -32,11 +32,11 @@ public:
     virtual void train() {
         // init local keys
         //{ rwlock_read_guard lk(param_cache.rwlock());
+        /*
             for(auto& item : param_cache.params()) {
                 local_keys.push_back(item.first);
             }
-        //}
-
+        */
         for(int i = 0; i < _num_iters; i ++) {
             LOG(WARNING) << i << " th iteration";
             train_iter(_async_channel_thread_num);
@@ -133,7 +133,7 @@ private:
     }
 
     void train_sg_pair(key_t word, key_t word2, const Vec& labels, bool train_w1=true, bool train_w2=true) {
-        CHECK_GT(local_keys.size(), 0) << "local_keys should be inited";
+        CHECK_GT(param_cache.local_keys().size(), 0) << "local_keys should be inited";
         //RWLock& rwlock = param_cache.rwlock();
         Vec l1;
         //{ rwlock_read_guard lk(rwlock);
@@ -211,7 +211,62 @@ private:
             param_cache.grads()[word2].accu_v(neu1e);
         }
     }
+    /*
+    void get_word_freq(int thread_num) {
+        LOG(WARNING) << "init local parameter cache";
+        DLOG(INFO) << "start " << thread_num << " threads to gather keys";
+        CHECK_GT(thread_num, 0);
+        // make sure the following task wait for the init period
+        FILE* file = std::fopen(data_path().c_str(), "r");
+        CHECK(file) << "file: open " << data_path() << " failed!";
+        std::mutex file_mut;
 
+        //std::set<key_t> keys;
+        std::mutex keys_mut;
+
+        std::function<void(const std::string& line)> handle_line \
+            = [this, &keys_mut] (const std::string& line) {
+                auto rcd = parse_record(line);
+                std::lock_guard<std::mutex> lk(keys_mut);
+                for(auto &item : rcd.feas) {
+                    word_freg[item.first] ++;
+                }
+            };
+
+        AsynExec::task_t task = [file, &file_mut, handle_line] {
+            auto _handle_line = handle_line;
+            scan_file_by_line(file, file_mut, std::move(_handle_line) );
+        };
+
+        async_exec(thread_num, std::move(task), async_channel());
+        std::fclose(file);
+    }
+
+    void init_unigram_table() {
+        CHECK_GT(word_freg.size(), 0) << "word_freg should be inited before";
+        int a, i;
+        double train_words_pow = 0;
+        double d1, power = 0.75;
+        table.reset( new int[table_size]);
+        table2word_freq.reset( new std::pair<key_t, int>[word_freg.size()]);
+        
+        i = 0;
+        for(const auto& item : word_freg) {
+            table2word_freq[i++] = item;
+            train_words_pow += std::pow(item.second, power);
+        }
+        i = 0;
+        d1 = pow(table2word_freq[i].second, power) / (double)train_words_pow;
+        for(a = 0; a < table_size; a++) {
+            table[a] = i;
+            if(a / (double)table_size > d1) {
+                i++;
+                d1 += pow(table2word_freq[i].second, power) / (double)train_words_pow;
+            }
+            if(i >= word_freg.size()) i = word_freg.size() - 1;
+        }
+    }
+    */
 
 private:
     int window{0};
@@ -220,9 +275,12 @@ private:
     int _num_iters{0};
     std::random_device rd;
     param_cache_t &param_cache;
-    std::vector<key_t> local_keys;
+    std::vector<key_t, size_t> local_keys;
     float learning_rate = 0.01;
-
+    //std::map<key_t, int> word_freg;
+    //std::unique_ptr<int[]> table;
+    //std::unique_ptr<std::pair<key_t, int>[]> table2word_freq;
+    int table_size = 1e8;
 };  // class Word2Vec
 
 
