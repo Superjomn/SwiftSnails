@@ -184,7 +184,7 @@ private:
                     f = v1.dot(v2);
                     g = (label - 1.0 / (1.0 + exp(-f)));
 
-                    v1 += learning_rate * (g * v2);
+                    neu1e += learning_rate * (g * v2);
                     v2 += learning_rate * (g * v1);
                 } // end for
                 // Learn weights input -> hidden
