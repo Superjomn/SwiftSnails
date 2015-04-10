@@ -76,17 +76,18 @@ protected:
 
 
     size_t arrange_local_grads(std::map<int, std::vector<push_val_t>>& node_reqs) {
-        auto &grads = param_cache.grads();
+        const auto &local_keys = param_cache.local_keys();
+        const auto &grads = param_cache.grads();
         // split grads to different nodes
-        for(auto& item : grads) {
-            auto& key = item.first;
-            //auto& grad = item.second;
+        for(const auto& key : local_keys) {
 
             int node_id = global_hashfrag<key_t>().to_node_id(key);
             if(node_reqs.count(node_id) == 0) {
                 node_reqs[node_id] = std::move(std::vector<push_val_t>());
             }
-            node_reqs[node_id].push_back(item);
+            const auto it = grads.find(key);
+            CHECK(it != grads.end());
+            node_reqs[node_id].push_back(*it);
         }
         return node_reqs.size();
     }
