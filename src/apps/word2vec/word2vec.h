@@ -75,7 +75,11 @@ private:
         FILE* file = std::fopen(data_path().c_str(), "r");
         CHECK_NOTNULL(file);
 
-        auto trainner = [this, &queue] {
+        double global_error = 0;
+        size_t error_counter = 0;
+
+        auto trainner = [this, &queue, &global_error, &error_counter] {
+            double error;
             for(;;) {
                 std::string line;
                 queue.wait_and_pop(line);
@@ -83,7 +87,9 @@ private:
                 rcd_t rcd = parse_record(line);
                 // TODO add config for shortest sentence
                 if(rcd.feas.size() > 4) {
-                    learn_record(std::move(rcd.feas));
+                    error = learn_record(std::move(rcd.feas));
+                    global_error += error;
+                    error_counter ++;
                 }
             }
         };
@@ -111,6 +117,8 @@ private:
         */
         t.join();
         std::fclose(file);
+
+        RAW_LOG(INFO, ">  train error:\t%f", global_error/error_counter);
     }
 
 /*
@@ -137,7 +145,7 @@ private:
     }
 */
 
-    void learn_record(rcd_t::feas_t && sen) {
+    double learn_record(rcd_t::feas_t && sen) {
         long long a, b, d, word, last_word;
         size_t sentence_length = sen.size(), 
                 sentence_position = 0;
@@ -153,12 +161,17 @@ private:
         Vec neu1(len_vec);
         Vec neu1e(len_vec);
 
+        double global_error = 0;
+        size_t error_counter = 0;
+
         while(true) {
             word =  sen[sentence_position].first;
             for (c = 0; c < len_vec; c++) neu1[c] = 0;
             for (c = 0; c < len_vec; c++) neu1e[c] = 0;
 
             b = rand(rng) % window;
+
+
             for (a = b; a < window * 2 + 1 - b; a++) if (a != window) {
                 c = sentence_position - window + a;
                 if (c < 0) continue;
@@ -169,6 +182,7 @@ private:
                 for (c = 0; c < len_vec; c++) neu1e[c] = 0;
 
                 for (d = 0; d < negative + 1; d++) {
+                    // prepare label and vector
                     if (d == 0) {
                         target = word;
                         label = 1;
@@ -181,20 +195,28 @@ private:
                     }
 
                     Vec &v2 = param_cache.params()[target].h();
-                    f = v1.dot(v2);
-                    g = (label - 1.0 / (1.0 + exp(-f)));
+                    f = 1.0 / ( 1 + exp(- v1.dot(v2)));
+                    g = (label - f);
+                    // calculate error
+                    double error = label == 0 ? - log(1-f) : -log(f);
+                    global_error += error;
+                    error_counter ++;
+                    neu1e += (g * v2); // * learning_rate
 
-                    neu1e += learning_rate * (g * v2);
-                    v2 += learning_rate * (g * v1);
+                    Vec grad_v2 = std::move(g * v1);
+                    v2 += learning_rate * grad_v2;
+                    param_cache.grads()[target].accu_h(grad_v2);
                 } // end for
                 // Learn weights input -> hidden
-                v1 += neu1e;
+                v1 += learning_rate * neu1e;
+                param_cache.grads()[last_word].accu_v(neu1e);
             }
             sentence_position ++;
             if (sentence_position >= sentence_length) {
-                return;
+                break;
             }
         }   
+        return error_counter == 0 ? 0 : global_error / error_counter;
     }
 
 
