@@ -117,12 +117,12 @@ private:
         labels[0] = 1.0;
 
 
-        for(int pos = 0; pos < wids.size(); pos ++) {
+        for(size_t pos = 0; pos < wids.size(); pos ++) {
             int reduced_window = rand(rng);
             int start = std::max(0, pos - window + reduced_window);
             key_t& word = wids[pos].first;
 
-            for(int pos2 = start; pos2 < pos + window + 1 - reduced_window; pos2 ++){
+            for(size_t pos2 = start; pos2 < pos + window + 1 - reduced_window; pos2 ++){
                 key_t& word2 = wids[pos2].first;
 
                 if( ! pos2 == pos) {
@@ -168,7 +168,7 @@ private:
         }
         // prepare fb
         Vec fb(word_indices.size());
-        for(int i = 0 ; i < word_indices.size(); i++) {
+        for(size_t i = 0 ; i < word_indices.size(); i++) {
             CHECK_GT(l2b[i].size(), 0);
             fb[i] = 1.0 / (1.0 + 1.0 / exp(l1.dot(l2b[i])));
         }
@@ -195,9 +195,9 @@ private:
         }
 
         Vec gb_dot_l2b(len_vec);
-        for(int i = 0; i < len_vec; i++) {
+        for(size_t i = 0; i < len_vec; i++) {
             Vec l2b_T(word_indices.size());
-            for(int j = 0; j < word_indices.size(); j++) {
+            for(size_t j = 0; j < word_indices.size(); j++) {
                 l2b_T[j] = l2b[j][i]; 
             }
             gb_dot_l2b[i] = gb.dot(l2b_T);
@@ -211,6 +211,7 @@ private:
             param_cache.grads()[word2].accu_v(neu1e);
         }
     }
+
 
 private:
     int window{0};
