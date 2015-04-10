@@ -95,30 +95,43 @@ public:
         CHECK_GT(_num_iters, 0);
         _learning_rate = global_config().get_config("learning_rate").to_float();
         _async_channel_thread_num = global_config().get_config("async_channel_thread_num").to_int32();
+        _local_train = global_config().get_config("local_train").to_int32() > 0;
         CHECK_GT(_learning_rate, 0);
         alg.create_async_channel();
     }
 
     void operator() () {
-        // route init
-        LOG(WARNING) << ".. node_transfer_init";
-        node_transfer_init(false);
-        LOG(WARNING) << ".. node_hashfrag_init";
-        node_hashfrag_init();
-        LOG(WARNING) << ".. init_local_param_keys";
-        init_local_param_keys(_async_channel_thread_num);
-        LOG(WARNING) << ".. first_pull_to_init_local_param";
-        first_pull_to_init_local_param();
-        LOG(WARNING) << ".. start_deamon_service";
-        start_deamon_service();
-        // API
-        alg.train();
-        // final push local grad to paramter servers
-        LOG(WARNING) << ".. final_push";
-        final_push();
-        LOG(WARNING) << ".. terminate";
-        // terminate local task
-        terminate();
+        if( ! _local_train) {
+            // route init
+            LOG(WARNING) << ".. node_transfer_init";
+            node_transfer_init(false);
+            LOG(WARNING) << ".. node_hashfrag_init";
+            node_hashfrag_init();
+            LOG(WARNING) << ".. init_local_param_keys";
+            init_local_param_keys(_async_channel_thread_num);
+            LOG(WARNING) << ".. first_pull_to_init_local_param";
+            first_pull_to_init_local_param();
+            LOG(WARNING) << ".. start_deamon_service";
+            start_deamon_service();
+            // API
+            alg.train();
+            // final push local grad to paramter servers
+            LOG(WARNING) << ".. final_push";
+            final_push();
+            LOG(WARNING) << ".. terminate";
+            // terminate local task
+            terminate();
+
+        } else {
+            LOG(WARNING) << ".. init_local_param_keys";
+            init_local_param_keys(_async_channel_thread_num);
+            // random init
+            for( auto& item : param_cache.params()) {
+                item.second.random_init();
+            }
+            alg.train();
+            std::cout << param_cache;
+        }
     }
 
 protected:
@@ -186,6 +199,7 @@ private:
     int _num_iters{0};
     float _learning_rate{0.01};
     int _async_channel_thread_num{0};
+    bool _local_train = false;
     // control modules
     Algorithm &alg;
     NodeTransferInit node_transfer_init;

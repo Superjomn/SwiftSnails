@@ -65,7 +65,11 @@ public:
         for(size_t i = 0; i < _size; ++i) {
             data()[i] = 0.0;
         }
-        if(random_init) randInit(0.5);
+        if(random_init) randInit(0.0);
+    }
+
+    void random() {
+        randInit(0.0);
     }
 
 	value_type& operator[](size_t i) {

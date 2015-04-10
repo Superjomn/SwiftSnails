@@ -113,6 +113,7 @@ private:
         std::fclose(file);
     }
 
+/*
     void learn_record(rcd_t::feas_t && wids) {
         std::mt19937 rng(rd());
         std::uniform_int_distribution<int> rand(0, window);
@@ -134,6 +135,68 @@ private:
             }
         }
     }
+*/
+
+    void learn_record(rcd_t::feas_t && sen) {
+        long long a, b, d, word, last_word;
+        size_t sentence_length = sen.size(), 
+                sentence_position = 0;
+        long long word_count = 0, last_word_count = 0;
+        long long l1, l2, c, target, label;
+        double f, g;
+        clock_t now;
+        //std::unique_ptr<double> neu1 = new double[len_vec()];
+        //std::unique_ptr<double> neu1e = new double[len_vec()];
+        std::mt19937 rng(rd());
+        std::uniform_int_distribution<int> rand(0, table_size);
+
+        Vec neu1(len_vec);
+        Vec neu1e(len_vec);
+
+        while(true) {
+            word =  sen[sentence_position].first;
+            for (c = 0; c < len_vec; c++) neu1[c] = 0;
+            for (c = 0; c < len_vec; c++) neu1e[c] = 0;
+
+            b = rand(rng) % window;
+            for (a = b; a < window * 2 + 1 - b; a++) if (a != window) {
+                c = sentence_position - window + a;
+                if (c < 0) continue;
+                if (c >= sentence_length) continue;
+                last_word = sen[c].first;
+                //if (last_word == -1) continue;
+                Vec &v1 = param_cache.params()[last_word].v();
+                for (c = 0; c < len_vec; c++) neu1e[c] = 0;
+
+                for (d = 0; d < negative + 1; d++) {
+                    if (d == 0) {
+                        target = word;
+                        label = 1;
+                    } else {
+                        int target_indent = rand(rng);
+                        if (target_indent == 0) target_indent = rand(rng);
+                        target = table2word_freq[ table[target_indent] ].first;
+                        if (target == word) continue;
+                        label = 0;
+                    }
+
+                    Vec &v2 = param_cache.params()[target].h();
+                    f = v1.dot(v2);
+                    g = (label - 1.0 / (1.0 + exp(-f)));
+
+                    v1 += learning_rate * (g * v2);
+                    v2 += learning_rate * (g * v1);
+                } // end for
+                // Learn weights input -> hidden
+                v1 += neu1e;
+            }
+            sentence_position ++;
+            if (sentence_position >= sentence_length) {
+                return;
+            }
+        }   
+    }
+
 
     void train_sg_pair(key_t word, key_t word2, const Vec& labels, bool train_w1=true, bool train_w2=true) {
         CHECK_GT(param_cache.local_keys().size(), 0) << "local_keys should be inited";

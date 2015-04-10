@@ -157,6 +157,11 @@ public:
         v2sum() = other.v2sum();
     }
 
+    void random_init() {
+        h().random();
+        v().random();
+    }
+
     void init(bool rand_init = false) {
         CHECK(_len_vec > 0);
         if(_h.size() == 0) {
