@@ -91,10 +91,15 @@ public:
         _iter_push_cond.notify_all();
     }
 
+    std::set<key_t>& local_keys() {
+        return _local_keys;
+    }
+
 private:
     RWLock _rwlock;
     std::map<key_t, val_t> _params;
     std::map<key_t, grad_t> _grads;
+    std::set<key_t> _local_keys;
     // number of iterations
     std::atomic<int> _num_iters{0};
     mutable std::mutex _iter_mutex;

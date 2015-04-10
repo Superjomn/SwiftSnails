@@ -52,21 +52,25 @@ public:
 protected:
     size_t arrange_local_vals(std::map<int, std::vector<pull_val_t> > &node_reqs) {
         CHECK(! param_cache.params().empty()) << "local param cache should be inited";
-        auto &vals = param_cache.params();
+        //auto &vals = param_cache.params();
         //RAW_LOG_INFO("param_cache get\t%lu\tkeys", vals.size() );
+        const auto &params = param_cache.params();
+        const auto &local_keys = param_cache.local_keys();
 
-        { rwlock_read_guard lk(param_cache.rwlock());
-            for( auto& item : vals) {
-                auto& key = item.first;
+        //{ rwlock_read_guard lk(param_cache.rwlock());
+            for( const auto& key : local_keys ) {
+                //auto& key = item.first;
                 //auto& val = item.second;
 
                 int node_id = global_hashfrag<key_t>().to_node_id(key);
                 if(node_reqs.count(node_id) == 0) {
                     node_reqs[node_id] = std::move(std::vector<pull_val_t>());
                 }
-                node_reqs[node_id].push_back(item);
+                const auto it = params.find(key);
+                CHECK(it != params.end());
+                node_reqs[node_id].push_back(*it);
             }
-        }
+        //}
         //RAW_LOG_INFO("split local keys to %lu parts", node_reqs.size());
         return node_reqs.size();
     }

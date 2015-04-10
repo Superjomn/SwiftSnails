@@ -139,15 +139,15 @@ protected:
         CHECK(file) << "file: open " << alg.data_path() << " failed!";
         std::mutex file_mut;
 
-        std::set<key_t> keys;
+        //std::set<key_t> keys;
         std::mutex keys_mut;
 
         std::function<void(const std::string& line)> handle_line \
-            = [this, &keys, &keys_mut] (const std::string& line) {
+            = [this, &keys_mut] (const std::string& line) {
                 auto rcd = alg.parse_record(line);
                 std::lock_guard<std::mutex> lk(keys_mut);
                 for(auto &item : rcd.feas) {
-                    keys.emplace(item.first);
+                    param_cache.local_keys().emplace(item.first);
                 }
             };
 
@@ -160,7 +160,7 @@ protected:
         std::fclose(file);
 
         RAW_LOG(INFO, "to get number of features");
-        param_cache.init_keys(keys);
+        param_cache.init_keys(param_cache.local_keys());
         RAW_LOG(INFO, "finish init_local_param_keys");
     }
 

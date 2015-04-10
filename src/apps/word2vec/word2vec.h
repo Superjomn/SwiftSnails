@@ -117,7 +117,7 @@ private:
         labels[0] = 1.0;
 
 
-        for(size_t pos = 0; pos < wids.size(); pos ++) {
+        for(int pos = 0; pos < wids.size(); pos ++) {
             int reduced_window = rand(rng);
             int start = std::max(0, pos - window + reduced_window);
             key_t& word = wids[pos].first;
