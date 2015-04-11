@@ -32,10 +32,13 @@ public:
     virtual void train() {
         // init local keys
         //{ rwlock_read_guard lk(param_cache.rwlock());
+        /*
             for(auto& item : param_cache.params()) {
                 local_keys.push_back(item.first);
             }
-        //}
+        */
+        get_word_freq(_async_channel_thread_num);
+        init_unigram_table();
 
         for(int i = 0; i < _num_iters; i ++) {
             LOG(WARNING) << i << " th iteration";
@@ -72,7 +75,11 @@ private:
         FILE* file = std::fopen(data_path().c_str(), "r");
         CHECK_NOTNULL(file);
 
-        auto trainner = [this, &queue] {
+        double global_error = 0;
+        size_t error_counter = 0;
+
+        auto trainner = [this, &queue, &global_error, &error_counter] {
+            double error;
             for(;;) {
                 std::string line;
                 queue.wait_and_pop(line);
@@ -80,7 +87,9 @@ private:
                 rcd_t rcd = parse_record(line);
                 // TODO add config for shortest sentence
                 if(rcd.feas.size() > 4) {
-                    learn_record(std::move(rcd.feas));
+                    error = learn_record(std::move(rcd.feas));
+                    global_error += error;
+                    error_counter ++;
                 }
             }
         };
@@ -108,8 +117,11 @@ private:
         */
         t.join();
         std::fclose(file);
+
+        RAW_LOG(INFO, ">  train error:\t%f", global_error/error_counter);
     }
 
+/*
     void learn_record(rcd_t::feas_t && wids) {
         std::mt19937 rng(rd());
         std::uniform_int_distribution<int> rand(0, window);
@@ -131,25 +143,97 @@ private:
             }
         }
     }
+*/
+
+    double learn_record(rcd_t::feas_t && sen) {
+        long long a, b, d, word, last_word;
+        size_t sentence_length = sen.size(), 
+                sentence_position = 0;
+        long long word_count = 0, last_word_count = 0;
+        long long l1, l2, c, target, label;
+        double f, g;
+        clock_t now;
+        //std::unique_ptr<double> neu1 = new double[len_vec()];
+        //std::unique_ptr<double> neu1e = new double[len_vec()];
+        std::mt19937 rng(rd());
+        std::uniform_int_distribution<int> rand(0, table_size);
+
+        Vec neu1(len_vec);
+        Vec neu1e(len_vec);
+
+        double global_error = 0;
+        size_t error_counter = 0;
+
+        while(true) {
+            word =  sen[sentence_position].first;
+            for (c = 0; c < len_vec; c++) neu1[c] = 0;
+            for (c = 0; c < len_vec; c++) neu1e[c] = 0;
+
+            b = rand(rng) % window;
+
+
+            for (a = b; a < window * 2 + 1 - b; a++) if (a != window) {
+                c = sentence_position - window + a;
+                if (c < 0) continue;
+                if (c >= sentence_length) continue;
+                last_word = sen[c].first;
+                //if (last_word == -1) continue;
+                Vec &v1 = param_cache.params()[last_word].v();
+                for (c = 0; c < len_vec; c++) neu1e[c] = 0;
+
+                for (d = 0; d < negative + 1; d++) {
+                    // prepare label and vector
+                    if (d == 0) {
+                        target = word;
+                        label = 1;
+                    } else {
+                        int target_indent = rand(rng);
+                        if (target_indent == 0) target_indent = rand(rng);
+                        target = table2word_freq[ table[target_indent] ].first;
+                        if (target == word) continue;
+                        label = 0;
+                    }
+
+                    Vec &v2 = param_cache.params()[target].h();
+                    f = 1.0 / ( 1 + exp(- v1.dot(v2)));
+                    g = (label - f);
+                    // calculate error
+                    double error = label == 0 ? - log(1-f) : -log(f);
+                    global_error += error;
+                    error_counter ++;
+                    neu1e += (g * v2); // * learning_rate
+
+                    Vec grad_v2 = std::move(g * v1);
+                    v2 += learning_rate * grad_v2;
+                    param_cache.grads()[target].accu_h(grad_v2);
+                } // end for
+                // Learn weights input -> hidden
+                v1 += learning_rate * neu1e;
+                param_cache.grads()[last_word].accu_v(neu1e);
+            }
+            sentence_position ++;
+            if (sentence_position >= sentence_length) {
+                break;
+            }
+        }   
+        return error_counter == 0 ? 0 : global_error / error_counter;
+    }
+
 
     void train_sg_pair(key_t word, key_t word2, const Vec& labels, bool train_w1=true, bool train_w2=true) {
-        CHECK_GT(local_keys.size(), 0) << "local_keys should be inited";
-        //RWLock& rwlock = param_cache.rwlock();
-        Vec l1;
-        //{ rwlock_read_guard lk(rwlock);
-            l1 = param_cache.params()[word2].v();
-        //}
+        CHECK_GT(param_cache.local_keys().size(), 0) << "local_keys should be inited";
+        Vec l1 = param_cache.params()[word2].v();
 
         Vec neu1e = Vec(len_vec);
         // generate noise         
         std::mt19937 rng(rd());
-        std::uniform_int_distribution<int> rand(0, local_keys.size());
+        std::uniform_int_distribution<int> rand(0, word_freg.size());
 
         std::vector<key_t> word_indices;
         word_indices.push_back(word);
         while(word_indices.size() < negative + 1) {
-            key_t id = rand(rng);
-            key_t w = local_keys[id];
+            int id = rand(rng);
+            key_t w = table2word_freq[id].first;
             if (w != word) word_indices.push_back(w);
         }
         // prepare l2b
@@ -157,14 +241,8 @@ private:
         std::vector<Vec> l2b;
         for(size_t i = 0; i < word_indices.size(); ++i ) {
             key_t id = word_indices[i];
-            Vec h;
-            //{ rwlock_read_guard lk(rwlock);
-            h = param_cache.params()[id].h();
-            //}
-
-            //RAW_DLOG(INFO,  "h: %s", h.to_str().c_str());
+            Vec h = param_cache.params()[id].h();
             l2b.push_back(std::move(h));
-            //CHECK_GT(l2b[i].size(), 0) << "after push_back((h)";
         }
         // prepare fb
         Vec fb(word_indices.size());
@@ -172,11 +250,7 @@ private:
             CHECK_GT(l2b[i].size(), 0);
             fb[i] = 1.0 / (1.0 + 1.0 / exp(l1.dot(l2b[i])));
         }
-
-        //CHECK_EQ(labels.size(), fb.size());
-        Vec gb = (labels - fb);// * learning_rate;
-
-        //RAW_DLOG(INFO, "%s", gb.to_str().c_str());
+        Vec gb = (labels - fb);
 
         auto Outer = outer(gb, l1);
 
@@ -187,10 +261,8 @@ private:
                 auto &_h = param_cache.params()[wid].h();
                 CHECK_EQ(_h.size(), Outer[i].size()); 
 
-                //{ rwlock_write_guard lk(rwlock); 
-                    _h += Outer[i] * learning_rate;
-                    param_cache.grads()[wid].accu_h(Outer[i]);
-                //}
+                _h += Outer[i] * learning_rate;
+                param_cache.grads()[wid].accu_h(Outer[i]);
             }
         }
 
@@ -205,13 +277,67 @@ private:
         neu1e += gb_dot_l2b;
 
         if(train_w2) {
-            //rwlock_write_guard(param_cache.rwlock());
             // update v
             param_cache.params()[word2].v() += neu1e * learning_rate;
             param_cache.grads()[word2].accu_v(neu1e);
         }
     }
 
+    void get_word_freq(int thread_num) {
+        LOG(WARNING) << "... get_word_freq";
+        DLOG(INFO) << "start " << thread_num << " threads to gather keys";
+        CHECK_GT(thread_num, 0);
+        // make sure the following task wait for the init period
+        FILE* file = std::fopen(data_path().c_str(), "r");
+        CHECK(file) << "file: open " << data_path() << " failed!";
+        std::mutex file_mut;
+
+        //std::set<key_t> keys;
+        std::mutex keys_mut;
+
+        std::function<void(const std::string& line)> handle_line \
+            = [this, &keys_mut] (const std::string& line) {
+                auto rcd = parse_record(line);
+                std::lock_guard<std::mutex> lk(keys_mut);
+                for(auto &item : rcd.feas) {
+                    word_freg[item.first] ++;
+                }
+            };
+
+        AsynExec::task_t task = [file, &file_mut, handle_line] {
+            auto _handle_line = handle_line;
+            scan_file_by_line(file, file_mut, std::move(_handle_line) );
+        };
+
+        async_exec(thread_num, std::move(task), async_channel());
+        std::fclose(file);
+    }
+
+    void init_unigram_table() {
+        LOG(INFO) << "... init_unigram_table";
+        CHECK_GT(word_freg.size(), 0) << "word_freg should be inited before";
+        int a, i;
+        double train_words_pow = 0;
+        double d1, power = 0.75;
+        table.reset( new int[table_size]);
+        table2word_freq.reset( new std::pair<key_t, int>[word_freg.size()]);
+        
+        i = 0;
+        for(const auto& item : word_freg) {
+            table2word_freq[i++] = item;
+            train_words_pow += std::pow(item.second, power);
+        }
+        i = 0;
+        d1 = pow(table2word_freq[i].second, power) / (double)train_words_pow;
+        for(a = 0; a < table_size; a++) {
+            table[a] = i;
+            if(a / (double)table_size > d1) {
+                i++;
+                d1 += pow(table2word_freq[i].second, power) / (double)train_words_pow;
+            }
+            if(i >= word_freg.size()) i = word_freg.size() - 1;
+        }
+    }
 
 private:
     int window{0};
@@ -222,7 +348,10 @@ private:
     param_cache_t &param_cache;
     std::vector<key_t> local_keys;
     float learning_rate = 0.01;
-
+    std::map<key_t, int> word_freg;
+    std::unique_ptr<int[]> table;
+    std::unique_ptr<std::pair<key_t, int>[]> table2word_freq;
+    int table_size = 1e8;
 };  // class Word2Vec
 
 

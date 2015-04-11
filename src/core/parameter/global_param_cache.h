@@ -71,6 +71,15 @@ public:
     std::mutex& iter_mutex() {
         return _iter_mutex;
     }
+
+    friend std::ostream& operator<< (std::ostream& os, GlobalParamCache & cache)
+    {
+        for(auto& item : cache._params ) {
+            os << item.first << "\t";
+            os << item.second << std::endl;
+        }
+        return os;
+    }
     
     // should be called after each iteration
     // to support pull and push service

@@ -23,6 +23,7 @@ void worker_init_configs() {
         async_channel_thread_num \
         line_buffer_queue_capacity \
         learning_rate \
+        local_train \
         ";
     init_configs(configs);
 }
