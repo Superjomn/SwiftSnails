@@ -27,16 +27,10 @@ public:
     { 
         //_num_iters = global_config().get_config("num_iters").to_int32();
         learning_rate = global_config().get_config("learning_rate").to_float();
+        sample = global_config().get_config("sample").to_float();
     }
 
     virtual void train() {
-        // init local keys
-        //{ rwlock_read_guard lk(param_cache.rwlock());
-        /*
-            for(auto& item : param_cache.params()) {
-                local_keys.push_back(item.first);
-            }
-        */
         get_word_freq(_async_channel_thread_num);
         init_unigram_table();
 
@@ -156,7 +150,9 @@ private:
         //std::unique_ptr<double> neu1 = new double[len_vec()];
         //std::unique_ptr<double> neu1e = new double[len_vec()];
         std::mt19937 rng(rd());
-        std::uniform_int_distribution<int> rand(0, table_size);
+        std::uniform_int_distribution<int> int_rand(0, table_size);
+        std::default_random_engine float_gen;
+        std::uniform_real_distribution<double> float_rand(0.0, 1.0);
 
         Vec neu1(len_vec);
         Vec neu1e(len_vec);
@@ -166,11 +162,17 @@ private:
 
         while(true) {
             word =  sen[sentence_position].first;
+
+            if(sample > 0) {
+                double keep = sqrt(sample / word_freg[word]) + sample / word_freg[word];
+                double rand = float_rand(float_gen);
+                if( keep <  rand) continue;
+            }
+
             for (c = 0; c < len_vec; c++) neu1[c] = 0;
             for (c = 0; c < len_vec; c++) neu1e[c] = 0;
 
-            b = rand(rng) % window;
-
+            b = int_rand(rng) % window;
 
             for (a = b; a < window * 2 + 1 - b; a++) if (a != window) {
                 c = sentence_position - window + a;
@@ -187,8 +189,8 @@ private:
                         target = word;
                         label = 1;
                     } else {
-                        int target_indent = rand(rng);
-                        if (target_indent == 0) target_indent = rand(rng);
+                        int target_indent = int_rand(rng);
+                        if (target_indent == 0) target_indent = int_rand(rng);
                         target = table2word_freq[ table[target_indent] ].first;
                         if (target == word) continue;
                         label = 0;
@@ -346,14 +348,11 @@ private:
     int _num_iters{0};
     std::random_device rd;
     param_cache_t &param_cache;
-    std::vector<key_t> local_keys;
+    //std::vector<key_t> local_keys;
     float learning_rate = 0.01;
     std::map<key_t, int> word_freg;
     std::unique_ptr<int[]> table;
     std::unique_ptr<std::pair<key_t, int>[]> table2word_freq;
     int table_size = 1e8;
+    float sample = 0;
 };  // class Word2Vec
-
-
-
-

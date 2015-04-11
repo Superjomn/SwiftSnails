@@ -85,8 +85,8 @@ public:
     // to support pull and push service
     void inc_num_iters() {
         _num_iters ++;
-        _iter_pull_cond.notify_all();    // ? notify_one ? 
         _iter_push_cond.notify_all();    // ? notify_one ? 
+        _iter_pull_cond.notify_all();    // ? notify_one ? 
     }
     std::atomic<int>& num_iters() {
         return _num_iters;
