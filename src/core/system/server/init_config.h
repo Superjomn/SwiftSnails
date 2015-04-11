@@ -16,6 +16,8 @@ void server_init_configs() {
         master_addr \
         init_timeout \
         frag_num \
+        param_backup_period \
+        param_backup_root \
         ";
     init_configs(configs);
 }

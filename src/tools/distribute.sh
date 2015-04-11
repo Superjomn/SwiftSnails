@@ -9,4 +9,4 @@ rm -rf src/apps/logistic_regression/bin/*
 rm -rf src/apps/word2vec/bin/*
 tar cvf src.tar src
 gzip src.tar
-scp src.tar.gz chunwei@info01:~/
+scp src.tar.gz chunwei@info04:~/

@@ -46,6 +46,7 @@ int main(int argc, char* argv[]) {
     global_config().register_config("len_vec");
     global_config().register_config("window");
     global_config().register_config("negative");
+    global_config().register_config("sample");
 
     global_config().load_conf(config_path);
     global_config().parse();
