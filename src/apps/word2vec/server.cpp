@@ -28,11 +28,13 @@ int main(int argc, char* argv[]) {
     }
     std::string config_path = cmdline.getValue(param_config_path);
 
+    /*
     server_init_configs();
     global_config().register_config("len_vec");
     global_config().register_config("learning_rate");
     global_config().register_config("window");
     global_config().register_config("negative");
+    */
 
     global_config().load_conf(config_path);
     global_config().parse();

@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 
     std::string config_path = cmdline.getValue(param_config_path);
 
-    master_init_configs();
+    //master_init_configs();
     global_config().load_conf(config_path);
     global_config().parse();
 

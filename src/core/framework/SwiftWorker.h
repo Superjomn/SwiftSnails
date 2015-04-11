@@ -8,7 +8,7 @@
 #pragma once
 #include "../../utils/all.h"
 #include "../system/node_init.h"
-#include "../system/worker/init_config.h"
+//#include "../system/worker/init_config.h"
 #include "../system/worker/terminate.h"
 #include "../parameter/global_pull_access.h"
 #include "../parameter/global_push_access.h"

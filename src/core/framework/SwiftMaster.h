@@ -1,6 +1,6 @@
 #include "../../utils/all.h"
 #include "../system/master/init.h"
-#include "../system/master/init_config.h"
+//#include "../system/master/init_config.h"
 #include "../system/master/terminate.h"
 
 namespace swift_snails {

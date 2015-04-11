@@ -86,7 +86,6 @@ public:
         // the size of the map table will not be changed
         for(int i = 0; i < num_frags(); i ++) {
             bb >> _map_table[i];
-            DLOG(INFO) << "i\t" << i <<"\t" << _map_table[i];
         }
     }
 

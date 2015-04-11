@@ -9,7 +9,7 @@
 #include "../../utils/all.h"
 #include "../system/node_init.h"
 #include "../system/server/init.h"
-#include "../system/server/init_config.h"
+//#include "../system/server/init_config.h"
 #include "../system/server/terminate.h"
 
 namespace swift_snails {

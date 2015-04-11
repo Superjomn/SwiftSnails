@@ -64,19 +64,20 @@ public:
     void clear() {
         _dic.clear();
     }
-
+    /*
     void register_config(const std::string &key, const std::string &value = "") {
         CHECK(!key.empty());
         CHECK(_dic.count(key) == 0) << "multi key:\t" << key << "is registered";
         _dic.insert({std::move(key), Item(value)});
     }
+    */
 
     // to_int32()
     // to_string()
     // to_bool()
     const Item& get_config(const std::string &key) {
         auto p = _dic.find(key);
-        CHECK(p != _dic.end()) << "get_config: no registered key:\t" << key;
+        CHECK(p != _dic.end()) << "no such key:\t" << key;
         return p->second;
     }
 
@@ -115,9 +116,12 @@ private:
     }
 
     void set_config(const std::string &key, const std::string &value) {
+        /*
         auto p = _dic.find(key);
         CHECK(p != _dic.end()) << "read unregistered key:\t" << key;
         p->second.value = value;
+        */
+        _dic.insert({key, Item(value)});
     }
 
     std::map<std::string, Item> _dic;
@@ -131,7 +135,7 @@ ConfigParser& global_config() {
     return config;
 }
 
-
+/*
 void init_configs(const std::string& configs) {
     std::vector<std::string> _configs = split(configs, " \n");
 
@@ -139,6 +143,7 @@ void init_configs(const std::string& configs) {
         global_config().register_config(c);
     }
 }
+*/
 
 }; // end namespace swift_snails
 
