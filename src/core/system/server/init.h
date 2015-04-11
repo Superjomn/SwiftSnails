@@ -105,7 +105,10 @@ public:
         gtransfer(global_transfer<ServerWorkerRoute>()),
         sparse_table(global_sparse_table<key_t, val_t>()),
         push_access(make_push_access<table_t, AccessMethod>(sparse_table))
-    { }
+    { 
+        param_backup_period = global_config().get_config("param_backup_period").to_int32();
+        param_backup_root = global_config().get_config("param_backup_root").to_string();
+    }
 
     void operator() () {
         LOG(WARNING) << "register push message class";
@@ -123,11 +126,13 @@ protected:
                     grad_t grad;
                     req->cont >> key;
                     req->cont >> grad;
-                    //DLOG(INFO) << "apply_push\t" << key << "\t" << grad;
-                    //req_items.emplace_back(std::move(key), std::move(grad));
                     push_access->apply_push_value(key, grad);
                 }
                 rsp.cont << 1234;
+
+                push_counter ++;
+                // backup local paramter to disk
+                if(param_backup_period > 0 && push_counter % param_backup_period == 0) backup_param();
             };
     
 
@@ -136,7 +141,19 @@ protected:
             std::move(handler)
         );
     }
-   
+protected: 
+
+    void backup_param() {
+        std::string path;
+        format_string(path, "%s/param-%d.txt", param_backup_root.c_str(), int(push_counter));
+        RAW_LOG(INFO, "backup local parameter to %s", path.c_str());
+        std::ofstream file;
+        file.open (path);
+        for(int i = 0; i < sparse_table.shard_num(); i++) {
+            file << sparse_table.shard(i);
+        }
+        file.close();
+    }
 
 private:
 
@@ -145,6 +162,11 @@ private:
     SparseTable<key_t, val_t>& sparse_table;
 
     std::unique_ptr<PushAccessAgent<table_t, AccessMethod> > push_access;
+    
+    std::atomic<int> push_counter{0};
+
+    int param_backup_period = 0;
+    std::string param_backup_root;
 
 
 };  // class ServerInitPushMethod
