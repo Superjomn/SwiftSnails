@@ -58,28 +58,17 @@ protected:
     size_t arrange_local_vals(
         const std::unordered_set<key_t> &keys, 
         std::map<int, std::vector<pull_val_t> > &node_reqs) {
-        //CHECK(! param_cache.params().empty()) << "local param cache should be inited";
-        //auto &vals = param_cache.params();
-        //RAW_LOG_INFO("param_cache get\t%lu\tkeys", vals.size() );
-        //const auto &params = param_cache.params();
         pull_val_t param;    // empty value
 
-        //{ rwlock_read_guard lk(param_cache.rwlock());
             for( const auto& key : keys ) {
-                //auto& key = item.first;
-                //auto& val = item.second;
-
                 int node_id = global_hashfrag<key_t>().to_node_id(key);
                 if(node_reqs.count(node_id) == 0) {
                     node_reqs[node_id] = std::move(std::vector<pull_val_t>());
                 }
-                //const auto it = params.find(key);
-                //CHECK(it != params.end());
+
                 param.first = key;
                 node_reqs[node_id].push_back(param);
             }
-        //}
-        //RAW_LOG_INFO("split local keys to %lu parts", node_reqs.size());
         return node_reqs.size();
     }
     /*
@@ -95,9 +84,7 @@ protected:
        for( auto& item : items) {
             int node_id = item.first;
             auto &values = item.second;
-
             //LOG(INFO) << "to send to " << node_id;
-
             Request req;
             req.meta.message_class = WORKER_PULL_REQUEST;
             for(auto& value : values) {
@@ -107,8 +94,6 @@ protected:
             // get remote parameters
             // rewrite to local cache
             req.call_back_handler = [this, &param_cache, extra_rsp_callback](std::shared_ptr<Request> rsp) {
-                //LOG(INFO) << "pull response arrived";
-
                 key_t key;
                 val_t val;
                 // write local cache 
@@ -118,7 +103,6 @@ protected:
                     while(! rsp->cont.read_finished()) {
                         rsp->cont >> key;
                         rsp->cont >> val;
-                        //RAW_LOG(INFO, "get param from server:\t%d\t%f" , key , val);
                         params[key] = std::move(val);
                     }
                 }
