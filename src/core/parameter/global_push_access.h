@@ -18,7 +18,6 @@ public:
     typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
 
     GlobalPushAccess() : \
-        //param_cache(global_param_cache<key_t, val_t, grad_t>()),
         gtransfer(global_transfer<ServerWorkerRoute>())
     { }
 
@@ -53,26 +52,10 @@ public:
 
         send(node_reqs, extra_rsp_callback);
         barrier.block();
-        //reset_local_grads();
     }
-    /*
-    void push_with_barrier() {
-        const auto &local_keys = param_cache.local_keys();
-        push_with_barrier(local_keys);
-    }
-    */
 
 protected:
-/*
-    void reset_local_grads() {
-        rwlock_write_guard(param_cache.rwlock());
-        for(auto& item : param_cache.grads()) {
-            //item.second.reset();    // set to 0
-            //item.second = std::move(val_t());
-            item.second.reset();
-        }
-    }
-*/
+
     void reset_local_grad(grad_t &grad) {
         grad.reset();
     }
@@ -122,7 +105,6 @@ protected:
     }
 
 private:
-    //param_cache_t &param_cache; 
     Transfer<ServerWorkerRoute>& gtransfer; 
 };  // end class GlobalPushAccess
 
