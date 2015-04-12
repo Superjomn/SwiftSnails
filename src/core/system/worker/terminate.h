@@ -23,13 +23,11 @@ public:
 	typedef Transfer<ServerWorkerRoute> transfer_t;
 
     explicit ClientTerminate() : \
-        gtransfer(global_transfer<ServerWorkerRoute>()),
-        param_cache(global_param_cache<key_t, val_t, grad_t>())
-    {
-    }
+        gtransfer(global_transfer<ServerWorkerRoute>())
+    { }
 
     void operator() () {
-        terminate_deamons(); 
+        //terminate_deamons(); 
         worker_send_finish_message(); 
         RAW_LOG(WARNING, "###################################");
         RAW_LOG(WARNING, "     Worker terminate normally");
@@ -38,12 +36,6 @@ public:
 
 protected:
     
-    // terminate push and pull service
-    void terminate_deamons() {
-        RAW_LOG(WARNING, "... to terminate all service deamons");
-        param_cache.terminate_service_deamons();
-    }
-
     // send finish message to master
     void worker_send_finish_message() {
         RAW_LOG(WARNING, ".. worker_send_finish_message");
@@ -65,7 +57,6 @@ private:
     typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
     transfer_t& gtransfer; 
     StateBarrier _wait_rsp_barrier;
-    param_cache_t &param_cache;
 
 };  // class ClientTerminate
 
