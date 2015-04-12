@@ -44,6 +44,7 @@ class Word2VecPushMethod : public PushAccessMethod<SparseTable<access_key_t, acc
 public:
     Word2VecPushMethod() {
         learning_rate = global_config().get_config("learning_rate").to_float();
+        adagrad = global_config().get_config("adagrad").to_int32() > 0;
     }
     virtual void merge_push_value(const key_t& key, push_val_t &push_val, const push_val_t &other_push_val) 
     {
@@ -52,47 +53,26 @@ public:
     virtual void apply_push_value(const key_t& key, push_param_t &param, const push_val_t &grad)  
     {
         float fudge_factor = 1e-6;
-        //grad.norm();
         CHECK(grad.n_h() == 0);
         CHECK(grad.n_v() == 0);
         param.h2sum() += (grad.h_grad() * grad.h_grad());
         param.v2sum() += (grad.v_grad() * grad.v_grad());
-        param.h() += learning_rate * 
-                grad.h_grad() / (sqrt(param.h2sum() + fudge_factor ));
+        // update grad
+        if(! adagrad) {
+            param.h() += learning_rate * grad.h_grad();
+            param.v() += learning_rate * grad.v_grad();
+        } else {
+            param.h() += learning_rate * 
+                    grad.h_grad() / (sqrt(param.h2sum() + fudge_factor ));
 
-        param.v() += learning_rate * 
-                grad.v_grad() / (sqrt(param.v2sum() + fudge_factor ));
-
-        /*
-        RAW_LOG(INFO, "key:\t%u", key);
-        RAW_LOG(INFO, "h2sum:\t%s", param.h2sum().to_str().c_str());
-        RAW_LOG(INFO, "v2sum:\t%s", param.v2sum().to_str().c_str());
-        RAW_LOG(INFO, "h_grad:\t%s", grad.h_grad().to_str().c_str());
-        RAW_LOG(INFO, "v_grad:\t%s", grad.v_grad().to_str().c_str());
-        RAW_LOG(INFO, "h:\t%s", param.h().to_str().c_str());
-        RAW_LOG(INFO, "v:\t%s", param.v().to_str().c_str());
-        */
+            param.v() += learning_rate * 
+                    grad.v_grad() / (sqrt(param.v2sum() + fudge_factor ));
+        }
     }
-    /*
-    virtual void apply_push_value(const key_t& key, push_param_t &param, const push_val_t &grad)  
-    {
-        //grad.norm();
-        CHECK(grad.n_h() == 0);
-        CHECK(grad.n_v() == 0);
-        //param.h2sum() += (grad.h_grad() * grad.h_grad());
-        //param.v2sum() += (grad.v_grad() * grad.v_grad());
-        //RAW_LOG(INFO, "h2sum:\t%s", param.h2sum().to_str().c_str());
-        //RAW_LOG(INFO, "v2sum:\t%s", param.v2sum().to_str().c_str());
-        param.h() += learning_rate * 
-                grad.h_grad() ;// / sqrt(param.h2sum());
 
-        param.v() += learning_rate * 
-                grad.v_grad() ; // / sqrt(param.v2sum());
+private:
+    bool adagrad = false;
 
-        RAW_LOG(INFO, "h:\t%s", param.h().to_str().c_str());
-        RAW_LOG(INFO, "v:\t%s", param.v().to_str().c_str());
-    }
-    */
 };  // class Word2VecPullMethod
 
 
