@@ -14,6 +14,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <unordered_set>
 #include <vector>
 #include <mutex>
 #include <atomic>

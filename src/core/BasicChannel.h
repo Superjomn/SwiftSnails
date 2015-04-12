@@ -79,6 +79,15 @@ public:
         data_cond.notify_one();
     }
     /*
+    void push(T&& new_value) {
+        std::shared_ptr<T> data (
+            std::make_shared<T>(std::move(new_value)));
+        std::lock_guard<std::mutex> lk(mut);
+        data_queue.push(data);
+        data_cond.notify_one();
+    }
+    */
+    /*
      * close the channel and tell all the 
      * waiting threads to exit
      */

@@ -21,22 +21,22 @@ public:
         gtransfer(global_transfer<ServerWorkerRoute>())
     { }
 
-    void push(voidf_t extra_rsp_callback = voidf_t()) {
+    void push(std::unordered_set<key_t> &&keys, voidf_t extra_rsp_callback = voidf_t()) {
         // nodeid to reqs
         std::map<int, std::vector<push_val_t> > node_reqs;
-        arrange_local_grads(node_reqs);
+        arrange_local_grads(std::move(keys), node_reqs);
 
         send(node_reqs, extra_rsp_callback);
 
-        reset_local_grads();
+        //reset_local_grads();
     }
 
-    void push_with_barrier() {
+    void push_with_barrier(const std::unordered_set<key_t> &keys) {
         StateBarrier barrier;
         std::atomic<size_t> num_reqs{0};
 
         std::map<int, std::vector<push_val_t> > node_reqs;
-        num_reqs = arrange_local_grads(node_reqs);
+        num_reqs = arrange_local_grads(keys, node_reqs);
 
         voidf_t extra_rsp_callback = [&barrier, &num_reqs] {
             if(-- num_reqs  == 0) {
@@ -47,24 +47,17 @@ public:
 
         send(node_reqs, extra_rsp_callback);
         barrier.block();
-        reset_local_grads();
-    }
-    /*
-    size_t push_without_reset(voidf_t extra_rsp_callback = voidf_t()) {
-        // nodeid to reqs
-        std::map<int, std::vector<push_val_t> > node_reqs;
-        arrange_local_grads(node_reqs);
-
-        return send(node_reqs, extra_rsp_callback);
-
         //reset_local_grads();
     }
-    */
     /*
-     * set local grads to zero(initial status)
-     */
-protected:
+    void push_with_barrier() {
+        const auto &local_keys = param_cache.local_keys();
+        push_with_barrier(local_keys);
+    }
+    */
 
+protected:
+/*
     void reset_local_grads() {
         rwlock_write_guard(param_cache.rwlock());
         for(auto& item : param_cache.grads()) {
@@ -73,11 +66,14 @@ protected:
             item.second.reset();
         }
     }
+*/
+    void reset_local_grad(grad_t &grad) {
+        grad.reset();
+    }
 
-
-    size_t arrange_local_grads(std::map<int, std::vector<push_val_t>>& node_reqs) {
-        const auto &local_keys = param_cache.local_keys();
-        const auto &grads = param_cache.grads();
+    size_t arrange_local_grads(const std::unordered_set<key_t>& keys, std::map<int, std::vector<push_val_t>>& node_reqs) {
+        const auto &local_keys = keys; //param_cache.local_keys();
+        auto &grads = param_cache.grads();
         // split grads to different nodes
         for(const auto& key : local_keys) {
 
@@ -85,9 +81,11 @@ protected:
             if(node_reqs.count(node_id) == 0) {
                 node_reqs[node_id] = std::move(std::vector<push_val_t>());
             }
-            const auto it = grads.find(key);
+            auto it = grads.find(key);
             CHECK(it != grads.end());
             node_reqs[node_id].push_back(*it);
+
+            reset_local_grad(it->second);
         }
         return node_reqs.size();
     }
