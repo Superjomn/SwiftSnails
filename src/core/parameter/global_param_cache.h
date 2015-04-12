@@ -104,6 +104,12 @@ public:
         return _local_keys;
     }
 
+    void clear() {
+        _params.clear();
+        _grads.clear();
+        _local_keys.clear();
+    }
+
 private:
     RWLock _rwlock;
     std::map<key_t, val_t> _params;
@@ -111,6 +117,7 @@ private:
     std::set<key_t> _local_keys;
     // number of iterations
     std::atomic<int> _num_iters{0};
+    // TODO clean all these codes
     mutable std::mutex _iter_mutex;
     std::condition_variable _iter_pull_cond;
     std::condition_variable _iter_push_cond;

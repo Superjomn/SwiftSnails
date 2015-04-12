@@ -92,6 +92,7 @@ private:
             push_access.push_with_barrier(local_keys, param_cache);
             local_keys.clear();
             batch.clear();
+            param_cache.clear();
         };
 
         auto minibatch_task = [this, &queue, &global_error, &error_counter, &trainer] {
