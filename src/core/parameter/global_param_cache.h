@@ -119,11 +119,4 @@ private:
 };
 
 
-template<class Key, class Val, class Grad> 
-GlobalParamCache<Key, Val, Grad>& global_param_cache() {
-    static GlobalParamCache<Key, Val, Grad> cache;
-    return cache;
-}
-
-
 };

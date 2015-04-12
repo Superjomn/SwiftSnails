@@ -16,12 +16,13 @@ public:
     typedef Val val_t;
     typedef Grad grad_t;
     typedef std::pair<key_t, val_t> pull_val_t;
+    typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
 
     GlobalPullAccess() : \
-        param_cache(global_param_cache<key_t, val_t, grad_t>()),
+        //param_cache(global_param_cache<key_t, val_t, grad_t>()),
         gtransfer(global_transfer<ServerWorkerRoute>())
     { }
-
+    /*
     void pull(const std::unordered_set<key_t> &keys, voidf_t rsp_callback = voidf_t() ) {
         RAW_DLOG(INFO, "pull() from server");
         // node_id : vals
@@ -32,8 +33,12 @@ public:
         // send message to each nodes
         send(node_reqs, rsp_callback);
     }
+    */
 
-    void pull_with_barrier(const std::unordered_set<key_t> &keys) {
+    void pull_with_barrier( 
+        const std::unordered_set<key_t> &keys,
+        param_cache_t &param_cache
+    ) {
         StateBarrier barrier;
         std::atomic<size_t> num_reqs{0};
         std::map<int, std::vector<pull_val_t> > node_reqs;
@@ -45,20 +50,22 @@ public:
                 barrier.try_unblock();
             }
         };
-        send(node_reqs, extra_rsp_callback);
+        send(node_reqs, param_cache, extra_rsp_callback);
         barrier.block();
     }
 
 protected:
-    size_t arrange_local_vals(const std::unordered_set<key_t> &keys, std::map<int, std::vector<pull_val_t> > &node_reqs) {
-        CHECK(! param_cache.params().empty()) << "local param cache should be inited";
-        auto &vals = param_cache.params();
+    size_t arrange_local_vals(
+        const std::unordered_set<key_t> &keys, 
+        std::map<int, std::vector<pull_val_t> > &node_reqs) {
+        //CHECK(! param_cache.params().empty()) << "local param cache should be inited";
+        //auto &vals = param_cache.params();
         //RAW_LOG_INFO("param_cache get\t%lu\tkeys", vals.size() );
-        const auto &params = param_cache.params();
-        const auto &local_keys = keys;//param_cache.local_keys();
+        //const auto &params = param_cache.params();
+        pull_val_t param;    // empty value
 
         //{ rwlock_read_guard lk(param_cache.rwlock());
-            for( const auto& key : local_keys ) {
+            for( const auto& key : keys ) {
                 //auto& key = item.first;
                 //auto& val = item.second;
 
@@ -66,9 +73,10 @@ protected:
                 if(node_reqs.count(node_id) == 0) {
                     node_reqs[node_id] = std::move(std::vector<pull_val_t>());
                 }
-                const auto it = params.find(key);
-                CHECK(it != params.end());
-                node_reqs[node_id].push_back(*it);
+                //const auto it = params.find(key);
+                //CHECK(it != params.end());
+                param.first = key;
+                node_reqs[node_id].push_back(param);
             }
         //}
         //RAW_LOG_INFO("split local keys to %lu parts", node_reqs.size());
@@ -80,6 +88,7 @@ protected:
      */
     void send(
         std::map<int, std::vector<pull_val_t>> &items,
+        param_cache_t &param_cache,
         voidf_t extra_rsp_callback = voidf_t()
         ) 
     {
@@ -97,7 +106,7 @@ protected:
             }
             // get remote parameters
             // rewrite to local cache
-            req.call_back_handler = [this, extra_rsp_callback](std::shared_ptr<Request> rsp) {
+            req.call_back_handler = [this, &param_cache, extra_rsp_callback](std::shared_ptr<Request> rsp) {
                 //LOG(INFO) << "pull response arrived";
 
                 key_t key;
@@ -117,7 +126,7 @@ protected:
                 if(extra_rsp_callback) extra_rsp_callback();
             };
 
-            RAW_LOG(INFO, "send pull req to %d", node_id);
+            //RAW_LOG(INFO, "send pull req to %d", node_id);
 
             gtransfer.send(std::move(req), node_id);
             //recv_parcel->send(node_id);
@@ -125,8 +134,7 @@ protected:
     }
 
 private:
-    typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
-    param_cache_t &param_cache; 
+    //param_cache_t &param_cache; 
     Transfer<ServerWorkerRoute>& gtransfer; 
 };  // class GlobalPullAccess
 
