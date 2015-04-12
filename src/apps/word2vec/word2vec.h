@@ -16,18 +16,23 @@ public:
     typedef index_t          key_t;
     typedef Word2VecParam   val_t;
     typedef Word2VecGrad    grad_t;
-    using param_cache_t = GlobalParamCache<key_t, val_t, grad_t> ;
+    using param_cache_t = GlobalParamCache<key_t, val_t, grad_t>;
+    using pull_access_t = GlobalPullAccess<key_t, val_t, grad_t>;
+    using push_access_t = GlobalPushAccess<key_t, val_t, grad_t>;
 
     SkipGram(int num_iters, int len_vec, int window, int negative) : \
         _num_iters(num_iters),
         window(window), 
         negative(negative), 
         len_vec(len_vec),
-        param_cache(global_param_cache<key_t, val_t, grad_t>())
+        param_cache(global_param_cache<key_t, val_t, grad_t>()),
+        pull_access(global_pull_access<key_t, val_t, grad_t>()),
+        push_access(global_push_access<key_t, val_t, grad_t>())
     { 
         //_num_iters = global_config().get_config("num_iters").to_int32();
         learning_rate = global_config().get_config("learning_rate").to_float();
         sample = global_config().get_config("sample").to_float();
+        minibatch = global_config().get_config("minibatch").to_int32();
     }
 
     virtual void train() {
@@ -37,7 +42,7 @@ public:
         for(int i = 0; i < _num_iters; i ++) {
             LOG(WARNING) << i << " th iteration";
             train_iter(_async_channel_thread_num);
-            param_cache.inc_num_iters();
+            //param_cache.inc_num_iters();
         }
     }
 
@@ -65,28 +70,58 @@ private:
     void train_iter(int thread_num) {
         LOG(INFO) << "train file with " << thread_num << " threads";
         const int line_buffer_queue_capacity = global_config().get_config("line_buffer_queue_capacity").to_int32();
+        // file read buffer queue
         queue_with_capacity<std::string> queue(line_buffer_queue_capacity);
+        // computation channel
         FILE* file = std::fopen(data_path().c_str(), "r");
         CHECK_NOTNULL(file);
 
         double global_error = 0;
         size_t error_counter = 0;
 
-        auto trainner = [this, &queue, &global_error, &error_counter] {
+        auto trainer = [this, &global_error, &error_counter] (std::vector<rcd_t::feas_t> &batch, std::unordered_set<key_t> &local_keys) {
             double error;
+            pull_access.pull_with_barrier(local_keys);
+            for(auto& feas : batch) {
+                error = learn_record(std::move(feas));
+                global_error += error;
+                error_counter ++;
+            }
+            // finish mini-batch training 
+            // and PUSH the grads
+            push_access.push_with_barrier(local_keys);
+            local_keys.clear();
+            batch.clear();
+        };
+
+        auto minibatch_task = [this, &queue, &global_error, &error_counter, &trainer] {
+            std::vector<rcd_t::feas_t> _minibatch;
+            std::unordered_set<key_t> local_keys;
             for(;;) {
+                // get one line from queue
                 std::string line;
                 queue.wait_and_pop(line);
                 if(line.empty()) break;
+
                 rcd_t rcd = parse_record(line);
                 // TODO add config for shortest sentence
                 if(rcd.feas.size() > 4) {
-                    error = learn_record(std::move(rcd.feas));
-                    global_error += error;
-                    error_counter ++;
+                    for(const auto& key : rcd.feas) {
+                        local_keys.insert(key.first);
+                    }
+                    _minibatch.push_back(std::move(rcd.feas));
+                    if(_minibatch.size() == minibatch) {
+                        // pull parameters
+                        trainer(_minibatch, local_keys);
+                    }
                 }
+            } // end for
+
+            if(! _minibatch.empty()) {
+                trainer(_minibatch, local_keys);
             }
         };
+
         auto producer = [this, &queue, file, thread_num] {
 
             LineFileReader line_reader; 
@@ -100,15 +135,8 @@ private:
         };
         std::thread t (std::move(producer));
 
-        async_exec(thread_num, std::move(trainner), async_channel());
-        //line_trainner();
-        //RAW_LOG(INFO, ">  after asyn_exec, to join producer thread");
-        // display parameters
-        /*
-        for(auto& it :  param_cache.params()) {
-            RAW_DLOG(INFO,  "%lu:\t%s", it.first, it.second.v().to_str().c_str());
-        }
-        */
+        async_exec(thread_num, std::move(minibatch_task), async_channel());
+
         t.join();
         std::fclose(file);
 
@@ -348,6 +376,8 @@ private:
     int _num_iters{0};
     std::random_device rd;
     param_cache_t &param_cache;
+    pull_access_t &pull_access;
+    push_access_t &push_access;
     //std::vector<key_t> local_keys;
     float learning_rate = 0.01;
     std::map<key_t, int> word_freg;
@@ -355,4 +385,5 @@ private:
     std::unique_ptr<std::pair<key_t, int>[]> table2word_freq;
     int table_size = 1e8;
     float sample = 0;
+    int minibatch = 0;
 };  // class Word2Vec

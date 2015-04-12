@@ -22,22 +22,22 @@ public:
         gtransfer(global_transfer<ServerWorkerRoute>())
     { }
 
-    void pull(voidf_t rsp_callback = voidf_t() ) {
+    void pull(const std::unordered_set<key_t> &keys, voidf_t rsp_callback = voidf_t() ) {
         RAW_DLOG(INFO, "pull() from server");
         // node_id : vals
         std::map<int, std::vector<pull_val_t> > node_reqs;
         RAW_DLOG(INFO, "to arrange_local_vals");
-        arrange_local_vals(node_reqs);
+        arrange_local_vals(keys, node_reqs);
         RAW_DLOG(INFO, "to send pull requests");
         // send message to each nodes
         send(node_reqs, rsp_callback);
     }
 
-    void pull_with_barrier() {
+    void pull_with_barrier(const std::unordered_set<key_t> &keys) {
         StateBarrier barrier;
         std::atomic<size_t> num_reqs{0};
         std::map<int, std::vector<pull_val_t> > node_reqs;
-        num_reqs = arrange_local_vals(node_reqs);
+        num_reqs = arrange_local_vals(keys, node_reqs);
 
         voidf_t extra_rsp_callback = [&barrier, &num_reqs] {
             if(-- num_reqs == 0) {
@@ -50,12 +50,12 @@ public:
     }
 
 protected:
-    size_t arrange_local_vals(std::map<int, std::vector<pull_val_t> > &node_reqs) {
+    size_t arrange_local_vals(const std::unordered_set<key_t> &keys, std::map<int, std::vector<pull_val_t> > &node_reqs) {
         CHECK(! param_cache.params().empty()) << "local param cache should be inited";
-        //auto &vals = param_cache.params();
+        auto &vals = param_cache.params();
         //RAW_LOG_INFO("param_cache get\t%lu\tkeys", vals.size() );
         const auto &params = param_cache.params();
-        const auto &local_keys = param_cache.local_keys();
+        const auto &local_keys = keys;//param_cache.local_keys();
 
         //{ rwlock_read_guard lk(param_cache.rwlock());
             for( const auto& key : local_keys ) {

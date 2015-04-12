@@ -109,15 +109,15 @@ public:
             node_hashfrag_init();
             LOG(WARNING) << ".. init_local_param_keys";
             init_local_param_keys(_async_channel_thread_num);
-            LOG(WARNING) << ".. first_pull_to_init_local_param";
-            first_pull_to_init_local_param();
-            LOG(WARNING) << ".. start_deamon_service";
-            start_deamon_service();
+            //LOG(WARNING) << ".. first_pull_to_init_local_param";
+            //first_pull_to_init_local_param();
+            //LOG(WARNING) << ".. start_deamon_service";
+            //start_deamon_service();
             // API
             alg.train();
             // final push local grad to paramter servers
-            LOG(WARNING) << ".. final_push";
-            final_push();
+            //LOG(WARNING) << ".. final_push";
+            //final_push();
             LOG(WARNING) << ".. terminate";
             // terminate local task
             terminate();
@@ -137,10 +137,12 @@ public:
 protected:
     // start pull and push service
     // these threads will run background
+    /*
     void start_deamon_service() {
         pull_service.start_service();
         push_service.start_service();
     }
+    */
     // should be called before train 
     // just initial local parameter cache
     void init_local_param_keys(int thread_num) {
@@ -185,11 +187,13 @@ protected:
         RAW_LOG(WARNING, "... finish first_pull_to_init_local_param");
     }
     // local task complete and push local grad 
+    /*
     void final_push() {
         RAW_LOG(WARNING, "... try to push");
         push_access.push_with_barrier();
         RAW_LOG(WARNING, "... finish try push");
     }
+    */
     int async_channel_thread_num() {
         CHECK(_async_channel_thread_num > 0);
         return _async_channel_thread_num;
