@@ -6,6 +6,8 @@
 using namespace swift_snails;
 using namespace fms;
 
+const double MAX_EXP = 6;
+
 struct rcd_t {
     typedef std::vector<std::pair<index_t, bool>> feas_t;
     feas_t feas;
@@ -31,16 +33,29 @@ public:
         learning_rate = global_config().get_config("learning_rate").to_float();
         sample = global_config().get_config("sample").to_float();
         minibatch = global_config().get_config("minibatch").to_int32();
+        local_train = global_config().get_config("local_train").to_int32() > 0;
     }
 
     virtual void train() {
         get_word_freq(_async_channel_thread_num);
         init_unigram_table();
-
-        for(int i = 0; i < _num_iters; i ++) {
-            LOG(WARNING) << i << " th iteration";
-            train_iter(_async_channel_thread_num);
+        param_cache_t local_param;
+        
+        if(local_train) {
+            for(const auto& item : word_freq) {
+                local_param.init_key(item.first, true);
+            }
         }
+        for(int i = 0; i < _num_iters; i ++) {
+            start = clock();
+            LOG(WARNING) << i << " th iteration";
+            if(local_train) 
+                local_train_iter(_async_channel_thread_num, local_param);
+            else train_iter(_async_channel_thread_num);
+            word_counter = 0;
+        }
+        // output paramters
+        if (local_train) std::cout << local_param;
     }
 
     rcd_t parse_record(const std::string &line) {
@@ -65,7 +80,7 @@ private:
      *  wordid wordid wordid
      */
     void train_iter(int thread_num) {
-        LOG(INFO) << "train file with " << thread_num << " threads";
+        //LOG(INFO) << "train file with " << thread_num << " threads";
         const int line_buffer_queue_capacity = global_config().get_config("line_buffer_queue_capacity").to_int32();
         // file read buffer queue
         queue_with_capacity<std::string> queue(line_buffer_queue_capacity);
@@ -73,11 +88,7 @@ private:
         FILE* file = std::fopen(data_path().c_str(), "r");
         CHECK_NOTNULL(file);
 
-        double global_error = 0;
-        size_t error_counter = 0;
-        size_t bad_error_counter = 0;
-
-        auto trainer = [this, &global_error, &error_counter, &bad_error_counter] 
+        auto trainer = [this] 
         (std::vector<rcd_t::feas_t> &batch, param_cache_t &param_cache, std::unordered_set<key_t> &local_keys) 
         {
             double error;
@@ -87,6 +98,8 @@ private:
                 global_error += error;
                 error_counter ++;
             }
+            RAW_LOG(INFO, "batch error:\t%f\t bad_error:\t%d", global_error/error_counter, bad_error_counter);
+            //fflush(stdout);
             // finish mini-batch training 
             // and PUSH the grads
             push_access.push_with_barrier(local_keys, param_cache);
@@ -95,7 +108,7 @@ private:
             param_cache.clear();
         };
 
-        auto minibatch_task = [this, &queue, &global_error, &error_counter, &trainer] {
+        auto minibatch_task = [this, &queue, &trainer] {
             std::vector<rcd_t::feas_t> _minibatch;
             std::unordered_set<key_t> local_keys;
             param_cache_t param_cache;  // local param
@@ -140,10 +153,59 @@ private:
 
         async_exec(thread_num, std::move(minibatch_task), async_channel());
 
+        now = clock();
+        RAW_LOG(WARNING, ">  train error:\t%f\twords per second:\t%f", global_error/error_counter, word_counter/(double(now - start)/CLOCKS_PER_SEC ));
+        //now = clock();
         t.join();
         std::fclose(file);
+    }
 
-        RAW_LOG(INFO, ">  train error:\t%f\tbad_error:\t", global_error/error_counter, bad_error_counter);
+    void local_train_iter(int thread_num, param_cache_t &local_param) {
+        CHECK(! local_param.params().empty()) << "local param should be inited before";
+        const int line_buffer_queue_capacity = global_config().get_config("line_buffer_queue_capacity").to_int32();
+        // file read buffer queue
+        queue_with_capacity<std::string> queue(line_buffer_queue_capacity);
+        // computation channel
+        FILE* file = std::fopen(data_path().c_str(), "r");
+        CHECK_NOTNULL(file);
+
+        auto trainer = [this, &queue, &local_param] {
+            for(;;) {
+                std::string line;
+                queue.wait_and_pop(line);
+                if(line.empty()) break;
+
+                rcd_t rcd = parse_record(line);
+                // TODO add config for shortest sentence
+                if(rcd.feas.size() > 4) {
+                    double error;
+                    error = learn_record(std::move(rcd.feas), local_param);
+                    global_error += error;
+                    error_counter ++;
+                    word_counter += rcd.feas.size();
+                }
+            }
+        };
+
+        auto producer = [this, &queue, file, thread_num] {
+
+            LineFileReader line_reader; 
+
+            while(line_reader.getline(file)) {
+                std::string line = line_reader.get();
+                queue.push(std::move(line));
+                //RAW_DLOG(INFO, "line_reader push a line to queue");
+            }
+            queue.end_input(thread_num, "");
+        };
+        std::thread t (std::move(producer));
+
+        async_exec(thread_num, std::move(trainer), async_channel());
+        now = clock();
+        RAW_LOG(WARNING, ">  train error:\t%f\twords per second:\t%f", global_error/error_counter, word_counter/(double(now - start)/CLOCKS_PER_SEC ));
+
+        t.join();
+        std::fclose(file);
     }
 
     double learn_record(rcd_t::feas_t && sen, param_cache_t &param_cache) {
@@ -155,10 +217,10 @@ private:
         double f, g;
         clock_t now;
 
-        std::mt19937 rng(rd());
-        std::uniform_int_distribution<int> int_rand(0, table_size);
-        std::default_random_engine float_gen;
-        std::uniform_real_distribution<double> float_rand(0.0, 1.0);
+        static std::mt19937 rng(rd());
+        static std::uniform_int_distribution<int> int_rand(0, table_size);
+        static std::default_random_engine float_gen;
+        static std::uniform_real_distribution<double> float_rand(0.0, 1.0);
 
         Vec neu1(len_vec);
         Vec neu1e(len_vec);
@@ -170,7 +232,7 @@ private:
             word =  sen[sentence_position].first;
 
             if(sample > 0) {
-                double keep = sqrt(sample / word_freg[word]) + sample / word_freg[word];
+                double keep = sqrt(sample / word_freq[word]) + sample / word_freq[word];
                 double rand = float_rand(float_gen);
                 if( keep <  rand) continue;
             }
@@ -203,7 +265,9 @@ private:
                     }
 
                     Vec &v2 = param_cache.params()[target].h();
-                    f = 1.0 / ( 1 + exp(- v1.dot(v2)));
+                    double v1_dot_v2 = v1.dot(v2);
+                    if(v1_dot_v2 > MAX_EXP || v1_dot_v2 < -MAX_EXP) continue;
+                    f = 1.0 / ( 1 + exp(- v1_dot_v2));
                     g = (label - f);
                     // calculate error
                     double error = label == 0 ? - log(1-f) : -log(f);
@@ -211,7 +275,7 @@ private:
                         global_error += error;
                         error_counter ++;
                     } else {
-                        //bad_error_counter ++;
+                        bad_error_counter ++;
                     }
                     neu1e += (g * v2); // * learning_rate
 
@@ -249,7 +313,7 @@ private:
                 auto rcd = parse_record(line);
                 std::lock_guard<std::mutex> lk(keys_mut);
                 for(auto &item : rcd.feas) {
-                    word_freg[item.first] ++;
+                    word_freq[item.first] ++;
                 }
             };
 
@@ -264,15 +328,15 @@ private:
 
     void init_unigram_table() {
         LOG(INFO) << "... init_unigram_table";
-        CHECK_GT(word_freg.size(), 0) << "word_freg should be inited before";
+        CHECK_GT(word_freq.size(), 0) << "word_freq should be inited before";
         int a, i;
         double train_words_pow = 0;
         double d1, power = 0.75;
         table.reset( new int[table_size]);
-        table2word_freq.reset( new std::pair<key_t, int>[word_freg.size()]);
+        table2word_freq.reset( new std::pair<key_t, int>[word_freq.size()]);
         
         i = 0;
-        for(const auto& item : word_freg) {
+        for(const auto& item : word_freq) {
             table2word_freq[i++] = item;
             train_words_pow += std::pow(item.second, power);
         }
@@ -284,7 +348,7 @@ private:
                 i++;
                 d1 += pow(table2word_freq[i].second, power) / (double)train_words_pow;
             }
-            if(i >= word_freg.size()) i = word_freg.size() - 1;
+            if(i >= word_freq.size()) i = word_freq.size() - 1;
         }
     }
 
@@ -294,15 +358,24 @@ private:
     int len_vec{0};
     int _num_iters{0};
     std::random_device rd;
+    bool local_train = false;
     //param_cache_t &param_cache;
     pull_access_t &pull_access;
     push_access_t &push_access;
     //std::vector<key_t> local_keys;
     float learning_rate = 0.01;
-    std::map<key_t, int> word_freg;
+    std::map<key_t, int> word_freq;
     std::unique_ptr<int[]> table;
     std::unique_ptr<std::pair<key_t, int>[]> table2word_freq;
     int table_size = 1e8;
     float sample = 0;
     int minibatch = 0;
+    // error
+    double global_error = 0;
+    size_t error_counter = 0;
+    size_t bad_error_counter = 0;
+    // clock
+    clock_t now, start;
+    size_t word_counter = 0;
+
 };  // class Word2Vec

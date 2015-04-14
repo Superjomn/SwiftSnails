@@ -82,7 +82,7 @@ public:
 		return _data.get()[i];
 	}
 
-    value_type dot(const Vec &other) {
+    value_type dot(const Vec &other) const {
         CHECK_EQ(size(), other.size());
         value_type res = 0.0;
         for(size_t i = 0; i < size(); i ++) {

@@ -44,6 +44,14 @@ public:
         }
     }
 
+    void init_key(const key_t& key, bool param_random=false) {
+        _params[key] = val_t();
+        _grads[key] = grad_t();
+        if(param_random) {
+            _params[key].init(true);
+        }
+    }
+
     size_t size() const {
         rwlock_read_guard lk(_rwlock);
         return _params.size();
