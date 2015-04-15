@@ -247,9 +247,9 @@ public:
 	}
 
 
-    void train(const string& data_path) {
+    void train(const string& data_path, const string& out_path) {
         Error global_error;
-        for(int iter = 0; iter < 10; iter ++) {
+        //for(int iter = 0; iter < 10; iter ++) {
             vector<thread> threads;
             for( int i = 0; i < num_threads; i++) {
                 thread t([this, &data_path, &global_error, i]{
@@ -263,8 +263,10 @@ public:
             }
             
             RAW_LOG(INFO, "error:\t%f", global_error.norm());
+            word_count_actual = 0;
         }
-    }
+        output(out_path);
+    //}
 
 
 	void TrainModelThread(const string &train_file, int id, Error& global_error) {
@@ -388,7 +390,7 @@ public:
 							                * (EXP_TABLE_SIZE / MAX_EXP / 2))])
 							        * alpha;
                         // accumerate error
-                        global_error.accu(g * g);
+                        global_error.accu(10000* g * g);
 						for (c = 0; c < len_vec; c++)
 							neu1e[c] += g * syn1neg[c + l2];
 						for (c = 0; c < len_vec; c++)
@@ -438,6 +440,29 @@ public:
 	Vocab& get_vocab() {
 		return vocab;
 	}
+
+    void output(const string& path) {
+        ofstream file(path);
+        CHECK(file.is_open())<< "output path is valid!";
+        for( auto & item : vocab.vocab) {
+            file << item.first << "\t";
+            file << "h:\t";
+            for(int i = 0; i < len_vec; i++) {
+                file << syn1neg[ item.second.id * len_vec + i];
+                if( i != len_vec - 1) {
+                    file << " ";
+                } else file << "\t";
+            }
+            file << "v:\t";
+            for(int i = 0; i < len_vec; i++) {
+                file << syn0[ item.second.id * len_vec + i];
+                if( i != len_vec - 1) {
+                    file << " ";
+                } else file << "\n";
+            }
+        }
+        LOG(WARNING)  << "output model to " << path;
+    }
 
 private:
 	std::unique_ptr<int[]> table;
