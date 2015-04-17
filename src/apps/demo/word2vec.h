@@ -264,9 +264,8 @@ public:
             
             RAW_LOG(INFO, "error:\t%f", global_error.norm());
             word_count_actual = 0;
-        }
-        output(out_path);
-    //}
+            output(out_path);
+    }
 
 
 	void TrainModelThread(const string &train_file, int id, Error& global_error) {

@@ -6,7 +6,7 @@
 #include <pthread.h>
 #include "../../utils/all.h"
 #include "./param.h"
-#include "./access_method.h"
+#include "./access_method_3.h"
 #include "../../core/parameter/global_param_cache.h"
 
 #define MAX_STRING 100
@@ -603,8 +603,10 @@ public:
 						for (c = 0; c < len_vec; c++)
                             neu1e[c] += g * syn1neg_target[c];
 							//neu1e[c] += g * syn1neg[c + l2];
+                        /*
 						for (c = 0; c < len_vec; c++)
                             syn1neg_target[c] += g * neu1[c];
+                        */
 
                         global_param.cache().grads()[target].accu_h(g * neu1);// / alpha);
 							//syn1neg[c + l2] += g * neu1[c];
@@ -622,8 +624,10 @@ public:
 						if (last_word == -1)
 							continue;
                         Vec &syn0_lastword = params[last_word].v();
+                        /*
 						for (c = 0; c < len_vec; c++)
                             syn0_lastword[c] += neu1e[c];
+                        */
 							//syn0[c + last_word * len_vec] += neu1e[c];
                         global_param.cache().grads()[last_word].accu_v(neu1e);// / alpha);
 					}
