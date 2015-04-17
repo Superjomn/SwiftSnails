@@ -122,7 +122,9 @@ protected:
             LOG(WARNING) << "get hashfrag from master";
             LOG(INFO) << "hashfrag rsp size:\t" << rsp->cont.size();
             hashfrag.deserialize(rsp->cont);
+            LOG(INFO) << "to deserialize hashfrag";
             // unblock hashfrag_barrier
+            LOG(INFO) << "finish hashfrag init";
             hashfrag_init_barrier.set_state_valid();
             hashfrag_init_barrier.try_unblock();
         };

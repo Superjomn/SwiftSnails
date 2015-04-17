@@ -103,7 +103,7 @@ public:
             return _buffer;
         } else {
             _length = 0;
-            CHECK(feof(f));
+            //CHECK(feof(f));
             return NULL;
         }
     }

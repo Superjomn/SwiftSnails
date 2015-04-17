@@ -86,7 +86,7 @@ public:
         _async_channel_thread_num = global_config().get_config("async_channel_thread_num").to_int32();
         _local_train = global_config().get_config("local_train").to_int32() > 0;
         CHECK_GT(_learning_rate, 0);
-        alg.create_async_channel();
+        //alg.create_async_channel();
     }
 
     void operator() () {
@@ -103,6 +103,7 @@ public:
             //LOG(WARNING) << ".. start_deamon_service";
             //start_deamon_service();
             // API
+            RAW_LOG(WARNING, "... begin to train alg");
             alg.train();
             // final push local grad to paramter servers
             //LOG(WARNING) << ".. final_push";

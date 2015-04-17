@@ -2,7 +2,7 @@
 #include "common.h"
 #include "param.h"
 #include "access_method.h"
-#include "word2vec.h"
+#include "word.h"
 using namespace swift_snails;
 using namespace fms;
 using namespace std;

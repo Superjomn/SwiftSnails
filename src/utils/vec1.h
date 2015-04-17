@@ -10,12 +10,21 @@ public:
     Vec() {
     }
 
+    ~Vec() {
+        if(_data != NULL) delete _data;
+    }
+
     Vec(size_t size) {
         init(size);
     }
 
     Vec(const Vec& other) {
         if(_size != other.size()) {
+            if(_data) {
+                delete _data;
+                _data = NULL;
+                _size = 0;
+            }
             init(other.size());
         }
         for(size_t i = 0; i < size(); i++) {
@@ -24,14 +33,16 @@ public:
     }
 
     Vec(Vec&& other) {
-        _data = std::move(other._data);
+        _data = other._data;
         _size = other._size;
+        other._data = NULL;
+        other._size = 0;
     }
 
     Vec& operator= (const Vec& other) {
         if(this != &other) {
             _size = other.size(); 
-            _data.reset(new value_type[_size]);
+            reset(_size);
             for(size_t i = 0; i < _size; i++) {
                 data()[i] = other[i];
             }
@@ -60,8 +71,8 @@ public:
     void init(size_t size, bool random_init = false) {
         CHECK_GT(size, 0);
         CHECK(! _data) << "data can be inited only once";
-        _size  = size;
-        _data.reset(new value_type[size]);
+        //_data.reset(new value_type[size]);
+        reset(size);
         for(size_t i = 0; i < _size; ++i) {
             data()[i] = 0.0;
         }
@@ -75,11 +86,11 @@ public:
 	value_type& operator[](size_t i) {
         CHECK_GE(i, 0);
         CHECK_LE(i, size());
-		return _data.get()[i];
+		return _data[i];
 	}
 	const value_type& operator[](size_t i) const {
         CHECK(i >= 0 && i < size());
-		return _data.get()[i];
+		return _data[i];
 	}
 
     value_type dot(const Vec &other) const {
@@ -113,10 +124,10 @@ public:
     }
 
     value_type* data() {
-        return _data.get();
+        return _data;
     }
     const value_type* data() const {
-        return _data.get();
+        return _data;
     }
 
     friend Vec operator*(const Vec &vec, value_type b) {
@@ -216,15 +227,24 @@ public:
 
 protected:
 	void randInit(float offset=0.5) {
-		float r;
-		for(size_t i=0; i<size(); i++) {
-			r = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) - offset);
-			data()[i] = r;
-		}
+        for(size_t i = 0; i < size(); i++) 
+            _data[i] = (rand() / (float) RAND_MAX - 0.5) / _size;
 	}
 
+    void reset(size_t size_) {
+        CHECK_GT(size_ , 0);
+        if (size_ == _size) return;
+        if(_data != NULL) {
+            delete _data;
+            _size = 0;
+        }
+        _size = size_;
+        _data = new value_type[size_];
+    }
+
 private:
-    std::unique_ptr<value_type[]> _data;
+    //std::unique_ptr<value_type[]> _data;
+    value_type *_data = NULL;
     size_t _size{0};
 };  // class Vec
 

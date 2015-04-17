@@ -31,6 +31,8 @@ public:
     typedef Grad grad_t;
 
     explicit GlobalParamCache() {
+        _params.set_empty_key(std::numeric_limits<key_t>::max());
+        _grads.set_empty_key(std::numeric_limits<key_t>::max());
     }
     // thread-safe
     // should run first
@@ -53,16 +55,16 @@ public:
     }
 
     size_t size() const {
-        rwlock_read_guard lk(_rwlock);
+        //rwlock_read_guard lk(_rwlock);
         return _params.size();
     }
     // not thread-safe
     // should use rwlock first
-    std::map<key_t, val_t>& params() {
+    dense_hash_map<key_t, val_t>& params() {
         return _params;
     }
 
-    std::map<key_t, grad_t>& grads() {
+    dense_hash_map<key_t, grad_t>& grads() {
         return _grads;
     }
 
@@ -120,8 +122,8 @@ public:
 
 private:
     RWLock _rwlock;
-    std::map<key_t, val_t> _params;
-    std::map<key_t, grad_t> _grads;
+    dense_hash_map<key_t, val_t> _params;
+    dense_hash_map<key_t, grad_t> _grads;
     std::set<key_t> _local_keys;
     // number of iterations
     std::atomic<int> _num_iters{0};

@@ -34,6 +34,8 @@ public:
         sample = global_config().get_config("sample").to_float();
         minibatch = global_config().get_config("minibatch").to_int32();
         local_train = global_config().get_config("local_train").to_int32() > 0;
+
+        word_freq.set_empty_key(std::numeric_limits<key_t>::max());
     }
 
     virtual void train() {
@@ -42,6 +44,7 @@ public:
         param_cache_t local_param;
         
         if(local_train) {
+            LOG(INFO) << "... init local keys";
             for(const auto& item : word_freq) {
                 local_param.init_key(item.first, true);
             }
@@ -93,8 +96,11 @@ private:
         {
             double error;
             pull_access.pull_with_barrier(local_keys, param_cache);
+            Vec neu1(len_vec);
+            Vec neu1e(len_vec);
+
             for(auto& feas : batch) {
-                error = learn_record(std::move(feas), param_cache);
+                error = learn_record(std::move(feas), param_cache, neu1, neu1e);
                 global_error += error;
                 error_counter ++;
             }
@@ -170,6 +176,8 @@ private:
         CHECK_NOTNULL(file);
 
         auto trainer = [this, &queue, &local_param] {
+            Vec neu1(len_vec);
+            Vec neu1e(len_vec);
             for(;;) {
                 std::string line;
                 queue.wait_and_pop(line);
@@ -179,7 +187,7 @@ private:
                 // TODO add config for shortest sentence
                 if(rcd.feas.size() > 4) {
                     double error;
-                    error = learn_record(std::move(rcd.feas), local_param);
+                    error = learn_record(std::move(rcd.feas), local_param, neu1, neu1e);
                     global_error += error;
                     error_counter ++;
                     word_counter += rcd.feas.size();
@@ -208,7 +216,7 @@ private:
         std::fclose(file);
     }
 
-    double learn_record(rcd_t::feas_t && sen, param_cache_t &param_cache) {
+    double learn_record(rcd_t::feas_t && sen, param_cache_t &param_cache, Vec& neu1, Vec& neu1e) {
         long long a, b, d, word, last_word;
         size_t sentence_length = sen.size(), 
                 sentence_position = 0;
@@ -221,9 +229,6 @@ private:
         static std::uniform_int_distribution<int> int_rand(0, table_size);
         static std::default_random_engine float_gen;
         static std::uniform_real_distribution<double> float_rand(0.0, 1.0);
-
-        Vec neu1(len_vec);
-        Vec neu1e(len_vec);
 
         double global_error = 0;
         size_t error_counter = 0;
@@ -313,6 +318,7 @@ private:
                 auto rcd = parse_record(line);
                 std::lock_guard<std::mutex> lk(keys_mut);
                 for(auto &item : rcd.feas) {
+                    if(word_freq.count(item.first) == 0) word_freq[item.first] = 0;
                     word_freq[item.first] ++;
                 }
             };
@@ -364,7 +370,7 @@ private:
     push_access_t &push_access;
     //std::vector<key_t> local_keys;
     float learning_rate = 0.01;
-    std::map<key_t, int> word_freq;
+    dense_hash_map<key_t, int> word_freq;
     std::unique_ptr<int[]> table;
     std::unique_ptr<std::pair<key_t, int>[]> table2word_freq;
     int table_size = 1e8;

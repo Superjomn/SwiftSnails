@@ -60,7 +60,7 @@ protected:
         std::map<int, std::vector<pull_val_t> > &node_reqs) {
         pull_val_t param;    // empty value
 
-            for( const auto& key : keys ) {
+            for(const auto& key : keys ) {
                 int node_id = global_hashfrag<key_t>().to_node_id(key);
                 if(node_reqs.count(node_id) == 0) {
                     node_reqs[node_id] = std::move(std::vector<pull_val_t>());
@@ -98,12 +98,15 @@ protected:
                 val_t val;
                 // write local cache 
                 auto& params = param_cache.params();
+                auto& grads = param_cache.grads();
                 // TODO put rwlock inside? 
                 { rwlock_write_guard lk (param_cache.rwlock());
                     while(! rsp->cont.read_finished()) {
                         rsp->cont >> key;
                         rsp->cont >> val;
                         params[key] = std::move(val);
+                        // init grads
+                        grads[key] = grad_t();
                     }
                 }
 

@@ -4,11 +4,12 @@ CC=gcc
 BIN=./bin
 
 #CXXFLAGS= -static -g -std=c++11 -pthread -lpthread -Wall -DHAVE_PCAP -lgtest -lgtest_main
-CXXFLAGS= -O3 -g -pipe -Wextra -Wall -Wno-parentheses \
+CXXFLAGS= -O3 -g -pipe  \
+  -lpthread -std=c++11 -pthread -DHAVE_PCAP -lgtest -lgtest_main  -lzmq -lglog \
+  -Wextra -Wall -Wno-parentheses \
   -Wno-literal-suffix \
   -Wno-unused-parameter \
-  -Wno-unused-local-typedefs \
-  -lpthread -std=c++11 -pthread -DHAVE_PCAP -lgtest -lgtest_main  -lzmq -lglog
+  -Wno-unused-local-typedefs 
 
 LOCAL_ROOT=../../../third/local
 GTEST_HOME=$(LOCAL_ROOT)/gtest
@@ -34,6 +35,9 @@ worker: worker.cpp
 
 server: server.cpp
 	$(CXX) server.cpp $(THIRD_INCPATH) -L$(GTEST_HOME)/lib/.libs -Xlinker $(THIRD_LIB)  $(CXXFLAGS) -o $(BIN)/server
+
+local: local_train.cpp
+	$(CXX) local_train.cpp $(THIRD_INCPATH) -L$(GTEST_HOME)/lib/.libs -Xlinker $(THIRD_LIB)  $(CXXFLAGS) -o $(BIN)/local
 
 
 clean:
