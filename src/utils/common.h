@@ -8,6 +8,8 @@
 #ifndef SwiftSnails_utils_common_h
 #define SwiftSnails_utils_common_h
 
+#define NDEBUG
+
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>

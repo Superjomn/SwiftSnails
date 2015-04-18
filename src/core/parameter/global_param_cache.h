@@ -31,6 +31,8 @@ public:
     typedef Grad grad_t;
 
     explicit GlobalParamCache() {
+        _params.set_empty_key(std::numeric_limits<key_t>::max());
+        _grads.set_empty_key(std::numeric_limits<key_t>::max());
     }
     // thread-safe
     // should run first
@@ -44,17 +46,25 @@ public:
         }
     }
 
+    void init_key(const key_t& key, bool param_random=false) {
+        _params[key] = val_t();
+        _grads[key] = grad_t();
+        if(param_random) {
+            _params[key].init(true);
+        }
+    }
+
     size_t size() const {
-        rwlock_read_guard lk(_rwlock);
+        //rwlock_read_guard lk(_rwlock);
         return _params.size();
     }
     // not thread-safe
     // should use rwlock first
-    std::map<key_t, val_t>& params() {
+    dense_hash_map<key_t, val_t>& params() {
         return _params;
     }
 
-    std::map<key_t, grad_t>& grads() {
+    dense_hash_map<key_t, grad_t>& grads() {
         return _grads;
     }
 
@@ -104,26 +114,26 @@ public:
         return _local_keys;
     }
 
+    void clear() {
+        _params.clear();
+        _grads.clear();
+        _local_keys.clear();
+    }
+
 private:
     RWLock _rwlock;
-    std::map<key_t, val_t> _params;
-    std::map<key_t, grad_t> _grads;
+    dense_hash_map<key_t, val_t> _params;
+    dense_hash_map<key_t, grad_t> _grads;
     std::set<key_t> _local_keys;
     // number of iterations
     std::atomic<int> _num_iters{0};
+    // TODO clean all these codes
     mutable std::mutex _iter_mutex;
     std::condition_variable _iter_pull_cond;
     std::condition_variable _iter_push_cond;
     // tell the push and pull service deamons to terminate
     std::atomic<bool> _terminate_flag{false};
 };
-
-
-template<class Key, class Val, class Grad> 
-GlobalParamCache<Key, Val, Grad>& global_param_cache() {
-    static GlobalParamCache<Key, Val, Grad> cache;
-    return cache;
-}
 
 
 };

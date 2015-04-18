@@ -7,7 +7,11 @@ struct alignas(64) SparseTableShard : public VirtualObject {
 public:
     typedef Key     key_t;
     typedef Value   value_t;
-    typedef typename SparseHashMap<key_t, value_t>::map_t map_t;
+    typedef dense_hash_map<key_t, value_t> map_t;
+
+    SparseTableShard() {
+        data().set_empty_key(std::numeric_limits<key_t>::max());
+    }
 
     bool find(const key_t& key, value_t* &val) {
         rwlock_read_guard lock(_rwlock);
@@ -55,12 +59,12 @@ public:
 protected:
     // not thread safe!
     map_t& data() {
-        return _data.get_map();
+        return _data;
     }
 
 
 private:
-    SparseHashMap<key_t, value_t> _data;
+    map_t _data;
     int _shard_id = -1;
     RWLock _rwlock;
     //mutable std::mutex _mutex;

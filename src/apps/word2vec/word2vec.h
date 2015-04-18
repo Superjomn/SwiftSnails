@@ -1,389 +1,485 @@
-#include "../../core/framework/SwiftWorker.h"
-#include "../../core/AsynExec.h"
-#include "common.h"
-#include "param.h"
-#include "access_method.h"
-using namespace swift_snails;
-using namespace fms;
+#pragma once
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <pthread.h>
+#include "../../utils/all.h"
 
-struct rcd_t {
-    typedef std::vector<std::pair<index_t, bool>> feas_t;
-    feas_t feas;
+#define MAX_STRING 100
+#define EXP_TABLE_SIZE 1000
+#define MAX_EXP 6
+#define MAX_SENTENCE_LENGTH 1000
+#define MAX_CODE_LENGTH 40
+using namespace std;
+using namespace swift_snails;
+typedef float real_t;                    // Precision of float numbers
+const int table_size = 1e8;
+using namespace std;
+
+// total number of words in dataset
+size_t train_words = 0;
+long long file_size = 0;
+long long word_count_actual = 0;
+clock_t start;
+
+std::vector<size_t> parse_record(const std::string &line, int min_len = 4) {
+	std::vector<size_t> res;
+	auto fields = std::move(split(line, " "));
+	try {
+		for (std::string & f : fields) {
+			res.push_back(std::stoi(f));
+		}
+	} catch (...) {
+		//RAW_LOG(INFO, "wrong record detected!");
+	}
+	if (res.size() < min_len) {
+		res.clear();
+	}
+	return std::move(res);
+}
+
+void ReadWord(char *word, FILE *fin) {
+	int a = 0, ch;
+	while (!feof(fin)) {
+		ch = fgetc(fin);
+		if (ch == 13)
+			continue;
+		if ((ch == ' ') || (ch == '\t') || (ch == '\n')) {
+			if (a > 0) {
+				if (ch == '\n')
+					ungetc(ch, fin);
+				break;
+			}
+			if (ch == '\n') {
+				strcpy(word, (char * )"</s>");
+				return;
+			} else
+				continue;
+		}
+		word[a] = ch;
+		a++;
+		if (a >= MAX_STRING - 1)
+			a--;   // Truncate too long words
+	}
+	word[a] = 0;
+}
+
+struct Error {
+    real_t data = 0;
+    size_t counter = 0;
+
+    void accu(real_t e) {
+        data += e;
+        counter ++;
+    }
+    
+    real_t norm() {
+        real_t error = data / counter;
+        data = 0;
+        counter = 0;
+        return error;
+    }
 };
 
-class SkipGram : public BaseAlgorithm<index_t, Word2VecParam,  Word2VecGrad, rcd_t > {
+struct Vocab {
+	typedef size_t id_t;
+
+	Vocab() {
+		vocab.set_empty_key(std::numeric_limits<id_t>::max());
+		len_vec = global_config().get_config("len_vec").to_int32();
+		min_reduce = global_config().get_config("min_reduce").to_int32();
+		min_len = global_config().get_config("min_len").to_int32();
+		CHECK_GT(len_vec, 0);
+		CHECK_GT(min_reduce, 0);
+		CHECK_GT(min_len, 0);
+	}
+	// init from a file
+	void init(const std::string& path) {
+		LineFileReader linereader;
+		FILE* file = fopen(path.c_str(), "r");
+		CHECK(file != NULL) << "file can not be open\t" << path;
+		string line;
+		while (true) {
+			char* res = linereader.getline(file);
+			if (res == NULL)
+				break;
+			line = linereader.get();
+			auto rcd = parse_record(line, min_len);
+			for (const auto& key : rcd) {
+				inc_word(key);
+				train_words++;
+				if (train_words % 100000 == 0) {
+					printf("%lldK%c", train_words / 1000, 13);
+					fflush(stdout);
+				}
+			}
+		}
+		file_size = ftell(file);
+		worditems.reset(new std::pair<key_t, WordItem>[vocab.size()]);
+		for (const auto& item : vocab) {
+			worditems[item.second.id] = item;
+		}
+		LOG(INFO)<< "vocabulary load\t" << vocab.size() << "\t words";
+		LOG(INFO)<< "dataset has\t" << train_words << "\twords";
+		fclose(file);
+	}
+
+	struct WordItem {
+		WordItem() {
+		}
+		int count = 0;
+		id_t id = std::numeric_limits<id_t>::max();
+	};  // end struct WordItem
+
+	void inc_word(id_t id) {
+		if (vocab.count(id) == 0) {
+			vocab[id] = WordItem();
+			vocab[id].id = word_counter++;
+		}
+		vocab[id].count++;
+	}
+
+	// clean the unusual words
+	void clean_vocab() {
+		if (min_reduce > 0) {
+			for (auto it = vocab.begin();; it != vocab.end()) {
+				auto& item = it->second;
+				if (item.count < min_reduce)
+					vocab.erase(it++);
+			}
+		}
+	}
+
+	size_t size() const {
+		return vocab.size();
+	}
+
+	dense_hash_map<key_t, WordItem> vocab;
+	std::unique_ptr<std::pair<key_t, WordItem>[]> worditems;
+	//std::unique_ptr<real[]> feas;
+	id_t word_counter = 0;
+	int len_vec = 0;
+	int min_reduce = 0;
+	int min_len = 0;
+	const id_t maxid = std::numeric_limits<id_t>::max();
+};
+// end struct Vocab
+
+//
+int ReadWordIndex(FILE *fin, Vocab &vocab) {
+	char word[MAX_STRING];
+	ReadWord(word, fin);
+	if (feof(fin))
+		return -1;
+    char *end;
+    size_t key  = strtol(word, &end, 10);
+    return vocab.vocab[key].id;
+}
+
+
+class Word2Vec {
+
 public:
-    typedef index_t          key_t;
-    typedef Word2VecParam   val_t;
-    typedef Word2VecGrad    grad_t;
-    using param_cache_t = GlobalParamCache<key_t, val_t, grad_t>;
-    using pull_access_t = GlobalPullAccess<key_t, val_t, grad_t>;
-    using push_access_t = GlobalPushAccess<key_t, val_t, grad_t>;
 
-    SkipGram(int num_iters, int len_vec, int window, int negative) : \
-        _num_iters(num_iters),
-        window(window), 
-        negative(negative), 
-        len_vec(len_vec),
-        param_cache(global_param_cache<key_t, val_t, grad_t>()),
-        pull_access(global_pull_access<key_t, val_t, grad_t>()),
-        push_access(global_push_access<key_t, val_t, grad_t>())
-    { 
-        //_num_iters = global_config().get_config("num_iters").to_int32();
-        learning_rate = global_config().get_config("learning_rate").to_float();
-        sample = global_config().get_config("sample").to_float();
-        minibatch = global_config().get_config("minibatch").to_int32();
-    }
+	Word2Vec() {
+		min_len = global_config().get_config("min_len").to_int32();
+		local_train = global_config().get_config("local_train").to_int32() > 0;
+		len_vec = global_config().get_config("len_vec").to_int32();
+		num_threads =
+		        global_config().get_config("async_channel_thread_num").to_int32();
+		window = global_config().get_config("window").to_int32();
+		negative = global_config().get_config("negative").to_int32();
+		cbow = global_config().get_config("cbow").to_int32() > 0;
+		CHECK_GT(min_len, 0);
+		CHECK_GT(num_threads, 0);
+	}
 
-    virtual void train() {
-        get_word_freq(_async_channel_thread_num);
+    void operator() (const string &data_path) {
+        vocab.init(data_path);
+        init_net();
+        init_exp_table();
         init_unigram_table();
-
-        for(int i = 0; i < _num_iters; i ++) {
-            LOG(WARNING) << i << " th iteration";
-            train_iter(_async_channel_thread_num);
-            //param_cache.inc_num_iters();
-        }
     }
 
-    rcd_t parse_record(const std::string &line) {
-        rcd_t res;
-        auto fields = std::move(split(line, " "));
-        try {
-            for(std::string & f : fields) {
-                res.feas.push_back(std::make_pair(std::stoi(f), true));
-            }
-        } catch (...) {
-            //RAW_LOG(INFO, "wrong record detected!");
-        }
-        if(res.feas.size() < 5) {
-            res.feas.clear();
-        }
-        return std::move(res);
-    }
+	void init_net() {
+		syn1neg.reset(new real_t[len_vec * vocab.size()]);
+		syn0.reset(new real_t[len_vec * vocab.size()]);
+		// random init
+		if (local_train) {
+			for (size_t b = 0; b < len_vec; b++)
+				for (size_t a = 0; a < vocab.size(); a++)
+					syn0[a * len_vec + b] = (rand() / (real_t) RAND_MAX - 0.5)
+					        / len_vec;
+			for (size_t b = 0; b < len_vec; b++)
+				for (size_t a = 0; a < vocab.size(); a++)
+					syn1neg[a * len_vec + b] =
+					        (rand() / (real_t) RAND_MAX - 0.5) / len_vec;
+		}
+		for (int i = 0; i < vocab.size(); i++) {
+			cout << syn0[i] << " ";
+		}
+		cout << endl;
+	}
 
-private:
-    /*
-     * data format:
-     *  wordid wordid wordid
-     */
-    void train_iter(int thread_num) {
-        LOG(INFO) << "train file with " << thread_num << " threads";
-        const int line_buffer_queue_capacity = global_config().get_config("line_buffer_queue_capacity").to_int32();
-        // file read buffer queue
-        queue_with_capacity<std::string> queue(line_buffer_queue_capacity);
-        // computation channel
-        FILE* file = std::fopen(data_path().c_str(), "r");
-        CHECK_NOTNULL(file);
+	void init_unigram_table() {
+		LOG(INFO)<< "... init_unigram_table";
+		CHECK_GT(vocab.size(), 0) << "word_freq should be inited before";
+		int a, i;
+		double train_words_pow = 0;
+		double d1, power = 0.75;
+		table.reset( new int[table_size]);
 
-        double global_error = 0;
-        size_t error_counter = 0;
-
-        auto trainer = [this, &global_error, &error_counter] (std::vector<rcd_t::feas_t> &batch, std::unordered_set<key_t> &local_keys) {
-            double error;
-            pull_access.pull_with_barrier(local_keys);
-            for(auto& feas : batch) {
-                error = learn_record(std::move(feas));
-                global_error += error;
-                error_counter ++;
-            }
-            // finish mini-batch training 
-            // and PUSH the grads
-            push_access.push_with_barrier(local_keys);
-            local_keys.clear();
-            batch.clear();
-        };
-
-        auto minibatch_task = [this, &queue, &global_error, &error_counter, &trainer] {
-            std::vector<rcd_t::feas_t> _minibatch;
-            std::unordered_set<key_t> local_keys;
-            for(;;) {
-                // get one line from queue
-                std::string line;
-                queue.wait_and_pop(line);
-                if(line.empty()) break;
-
-                rcd_t rcd = parse_record(line);
-                // TODO add config for shortest sentence
-                if(rcd.feas.size() > 4) {
-                    for(const auto& key : rcd.feas) {
-                        local_keys.insert(key.first);
-                    }
-                    _minibatch.push_back(std::move(rcd.feas));
-                    if(_minibatch.size() == minibatch) {
-                        // pull parameters
-                        trainer(_minibatch, local_keys);
-                    }
-                }
-            } // end for
-
-            if(! _minibatch.empty()) {
-                trainer(_minibatch, local_keys);
-            }
-        };
-
-        auto producer = [this, &queue, file, thread_num] {
-
-            LineFileReader line_reader; 
-
-            while(line_reader.getline(file)) {
-                std::string line = line_reader.get();
-                queue.push(std::move(line));
-                //RAW_DLOG(INFO, "line_reader push a line to queue");
-            }
-            queue.end_input(thread_num, "");
-        };
-        std::thread t (std::move(producer));
-
-        async_exec(thread_num, std::move(minibatch_task), async_channel());
-
-        t.join();
-        std::fclose(file);
-
-        RAW_LOG(INFO, ">  train error:\t%f", global_error/error_counter);
-    }
-
-/*
-    void learn_record(rcd_t::feas_t && wids) {
-        std::mt19937 rng(rd());
-        std::uniform_int_distribution<int> rand(0, window);
-        Vec labels(negative + 1);
-        labels[0] = 1.0;
+		i = 0;
+		for(const auto& item : vocab.vocab) {
+			train_words_pow += std::pow(item.second.count, power);
+		}
+		i = 0;
+		d1 = pow(vocab.worditems[i].second.count, power) / (double)train_words_pow;
+		for(a = 0; a < table_size; a++) {
+			table[a] = i;
+			if(a / (double)table_size > d1) {
+				i++;
+				d1 += pow(vocab.worditems[i].second.count, power) / (double)train_words_pow;
+			}
+			if(i >= vocab.size()) i = vocab.size() - 1;
+		}
+	}
 
 
-        for(int pos = 0; pos < wids.size(); pos ++) {
-            int reduced_window = rand(rng);
-            int start = std::max(0, pos - window + reduced_window);
-            key_t& word = wids[pos].first;
-
-            for(size_t pos2 = start; pos2 < pos + window + 1 - reduced_window; pos2 ++){
-                key_t& word2 = wids[pos2].first;
-
-                if( ! pos2 == pos) {
-                    train_sg_pair(word, word2, labels);
-                }
-            }
-        }
-    }
-*/
-
-    double learn_record(rcd_t::feas_t && sen) {
-        long long a, b, d, word, last_word;
-        size_t sentence_length = sen.size(), 
-                sentence_position = 0;
-        long long word_count = 0, last_word_count = 0;
-        long long l1, l2, c, target, label;
-        double f, g;
-        clock_t now;
-        //std::unique_ptr<double> neu1 = new double[len_vec()];
-        //std::unique_ptr<double> neu1e = new double[len_vec()];
-        std::mt19937 rng(rd());
-        std::uniform_int_distribution<int> int_rand(0, table_size);
-        std::default_random_engine float_gen;
-        std::uniform_real_distribution<double> float_rand(0.0, 1.0);
-
-        Vec neu1(len_vec);
-        Vec neu1e(len_vec);
-
-        double global_error = 0;
-        size_t error_counter = 0;
-
-        while(true) {
-            word =  sen[sentence_position].first;
-
-            if(sample > 0) {
-                double keep = sqrt(sample / word_freg[word]) + sample / word_freg[word];
-                double rand = float_rand(float_gen);
-                if( keep <  rand) continue;
+    void train(const string& data_path, const string& out_path) {
+        Error global_error;
+        //for(int iter = 0; iter < 10; iter ++) {
+            vector<thread> threads;
+            for( int i = 0; i < num_threads; i++) {
+                thread t([this, &data_path, &global_error, i]{
+                    TrainModelThread(data_path, i, global_error);
+                });
+                threads.push_back(std::move(t));
             }
 
-            for (c = 0; c < len_vec; c++) neu1[c] = 0;
-            for (c = 0; c < len_vec; c++) neu1e[c] = 0;
-
-            b = int_rand(rng) % window;
-
-            for (a = b; a < window * 2 + 1 - b; a++) if (a != window) {
-                c = sentence_position - window + a;
-                if (c < 0) continue;
-                if (c >= sentence_length) continue;
-                last_word = sen[c].first;
-                //if (last_word == -1) continue;
-                Vec &v1 = param_cache.params()[last_word].v();
-                for (c = 0; c < len_vec; c++) neu1e[c] = 0;
-
-                for (d = 0; d < negative + 1; d++) {
-                    // prepare label and vector
-                    if (d == 0) {
-                        target = word;
-                        label = 1;
-                    } else {
-                        int target_indent = int_rand(rng);
-                        if (target_indent == 0) target_indent = int_rand(rng);
-                        target = table2word_freq[ table[target_indent] ].first;
-                        if (target == word) continue;
-                        label = 0;
-                    }
-
-                    Vec &v2 = param_cache.params()[target].h();
-                    f = 1.0 / ( 1 + exp(- v1.dot(v2)));
-                    g = (label - f);
-                    // calculate error
-                    double error = label == 0 ? - log(1-f) : -log(f);
-                    global_error += error;
-                    error_counter ++;
-                    neu1e += (g * v2); // * learning_rate
-
-                    Vec grad_v2 = std::move(g * v1);
-                    v2 += learning_rate * grad_v2;
-                    param_cache.grads()[target].accu_h(grad_v2);
-                } // end for
-                // Learn weights input -> hidden
-                v1 += learning_rate * neu1e;
-                param_cache.grads()[last_word].accu_v(neu1e);
+            for(auto &t : threads) {
+                t.join();
             }
-            sentence_position ++;
-            if (sentence_position >= sentence_length) {
-                break;
-            }
-        }   
-        return error_counter == 0 ? 0 : global_error / error_counter;
+            
+            RAW_LOG(INFO, "error:\t%f", global_error.norm());
+            word_count_actual = 0;
+            output(out_path);
     }
 
 
-    void train_sg_pair(key_t word, key_t word2, const Vec& labels, bool train_w1=true, bool train_w2=true) {
-        CHECK_GT(param_cache.local_keys().size(), 0) << "local_keys should be inited";
-        Vec l1 = param_cache.params()[word2].v();
+	void TrainModelThread(const string &train_file, int id, Error& global_error) {
+		long long a, b, d, word, last_word, sentence_length = 0, sentence_position =
+		        0;
+		long long word_count = 0, last_word_count = 0, sen[MAX_SENTENCE_LENGTH + 1];
+		long long l1, l2, c, target, label;
+		unsigned long long next_random = (long long) id;
+		real_t f, g;
+		clock_t now;
+		real_t *neu1 = (real_t *) calloc(len_vec, sizeof(real_t));
+		real_t *neu1e = (real_t *) calloc(len_vec, sizeof(real_t));
+		FILE *fi = fopen(train_file.c_str(), "rb");
+		if (fi == NULL) {
+			fprintf(stderr, "no such file or directory: %s", train_file.c_str());
+			exit(1);
+		}
+		fseek(fi, file_size / (long long) num_threads * (long long) id, SEEK_SET);
+		while (1) {
+			if (word_count - last_word_count > 10000) {
+				word_count_actual += word_count - last_word_count;
+				last_word_count = word_count;
+				if ((debug_mode)) {
+					now = clock();
+					printf(
+					        "%cAlpha: %f  Progress: %.2f%%  Words/thread/sec: %.2fk  ",
+					        13, alpha,
+					        word_count_actual / (real_t) (train_words + 1) * 100,
+					        word_count_actual
+					                / ((real_t) (now - start + 1)
+					                        / (real_t) CLOCKS_PER_SEC * 1000));
+					fflush(stdout);
+				}
+				alpha = starting_alpha
+				        * (1 - word_count_actual / (real_t) (train_words + 1));
+				if (alpha < starting_alpha * 0.0001)
+					alpha = starting_alpha * 0.0001;
+			}
+			if (sentence_length == 0) {
+				while (1) {
+					word = ReadWordIndex(fi, vocab);
+					if (feof(fi))
+						break;
+					if (word == -1)
+						continue;
+					word_count++;
+					if (word == 0)
+						break;
+					// The subsampling randomly discards frequent words while keeping the ranking same
+					if (sample > 0) {
+						real_t ran = (sqrt(vocab.worditems[word].second.count / (sample * train_words))
+						        + 1) * (sample * train_words) / vocab.worditems[word].second.count;
+						next_random = next_random * (unsigned long long) 25214903917
+						        + 11;
+						if (ran < (next_random & 0xFFFF) / (real_t) 65536)
+							continue;
+					}
+					sen[sentence_length] = word;
+					sentence_length++;
+					if (sentence_length >= MAX_SENTENCE_LENGTH)
+						break;
+				}
+				sentence_position = 0;
+			}
+			if (feof(fi))
+				break;
+			if (word_count > train_words / num_threads)
+				break;
+			word = sen[sentence_position];
+			if (word == -1)
+				continue;
+			for (c = 0; c < len_vec; c++)
+				neu1[c] = 0;
+			for (c = 0; c < len_vec; c++)
+				neu1e[c] = 0;
+			next_random = next_random * (unsigned long long) 25214903917 + 11;
+			b = next_random % window;
+			if (cbow) {  //train the cbow architecture
+				// in -> hidden
+				for (a = b; a < window * 2 + 1 - b; a++)
+					if (a != window) {
+						c = sentence_position - window + a;
+						if (c < 0)
+							continue;
+						if (c >= sentence_length)
+							continue;
+						last_word = sen[c];
+						if (last_word == -1)
+							continue;
+						for (c = 0; c < len_vec; c++)
+							neu1[c] += syn0[c + last_word * len_vec];
+					}
 
-        Vec neu1e = Vec(len_vec);
-        // generate noise         
-        std::mt19937 rng(rd());
-        std::uniform_int_distribution<int> rand(0, word_freg.size());
+				// NEGATIVE SAMPLING
+				if (negative > 0)
+					for (d = 0; d < negative + 1; d++) {
+						if (d == 0) {
+							target = word;
+							label = 1;
+						} else {
+							next_random = next_random
+							        * (unsigned long long) 25214903917 + 11;
+							target = table[(next_random >> 16) % table_size];
+							if (target == 0)
+								target = next_random % (vocab.size() - 1) + 1;
+							if (target == word)
+								continue;
+							label = 0;
+						}
+						l2 = target * len_vec;
+						f = 0;
+						for (c = 0; c < len_vec; c++)
+							f += neu1[c] * syn1neg[c + l2];
+						if (f > MAX_EXP)
+							g = (label - 1) * alpha;
+						else if (f < -MAX_EXP)
+							g = (label - 0) * alpha;
+						else
+							g = (label
+							        - expTable[(int) ((f + MAX_EXP)
+							                * (EXP_TABLE_SIZE / MAX_EXP / 2))])
+							        * alpha;
+                        // accumerate error
+                        global_error.accu(10000* g * g);
+						for (c = 0; c < len_vec; c++)
+							neu1e[c] += g * syn1neg[c + l2];
+						for (c = 0; c < len_vec; c++)
+							syn1neg[c + l2] += g * neu1[c];
+                        //RAW_LOG(INFO, "g:%f", g);
+					}
+				// hidden -> in
+				for (a = b; a < window * 2 + 1 - b; a++)
+					if (a != window) {
+						c = sentence_position - window + a;
+						if (c < 0)
+							continue;
+						if (c >= sentence_length)
+							continue;
+						last_word = sen[c];
+						if (last_word == -1)
+							continue;
+						for (c = 0; c < len_vec; c++)
+							syn0[c + last_word * len_vec] += neu1e[c];
+					}
+			}
+			sentence_position++;
+			if (sentence_position >= sentence_length) {
+				sentence_length = 0;
+				continue;
+			}
+		}
+		fclose(fi);
+		free(neu1);
+		free(neu1e);
+		pthread_exit(NULL);
+	}
 
-        std::vector<key_t> word_indices;
-        word_indices.push_back(word);
-        while(word_indices.size() < negative + 1) {
-            int id = rand(rng);
-            key_t w = table2word_freq[id].first;
-            if (w != word) word_indices.push_back(w);
+    void init_exp_table() {
+        expTable = (real_t *) malloc((EXP_TABLE_SIZE + 1) * sizeof(real_t));
+        if (expTable == NULL) {
+            fprintf(stderr, "out of memory\n");
+            exit(1);
         }
-        // prepare l2b
-        // negative hidden vector of the selected words
-        std::vector<Vec> l2b;
-        for(size_t i = 0; i < word_indices.size(); ++i ) {
-            key_t id = word_indices[i];
-            Vec h = param_cache.params()[id].h();
-            l2b.push_back(std::move(h));
-        }
-        // prepare fb
-        Vec fb(word_indices.size());
-        for(size_t i = 0 ; i < word_indices.size(); i++) {
-            CHECK_GT(l2b[i].size(), 0);
-            fb[i] = 1.0 / (1.0 + 1.0 / exp(l1.dot(l2b[i])));
-        }
-        Vec gb = (labels - fb);
-
-        auto Outer = outer(gb, l1);
-
-        if(train_w1) {
-            for(size_t i = 0; i < word_indices.size(); i++) {
-                const auto wid = word_indices[i];
-                // update word vector
-                auto &_h = param_cache.params()[wid].h();
-                CHECK_EQ(_h.size(), Outer[i].size()); 
-
-                _h += Outer[i] * learning_rate;
-                param_cache.grads()[wid].accu_h(Outer[i]);
-            }
-        }
-
-        Vec gb_dot_l2b(len_vec);
-        for(size_t i = 0; i < len_vec; i++) {
-            Vec l2b_T(word_indices.size());
-            for(size_t j = 0; j < word_indices.size(); j++) {
-                l2b_T[j] = l2b[j][i]; 
-            }
-            gb_dot_l2b[i] = gb.dot(l2b_T);
-        }
-        neu1e += gb_dot_l2b;
-
-        if(train_w2) {
-            // update v
-            param_cache.params()[word2].v() += neu1e * learning_rate;
-            param_cache.grads()[word2].accu_v(neu1e);
-        }
+        for (int i = 0; i < EXP_TABLE_SIZE; i++) {
+            expTable[i] = exp((i / (real_t) EXP_TABLE_SIZE * 2 - 1) * MAX_EXP); // Precompute the exp() table
+            expTable[i] = expTable[i] / (expTable[i] + 1); // Precompute f(x) = x / (x + 1)
+	    }
     }
 
-    void get_word_freq(int thread_num) {
-        LOG(WARNING) << "... get_word_freq";
-        DLOG(INFO) << "start " << thread_num << " threads to gather keys";
-        CHECK_GT(thread_num, 0);
-        // make sure the following task wait for the init period
-        FILE* file = std::fopen(data_path().c_str(), "r");
-        CHECK(file) << "file: open " << data_path() << " failed!";
-        std::mutex file_mut;
 
-        //std::set<key_t> keys;
-        std::mutex keys_mut;
+	Vocab& get_vocab() {
+		return vocab;
+	}
 
-        std::function<void(const std::string& line)> handle_line \
-            = [this, &keys_mut] (const std::string& line) {
-                auto rcd = parse_record(line);
-                std::lock_guard<std::mutex> lk(keys_mut);
-                for(auto &item : rcd.feas) {
-                    word_freg[item.first] ++;
-                }
-            };
-
-        AsynExec::task_t task = [file, &file_mut, handle_line] {
-            auto _handle_line = handle_line;
-            scan_file_by_line(file, file_mut, std::move(_handle_line) );
-        };
-
-        async_exec(thread_num, std::move(task), async_channel());
-        std::fclose(file);
-    }
-
-    void init_unigram_table() {
-        LOG(INFO) << "... init_unigram_table";
-        CHECK_GT(word_freg.size(), 0) << "word_freg should be inited before";
-        int a, i;
-        double train_words_pow = 0;
-        double d1, power = 0.75;
-        table.reset( new int[table_size]);
-        table2word_freq.reset( new std::pair<key_t, int>[word_freg.size()]);
-        
-        i = 0;
-        for(const auto& item : word_freg) {
-            table2word_freq[i++] = item;
-            train_words_pow += std::pow(item.second, power);
-        }
-        i = 0;
-        d1 = pow(table2word_freq[i].second, power) / (double)train_words_pow;
-        for(a = 0; a < table_size; a++) {
-            table[a] = i;
-            if(a / (double)table_size > d1) {
-                i++;
-                d1 += pow(table2word_freq[i].second, power) / (double)train_words_pow;
+    void output(const string& path) {
+        ofstream file(path);
+        CHECK(file.is_open())<< "output path is valid!";
+        for( auto & item : vocab.vocab) {
+            file << item.first << "\t";
+            file << "h:\t";
+            for(int i = 0; i < len_vec; i++) {
+                file << syn1neg[ item.second.id * len_vec + i];
+                if( i != len_vec - 1) {
+                    file << " ";
+                } else file << "\t";
             }
-            if(i >= word_freg.size()) i = word_freg.size() - 1;
+            file << "v:\t";
+            for(int i = 0; i < len_vec; i++) {
+                file << syn0[ item.second.id * len_vec + i];
+                if( i != len_vec - 1) {
+                    file << " ";
+                } else file << "\n";
+            }
         }
+        LOG(WARNING)  << "output model to " << path;
     }
 
 private:
-    int window{0};
-    int negative{0};
-    int len_vec{0};
-    int _num_iters{0};
-    std::random_device rd;
-    param_cache_t &param_cache;
-    pull_access_t &pull_access;
-    push_access_t &push_access;
-    //std::vector<key_t> local_keys;
-    float learning_rate = 0.01;
-    std::map<key_t, int> word_freg;
-    std::unique_ptr<int[]> table;
-    std::unique_ptr<std::pair<key_t, int>[]> table2word_freq;
-    int table_size = 1e8;
-    float sample = 0;
-    int minibatch = 0;
-};  // class Word2Vec
+	std::unique_ptr<int[]> table;
+	std::unique_ptr<real_t[]> syn1neg;
+	std::unique_ptr<real_t[]> syn0;
+	Vocab vocab;
+	int min_len = 0;
+	int len_vec = 0;
+	bool local_train = false;
+	int num_threads = 0;
+	int window = 0;
+	std::random_device rd;
+	int negative;
+	bool cbow = false;
+	real_t alpha = 0.025;
+    real_t sample = 1e-3;
+    bool debug_mode = true;
+    real_t starting_alpha = 0.025;
+    real_t *expTable;
+}
+;

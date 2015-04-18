@@ -1,5 +1,6 @@
-#include "../../core/framework/SwiftWorker.h"
-#include "word2vec_3.h"
+#include "word2vec.h"
+
+
 using namespace swift_snails;
 using namespace fms;
 using namespace std;
@@ -46,20 +47,10 @@ int main(int argc, char* argv[]) {
     int len_vec = global_config().get_config("len_vec").to_int32();
     int window = global_config().get_config("window").to_int32();
     int negative = global_config().get_config("negative").to_int32();
-    /*
-    SkipGram alg(num_iters, len_vec, window, negative);
-    alg.set_data_path(data_path);
 
-    SwiftWorker<SkipGram> worker(config_path, alg); 
-    worker();
-    */
-
-    Word2Vec word2vec(data_path);
-    //word2vec.train();
-    SwiftWorker<Word2Vec> worker(config_path, word2vec); 
-    word2vec();
-    worker();
+    Word2Vec word2vec;
+    word2vec(data_path);
+    word2vec.train(data_path, "1.model");
 
     return 0;
-}
-
+};

@@ -1,9 +1,6 @@
-#pragma once
 #include "../../utils/all.h"
 using namespace swift_snails;
-/*
- * adagrad support
- */
+
 struct Word2VecGrad {
 
     Word2VecGrad() {
@@ -35,7 +32,6 @@ struct Word2VecGrad {
         v_grad() = other.v_grad();
         n_h() = other.n_h();
         n_v() = other.n_v();
-        return *this;
     }
 
     void merge_with(const Word2VecGrad &other) {
@@ -45,12 +41,12 @@ struct Word2VecGrad {
         n_h() += other.n_h();
     }
 
-    void accu_v(const Vec& grad) {
+    void accu_v(Vec& grad) {
         v_grad() += grad;
         _n_v ++;
     }
 
-    void accu_h(const Vec& grad) {
+    void accu_h(Vec& grad) {
         h_grad() += grad;
         _n_h ++;
     }
@@ -65,6 +61,18 @@ struct Word2VecGrad {
         _n_h = 0;
         _n_v = 0;
     }
+    /*
+    Word2VecGrad normed() const {
+        Word2VecGrad val(_len_vec);
+        if(_n_h > 0) {
+            val.h_grad() /= _n_h;
+        }
+        if(_n_v > 0) {
+            val.v_grad() /= _n_v;
+        }
+        return std::move(val);
+    }
+    */
 
     void reset() {
         _n_v = 0;
@@ -236,4 +244,7 @@ private:
 
 int Word2VecGrad::_len_vec = 0;
 int Word2VecParam::_len_vec = 0;
+
+
+
 

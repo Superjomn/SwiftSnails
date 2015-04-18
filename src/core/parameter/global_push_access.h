@@ -15,12 +15,13 @@ public:
     typedef Val val_t;
     typedef Grad grad_t;
     typedef std::pair<key_t, grad_t> push_val_t;
+    typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
 
     GlobalPushAccess() : \
-        param_cache(global_param_cache<key_t, val_t, grad_t>()),
         gtransfer(global_transfer<ServerWorkerRoute>())
     { }
 
+    /*
     void push(std::unordered_set<key_t> &&keys, voidf_t extra_rsp_callback = voidf_t()) {
         // nodeid to reqs
         std::map<int, std::vector<push_val_t> > node_reqs;
@@ -30,13 +31,17 @@ public:
 
         //reset_local_grads();
     }
+    */
 
-    void push_with_barrier(const std::unordered_set<key_t> &keys) {
+    void push_with_barrier(
+        const std::unordered_set<key_t> &keys,
+        param_cache_t &param_cache
+    ) {
         StateBarrier barrier;
         std::atomic<size_t> num_reqs{0};
 
         std::map<int, std::vector<push_val_t> > node_reqs;
-        num_reqs = arrange_local_grads(keys, node_reqs);
+        num_reqs = arrange_local_grads(keys, param_cache, node_reqs);
 
         voidf_t extra_rsp_callback = [&barrier, &num_reqs] {
             if(-- num_reqs  == 0) {
@@ -47,36 +52,67 @@ public:
 
         send(node_reqs, extra_rsp_callback);
         barrier.block();
-        //reset_local_grads();
     }
+
     /*
-    void push_with_barrier() {
-        const auto &local_keys = param_cache.local_keys();
-        push_with_barrier(local_keys);
+    void push_with_barrier(
+        param_cache_t &param_cache
+    ) {
+        StateBarrier barrier;
+        std::atomic<size_t> num_reqs{0};
+
+        std::map<int, std::vector<push_val_t> > node_reqs;
+        num_reqs = arrange_local_grads(param_cache, node_reqs);
+
+        voidf_t extra_rsp_callback = [&barrier, &num_reqs] {
+            if(-- num_reqs  == 0) {
+                barrier.set_state_valid();
+                barrier.try_unblock();
+            }
+        };
+
+        send(node_reqs, extra_rsp_callback);
+        barrier.block();
     }
     */
 
 protected:
-/*
-    void reset_local_grads() {
-        rwlock_write_guard(param_cache.rwlock());
-        for(auto& item : param_cache.grads()) {
-            //item.second.reset();    // set to 0
-            //item.second = std::move(val_t());
-            item.second.reset();
-        }
-    }
-*/
+
     void reset_local_grad(grad_t &grad) {
         grad.reset();
     }
 
-    size_t arrange_local_grads(const std::unordered_set<key_t>& keys, std::map<int, std::vector<push_val_t>>& node_reqs) {
-        const auto &local_keys = keys; //param_cache.local_keys();
+    size_t arrange_local_grads(
+        const std::unordered_set<key_t>& keys, 
+        param_cache_t &param_cache,
+        std::map<int, std::vector<push_val_t>>& node_reqs
+    ) {
         auto &grads = param_cache.grads();
         // split grads to different nodes
-        for(const auto& key : local_keys) {
+        for(auto key : keys) {
+            int node_id = global_hashfrag<key_t>().to_node_id(key);
+            if(node_reqs.count(node_id) == 0) {
+                node_reqs[node_id] = std::move(std::vector<push_val_t>());
+            }
+            auto it = grads.find(key);
+            //CHECK(it != grads.end());
+            if(it !=  grads.end()) {
+                node_reqs[node_id].push_back(*it);
+                reset_local_grad(it->second);
+            }
+        }
+        return node_reqs.size();
+    }
 
+    /*
+    size_t arrange_local_grads(
+        param_cache_t &param_cache,
+        std::map<int, std::vector<push_val_t>>& node_reqs
+    ) {
+        auto &grads = param_cache.grads();
+        // split grads to different nodes
+        for(const auto& item : param_cache.grads()) {
+            const key_t& key = item.first;
             int node_id = global_hashfrag<key_t>().to_node_id(key);
             if(node_reqs.count(node_id) == 0) {
                 node_reqs[node_id] = std::move(std::vector<push_val_t>());
@@ -84,17 +120,20 @@ protected:
             auto it = grads.find(key);
             CHECK(it != grads.end());
             node_reqs[node_id].push_back(*it);
-
             reset_local_grad(it->second);
         }
         return node_reqs.size();
     }
+    */
 
     size_t send(
             std::map<int, std::vector<push_val_t>>& items,
             voidf_t extra_rsp_callback
     ) {
+        size_t num_reqs = 0;
         for (auto& item : items) {
+            if(item.second.empty()) continue;
+            num_reqs ++;
             int node_id = item.first;
             auto &grads = item.second;
 
@@ -111,14 +150,11 @@ protected:
             };
             gtransfer.send(std::move(req), node_id);
         }
-        return items.size();
+        return num_reqs;
     }
 
 private:
-    typedef GlobalParamCache<key_t, val_t, grad_t> param_cache_t;
-    param_cache_t &param_cache; 
     Transfer<ServerWorkerRoute>& gtransfer; 
-
 };  // end class GlobalPushAccess
 
 
