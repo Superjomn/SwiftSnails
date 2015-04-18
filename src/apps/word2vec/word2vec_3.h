@@ -243,7 +243,7 @@ protected:
 		double train_words_pow = 0;
 		double d1, power = 0.75;
 		//table.reset(new int[table_size]);
-        if(table = NULL) table = new int[table_size];
+        if(table == NULL) table = new int[table_size];
 
 		i = 0;
 		for(const auto& item : vocab) {
@@ -491,7 +491,7 @@ public:
 		}
 		fseek(fi, file_size / (long long) num_threads * (long long) id, SEEK_SET);
 		while (true) {
-			if (word_count - last_word_count > 10000) {
+			if (word_count - last_word_count > 10000000) {
 				word_count_actual += word_count - last_word_count;
 				last_word_count = word_count;
 				if ((debug_mode)) {
