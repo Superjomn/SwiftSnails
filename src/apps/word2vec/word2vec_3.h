@@ -238,7 +238,6 @@ protected:
 	void init_unigram_table() {
 		LOG(INFO)<< "... init_unigram_table";
 		CHECK_GT(vocab.size(), 0) << "word_freq should be inited before";
-        CHECK( ! table) << "table has been inited before";
 		int a, i;
 		double train_words_pow = 0;
 		double d1, power = 0.75;
