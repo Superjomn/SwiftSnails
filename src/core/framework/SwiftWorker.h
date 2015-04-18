@@ -104,6 +104,9 @@ public:
             //start_deamon_service();
             // API
             RAW_LOG(WARNING, "... begin to train alg");
+            // TODO add config for this
+            // assure server have enough time to receive requests
+            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
             alg.train();
             // final push local grad to paramter servers
             //LOG(WARNING) << ".. final_push";

@@ -123,11 +123,13 @@ struct GlobalVocab {
 		id_t id = std::numeric_limits<id_t>::max();
 	};  // end struct WordItem
 
-	std::unique_ptr<std::pair<key_t, WordItem>[]> worditems;
+	std::pair<key_t, WordItem>* worditems = NULL;
 
 	dense_hash_map<key_t, WordItem> vocab;
 
-	std::unique_ptr<int[]> table;
+    int *table = NULL;
+
+	//std::unique_ptr<int[]> table;
 
 	GlobalVocab() {
 		vocab.set_empty_key(std::numeric_limits<id_t>::max());
@@ -138,6 +140,24 @@ struct GlobalVocab {
 		CHECK_GT(min_reduce, 0);
 		CHECK_GT(min_len, 0);
 	}
+
+    ~GlobalVocab() {
+        if(worditems != NULL) {
+            worditems = NULL;
+            delete worditems;
+        }
+    }
+
+    void reset_worditems(size_t size) {
+        CHECK_GT(size, 0);
+        if(worditems_size == size) return;
+        if(worditems != NULL) {
+            delete worditems;
+            worditems_size = 0;
+        }
+        worditems = new std::pair<key_t, WordItem>[size];
+        worditems_size = size;
+    }
 
     void operator() (const string& path) 
     {
@@ -186,7 +206,8 @@ protected:
         LOG(INFO) << "file_size:\t" << file_size;
 		file_size = ftell(file);
         DLOG(INFO) << "to create worditems";
-		worditems.reset(new std::pair<key_t, WordItem>[vocab.size()]);
+		//worditems.reset(new std::pair<key_t, WordItem>[vocab.size()]);
+        reset_worditems(vocab.size());
 		for (const auto& item : vocab) {
 			worditems[item.second.id] = item;
 		}
@@ -221,7 +242,8 @@ protected:
 		int a, i;
 		double train_words_pow = 0;
 		double d1, power = 0.75;
-		table.reset(new int[table_size]);
+		//table.reset(new int[table_size]);
+        if(table = NULL) table = new int[table_size];
 
 		i = 0;
 		for(const auto& item : vocab) {
@@ -246,6 +268,7 @@ protected:
 	int len_vec = 0;
 	int min_reduce = 0;
 	int min_len = 0;
+    size_t worditems_size = 0;
 	const id_t maxid = std::numeric_limits<id_t>::max();
 }; // end struct GlobalVocab
 
