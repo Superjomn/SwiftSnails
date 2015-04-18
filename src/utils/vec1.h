@@ -33,6 +33,10 @@ public:
     }
 
     Vec(Vec&& other) {
+        if(_data != NULL) {
+            delete _data;
+            _data = NULL;
+        }
         _data = other._data;
         _size = other._size;
         other._data = NULL;
