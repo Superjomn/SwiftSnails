@@ -238,12 +238,12 @@ protected:
 	void init_unigram_table() {
 		LOG(INFO)<< "... init_unigram_table";
 		CHECK_GT(vocab.size(), 0) << "word_freq should be inited before";
-        CHECK( ! table) << "table has been inited before";
 		int a, i;
 		double train_words_pow = 0;
 		double d1, power = 0.75;
 		//table.reset(new int[table_size]);
-        if(table = NULL) table = new int[table_size];
+        CHECK( table == NULL) << "table has been inited before";
+        table = new int[table_size];
 
 		i = 0;
 		for(const auto& item : vocab) {
