@@ -1,5 +1,5 @@
 #include "../../core/framework/SwiftWorker.h"
-#include "word2vec_3.h"
+#include "word2vec.h"
 using namespace swift_snails;
 using namespace fms;
 using namespace std;

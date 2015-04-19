@@ -79,7 +79,7 @@ private:
 
 
 BinaryBuffer& operator<< (BinaryBuffer &bb, Word2VecGrad& grad) {
-    //grad.norm();
+    grad.norm();
     bb << grad.len_vec();
     // input h v
     for(int i = 0; i < grad.len_vec(); i++) {
