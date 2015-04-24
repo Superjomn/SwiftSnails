@@ -10,6 +10,7 @@
 #include "core/parameter/global_param_cache.h"
 #include "core/parameter/global_pull_access.h"
 #include "core/parameter/sparsetable.h"
+#include "core/parameter/sparse_access_method.h"
 // framework
 #include "core/framework/SwiftMaster.h"
 #include "core/framework/SwiftServer.h"
