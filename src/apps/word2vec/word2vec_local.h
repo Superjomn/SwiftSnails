@@ -26,22 +26,6 @@ long long file_size = 0;
 long long word_count_actual = 0;
 clock_t start;
 
-std::vector<size_t> parse_record(const std::string &line, int min_len = 4) {
-	std::vector<size_t> res;
-	auto fields = std::move(split(line, " "));
-	try {
-		for (std::string & f : fields) {
-			res.push_back(std::stoi(f));
-		}
-	} catch (...) {
-		//RAW_LOG(INFO, "wrong record detected!");
-	}
-	if (res.size() < min_len) {
-		res.clear();
-	}
-	return std::move(res);
-}
-
 struct Random {
     Random(unsigned long long seed) {
         next_random = seed;
@@ -86,8 +70,6 @@ void ReadWord(char *word, FILE *fin) {
 long ReadWordKey(FILE *file) {
     char word[MAX_STRING];
     ReadWord(word, file);
-    //RAW_LOG(INFO, "word:\t%s", word);
-    //RAW_LOG(INFO, "char:\t%s", word);
     if (feof(file)) return -1;
     char *end;
     if (strcmp(word, "</s>") == 0) return -2;
@@ -113,26 +95,21 @@ struct Error {
     }
 };
 
-struct GlobalVocab {
+struct Vocab {
 	typedef size_t id_t;
     typedef index_t key_t;
 	struct WordItem {
-		WordItem() {
-		}
 		int count = 0;
 		id_t id = std::numeric_limits<id_t>::max();
 	};  // end struct WordItem
 
 	std::pair<key_t, WordItem>* worditems = NULL;
-
-	dense_hash_map<key_t, WordItem> vocab;
-
+	map<key_t, WordItem> vocab;
     int *table = NULL;
 
-	//std::unique_ptr<int[]> table;
 
-	GlobalVocab() {
-		vocab.set_empty_key(std::numeric_limits<id_t>::max());
+	Vocab() {
+		//vocab.set_empty_key(std::numeric_limits<id_t>::max());
 		len_vec = global_config().get_config("len_vec").to_int32();
 		min_reduce = global_config().get_config("min_reduce").to_int32();
 		min_len = global_config().get_config("min_len").to_int32();
@@ -141,7 +118,7 @@ struct GlobalVocab {
 		CHECK_GT(min_len, 0);
 	}
 
-    ~GlobalVocab() {
+    ~Vocab() {
         if(worditems != NULL) {
             delete worditems;
             worditems = NULL;
@@ -153,22 +130,34 @@ struct GlobalVocab {
         }
     }
 
-    void reset_worditems(size_t size) {
-        CHECK_GT(size, 0);
-        if(worditems_size == size) return;
-        if(worditems != NULL) {
-            delete worditems;
-            worditems_size = 0;
-        }
-        worditems = new std::pair<key_t, WordItem>[size];
-        worditems_size = size;
+    void init() {
+        init_worditems();
+        init_unigram_table();
     }
 
+	void inc_word(key_t key) {
+		if (vocab.count(key) == 0) {
+			vocab[key] = WordItem();
+			vocab[key].id = word_counter++;
+		}
+		vocab[key].count++;
+	}
+    // set vocab to initial status
+    void clear() {
+        vocab.clear();
+        // delete worditems
+        CHECK(worditems != NULL);
+        delete worditems;
+        worditems = NULL;
+        worditems_size = 0;
+        word_counter = 0;
+    }
+    // init vocab from file
     void operator() (const string& path) 
     {
-        // init vocab from dataset
         init(path);
-        init_unigram_table();
+        //init_worditems();
+        //init_unigram_table();
     }
 
     WordItem& operator[] (key_t key) {
@@ -186,7 +175,6 @@ struct GlobalVocab {
 	size_t size() const {
 		return vocab.size();
 	}
-
 protected:
 	// init from a file
 	void init(const std::string& path) {
@@ -198,12 +186,11 @@ protected:
         long word = 0;
         while(true) {
             word = ReadWordKey(file);
-            //RAW_LOG(INFO, "read %d", word);
             if(feof(file)) break;
             if(word == -1 || word == -2) continue;
             inc_word(word);
             train_words++;
-            if (train_words % 1000 == 0) {
+            if (train_words % 100000 == 0) {
                 printf("%lldK%c", train_words / 1000, 13);
                 fflush(stdout);
             }
@@ -212,36 +199,23 @@ protected:
 		file_size = ftell(file);
         DLOG(INFO) << "to create worditems";
 		//worditems.reset(new std::pair<key_t, WordItem>[vocab.size()]);
-        reset_worditems(vocab.size());
-		for (const auto& item : vocab) {
-			worditems[item.second.id] = item;
-		}
 		LOG(INFO)<< "vocabulary load\t" << vocab.size() << "\t words";
 		LOG(INFO)<< "dataset has\t" << train_words << "\twords";
 		fclose(file);
 	}
 
-	void inc_word(key_t key) {
-		if (vocab.count(key) == 0) {
-			vocab[key] = WordItem();
-			vocab[key].id = word_counter++;
+    void init_worditems() {
+        RAW_DLOG(INFO, "... init_worditems");
+        CHECK(!vocab.empty());
+        CHECK(worditems == NULL);
+        reset_worditems(vocab.size());
+		for (const auto& item : vocab) {
+			worditems[item.second.id] = item;
 		}
-		vocab[key].count++;
-	}
-
-	// clean the unusual words
-	void clean_vocab() {
-		if (min_reduce > 0) {
-			for (auto it = vocab.begin();; it != vocab.end()) {
-				auto& item = it->second;
-				if (item.count < min_reduce)
-					vocab.erase(it++);
-			}
-		}
-	}
+    }
 
 	void init_unigram_table() {
-		LOG(INFO)<< "... init_unigram_table";
+		RAW_DLOG(INFO, "... init_unigram_table");
 		CHECK_GT(vocab.size(), 0) << "word_freq should be inited before";
 		int a, i;
 		double train_words_pow = 0;
@@ -266,6 +240,27 @@ protected:
 		}
 	}
 
+    void reset_worditems(size_t size) {
+        CHECK_GT(size, 0);
+        if(worditems_size == size) return;
+        if(worditems != NULL) {
+            delete worditems;
+            worditems_size = 0;
+        }
+        worditems = new std::pair<key_t, WordItem>[size];
+        worditems_size = size;
+    }
+
+	// clean the unusual words
+	void clean_vocab() {
+		if (min_reduce > 0) {
+			for (auto it = vocab.begin();; it != vocab.end()) {
+				auto& item = it->second;
+				if (item.count < min_reduce)
+					vocab.erase(it++);
+			}
+		}
+	}
 
 	//std::unique_ptr<real[]> feas;
 	size_t word_counter = 0;
@@ -274,11 +269,11 @@ protected:
 	int min_len = 0;
     size_t worditems_size = 0;
 	const id_t maxid = std::numeric_limits<id_t>::max();
-}; // end struct GlobalVocab
+}; // end struct Vocab
 
 
 
-class GlobalCache {
+class LocalCache {
 public:
     typedef index_t          key_t;
     typedef Word2VecParam val_t;
@@ -287,29 +282,25 @@ public:
     using pull_access_t = GlobalPullAccess<key_t, val_t, grad_t>;
     using push_access_t = GlobalPushAccess<key_t, val_t, grad_t>;
 
-    GlobalCache(GlobalVocab &vocab) :
+    LocalCache(Vocab &local_vocab) :
         pull_access(global_pull_access<key_t, val_t, grad_t>()),
         push_access(global_push_access<key_t, val_t, grad_t>()), 
-        global_vocab(vocab)
+        local_vocab(local_vocab)
     { }
 
-    void init() {
-        LOG(INFO) << "... GlobalVocab init";
-        CHECK(local_keys.empty());
-        CHECK(!global_vocab.vocab.empty());
-        for(auto& item : global_vocab.vocab) {
-            local_keys.insert(item.first);
-        }
-    }
-
+    // collect keys before pull
+    // init local cache and pull
     void pull() {
+        // init local_vocab from collected keys
+        local_vocab.init();
+        init_local_cache();
         DLOG(INFO) << "to pull from PS";
         CHECK(! local_keys.empty());
         DLOG(INFO) << "pull " << local_keys.size() << " keys";
         pull_access.pull_with_barrier(local_keys, param_cache);
         DLOG(INFO) << "get pulled param " << param_cache.size();
     }
-
+    // push and clear local cache
     void push() {
         DLOG(INFO) << "to push to PS";
         if(local_keys.empty()) {
@@ -319,17 +310,36 @@ public:
         push_access.push_with_barrier(local_keys, param_cache);
     }
 
+    void clear() {
+        local_keys.clear();
+        param_cache.clear();
+    }
+
     param_cache_t& cache() {
         return param_cache;
     }
 
+protected:
+    void init_local_cache() {
+        DLOG(INFO) << "... init local cache";
+        CHECK(local_keys.empty());
+        CHECK(!local_vocab.vocab.empty());
+        for(auto& item : local_vocab.vocab) {
+            local_keys.insert(item.first);
+        }
+        // init param cahce
+        for(auto &key : local_keys) {
+            param_cache.init_key(key);
+        }
+    }
 
-    GlobalVocab& global_vocab;
+    Vocab& local_vocab;
     GlobalParamCache<key_t, val_t, grad_t> param_cache;
     std::unordered_set<key_t> local_keys;
     pull_access_t &pull_access;
     push_access_t &push_access;
 };
+
 
     
 class MiniBatch {
@@ -337,14 +347,14 @@ public:
     typedef index_t          key_t;
     typedef Word2VecParam val_t;
     typedef Word2VecGrad grad_t;
-    using param_cache_t = GlobalParamCache<key_t, val_t, grad_t>;
-    using pull_access_t = GlobalPullAccess<key_t, val_t, grad_t>;
-    using push_access_t = GlobalPushAccess<key_t, val_t, grad_t>;
 
-    MiniBatch(GlobalCache &global_cache) :
-        global_cache(global_cache),
-        pull_access(global_pull_access<key_t, val_t, grad_t>()),
-        push_access(global_push_access<key_t, val_t, grad_t>())
+    Vocab local_vocab;
+    Vocab &global_vocab;
+    LocalCache local_cache;
+
+    MiniBatch(Vocab &global_vocab) :
+        global_vocab(global_vocab), 
+        local_cache(local_vocab)
     { 
         num_sents_to_cache = global_config().get_config("num_sents_to_cache").to_int32();
         CHECK_GT(num_sents_to_cache, 0);
@@ -357,7 +367,6 @@ public:
         size_t sentence_counter = 0;
         size_t key;
         char *end;
-        auto& params = global_cache.cache().params();
         // read words
         for(;;) {
             if (feof(file)) break;
@@ -370,42 +379,34 @@ public:
                 continue;
             }
             word_count ++;
-            if(params.count(key) > 0) local_keys.insert(key);
+            if(global_vocab.vocab.count(key) > 0) local_vocab.inc_word(key);
         }
         // resume position
         fseek(file, cur_pos, SEEK_SET);
-        RAW_DLOG(INFO, "collect %d keys", local_keys.size());
+        RAW_DLOG(INFO, "collect %d keys", local_vocab.size());
+    }
+
+    LocalCache::param_cache_t& cache() {
+        return local_cache.cache();
     }
 
     void pull() {
-        RAW_DLOG(INFO, "minibatch pull %lu keys", local_keys.size());
-        CHECK(! local_keys.empty());
-        pull_access.pull_with_barrier(local_keys, global_cache.cache());
+        //local_cache.init(); // parameter cache init from local_vocab
+        local_cache.pull();
     }
 
     void push() {
-        RAW_DLOG(INFO, "minibatch push %lu keys", local_keys.size());
-        if(local_keys.empty()) {
-            RAW_DLOG(INFO, "local_keys empty, do not push");
-            return;
-        }
-        push_access.push_with_barrier(local_keys, global_cache.cache());
+        local_cache.push();
+        local_vocab.clear();
+        local_cache.clear();
     }
-
-    void clear() {
-        local_keys.clear();
-    }
-
-    std::unordered_set<key_t> local_keys;
 
 private:
-    pull_access_t &pull_access;
-    push_access_t &push_access;
-    GlobalCache &global_cache;
+    //pull_access_t &pull_access;
+    //push_access_t &push_access;
+    //LocalCache &local_cache;
     size_t num_sents_to_cache = 0;
 };
-
-
 
 
 class Word2Vec {
@@ -416,11 +417,9 @@ public:
     typedef Word2VecGrad grad_t;
 
 	Word2Vec(const string& data_path) :
-        global_param(vocab),
         data_path(data_path)
     {
 		min_len = global_config().get_config("min_len").to_int32();
-		//local_train = global_config().get_config("local_train").to_int32() > 0;
 		len_vec = global_config().get_config("len_vec").to_int32();
 		num_threads =
 		        global_config().get_config("async_channel_thread_num").to_int32();
@@ -437,19 +436,19 @@ public:
     }
 
     void operator() () {
-        vocab(data_path);
+        LOG(WARNING) << "... init global vocab";
+        global_vocab(data_path);
         //init_net();
         init_exp_table();
         //init_unigram_table();
-        global_param.init();
+        //global_param.init();
     }
 
     void train() {
         Error global_error;
-        DLOG(INFO) << "param size:\t" << global_param.cache().size();
+        //DLOG(INFO) << "param size:\t" << global_param.cache().size();
         for(int iter = 0; iter < global_config().get_config("num_iters").to_int32(); iter ++) {
-            LOG(INFO) << iter << " th train!";
-            global_param.pull();
+           // global_param.pull();
             vector<thread> threads;
             for( int i = 0; i < num_threads; i++) {
                 DLOG(INFO) << "start train thread " << i;
@@ -463,10 +462,10 @@ public:
                 t.join();
             }
             
-            RAW_LOG(INFO, "error:\t%f", global_error.norm());
+            LOG(WARNING) << iter << " th train!";
+            RAW_LOG(WARNING, "error:\t%f", global_error.norm());
             word_count_actual = 0;
-            //output(out_path);
-            global_param.push();
+            //global_param.push();
         }
     }
 
@@ -478,14 +477,14 @@ public:
 		long long word_count = 0, last_word_count = 0, sen[MAX_SENTENCE_LENGTH + 1];
 		long long l1, l2, c, target, label;
         long sentence_counter = 0;
-        long last_sentence_counter = sentence_counter;
+        long last_sentence_counter = -1;
 		//unsigned long long next_random = (long long) id;
 		real_t f, g;
 		clock_t now;
-        MiniBatch minibatch(global_param);
-		//real_t *neu1 = (real_t *) calloc(len_vec, sizeof(real_t));
-		//real_t *neu1e = (real_t *) calloc(len_vec, sizeof(real_t));
-        auto& params = global_param.cache().params();
+        MiniBatch minibatch(global_vocab);
+        auto& params = minibatch.cache().params();
+        auto& grads = minibatch.cache().grads();
+        auto& vocab = minibatch.local_vocab;
         Vec neu1(len_vec);
         Vec neu1e(len_vec);
 		FILE *fi = fopen(train_file.c_str(), "rb");
@@ -516,12 +515,12 @@ public:
 					alpha = starting_alpha * 0.0001;
 			}
             // update paramters
-            if(sentence_counter > 0 && sentence_counter % num_sents_to_cache == 0 && sentence_counter != last_sentence_counter) {
+            if( sentence_counter % num_sents_to_cache == 0 && sentence_counter != last_sentence_counter) {
                 // push last minibatch
                 RAW_DLOG(INFO, "sentence_counter:\t%d", sentence_counter);
                 last_sentence_counter = sentence_counter;
-                minibatch.push();
-                minibatch.clear();
+                if(sentence_counter > 0) minibatch.push();
+                //minibatch.clear();
                 minibatch.collect_keys(fi, word_count, train_words / num_threads);
                 minibatch.pull();
             }
@@ -578,8 +577,9 @@ public:
 						if (last_word == -1)
 							continue;
                         if(params.count(last_word) == 0) continue;
-                        CHECK(vocab.vocab.count(last_word) > 0) << last_word;
-                        CHECK(params.count(last_word) > 0) << last_word;
+                        if(vocab.vocab.count(last_word) == 0) continue;
+                        //CHECK(vocab.vocab.count(last_word) > 0) << last_word;
+                        //CHECK(params.count(last_word) > 0) << last_word;
                         Vec& syn0_lastword = params[last_word].v();
 						for (c = 0; c < len_vec; c++) {
                             neu1[c] += syn0_lastword[c];
@@ -606,10 +606,7 @@ public:
 							label = 0;
 						}
                         if (params.count(target) == 0) continue;
-                        //RAW_LOG(INFO, "target:\t%d\tlabel:%d", target, label);
-						//l2 = target * len_vec;
-                        CHECK(vocab.vocab.count(target) > 0) << target;
-                        CHECK(params.count(target) > 0) << target;
+                        if (vocab.vocab.count(target) == 0) continue;
                         Vec& syn1neg_target = params[target].h();
 						f = 0;
 						for (c = 0; c < len_vec; c++)
@@ -635,9 +632,7 @@ public:
                             syn1neg_target[c] += g * neu1[c];
                         */
 
-                        global_param.cache().grads()[target].accu_h(g * neu1);// / alpha);
-							//syn1neg[c + l2] += g * neu1[c];
-                        //RAW_LOG(INFO, "g:%f", g);
+                        grads[target].accu_h(g * neu1);// / alpha);
 					}
 				// hidden -> in
 				for (a = b; a < window * 2 + 1 - b; a++)
@@ -656,7 +651,7 @@ public:
                             syn0_lastword[c] += neu1e[c];
                         */
 							//syn0[c + last_word * len_vec] += neu1e[c];
-                        global_param.cache().grads()[last_word].accu_v(neu1e);// / alpha);
+                        grads[last_word].accu_v(neu1e);// / alpha);
 					}
 			}
 			sentence_position++;
@@ -683,38 +678,8 @@ public:
 	    }
     }
 
-
-    GlobalVocab& get_vocab() {
-		return vocab;
-	}
-
-    void output(const string& path) {
-        ofstream file(path);
-        CHECK(file.is_open())<< "output path is valid!";
-        for( auto & item : vocab.vocab) {
-            file << item.first << "\t";
-            file << "h:\t";
-            for(int i = 0; i < len_vec; i++) {
-                file << syn1neg[ item.second.id * len_vec + i];
-                if( i != len_vec - 1) {
-                    file << " ";
-                } else file << "\t";
-            }
-            file << "v:\t";
-            for(int i = 0; i < len_vec; i++) {
-                file << syn0[ item.second.id * len_vec + i];
-                if( i != len_vec - 1) {
-                    file << " ";
-                } else file << "\n";
-            }
-        }
-        LOG(WARNING)  << "output model to " << path;
-    }
-
 private:
-	std::unique_ptr<real_t[]> syn1neg;
-	std::unique_ptr<real_t[]> syn0;
-	GlobalVocab vocab;
+	Vocab global_vocab;
 	int min_len = 0;
 	int len_vec = 0;
 	//bool local_train = false;
@@ -729,6 +694,5 @@ private:
     bool debug_mode = true;
     real_t starting_alpha = 0.025;
     real_t *expTable;
-    GlobalCache global_param;
     string data_path;
 };
