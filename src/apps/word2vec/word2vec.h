@@ -203,7 +203,7 @@ protected:
             if(word == -1 || word == -2) continue;
             inc_word(word);
             train_words++;
-            if (train_words % 1000 == 0) {
+            if (train_words % 100000 == 0) {
                 printf("%lldK%c", train_words / 1000, 13);
                 fflush(stdout);
             }
