@@ -17,6 +17,8 @@ struct BasicMetaMessage {
 struct MetaMessage : public BasicMetaMessage {
     int client_id = -3;
     int message_id = -1;    // TODO this type ok?
+    unsigned int zlib = 0;        // size of original buffer
+                            // don't use zlib if  size == 0 
 
     explicit MetaMessage() { }
 
@@ -24,6 +26,7 @@ struct MetaMessage : public BasicMetaMessage {
     	message_class = other.message_class;
     	client_id = other.client_id;
     	message_id = other.message_id;
+        zlib = other.zlib;
         addr = other.addr;
     }
 
@@ -31,6 +34,7 @@ struct MetaMessage : public BasicMetaMessage {
     	message_class = other.message_class;
     	client_id = other.client_id;
     	message_id = other.message_id;
+        zlib = other.zlib;
         addr = other.addr;
     	return *this;
     }
@@ -106,21 +110,6 @@ public:
     zmq_msg_t& zmg() {
         return _zmg;
     }
-    /*
-    BasicBuffer& moveTo(BasicBuffer &bb) {
-        CHECK(&zmg());
-        bb.free();
-        bb.reserve(size());
-        // copy from zmg
-        memcpy(bb.buffer(), &zmg(), size());
-        LOG(INFO) << "bb.buffer:\t" << (char*)bb.buffer();
-        LOG(INFO) << "bb.buffer()[1]:\t" << bb.buffer()[1];
-        bb.set_end(bb.buffer() + size());
-        LOG(INFO) << "bb.end:\t" << bb.end();
-        bb.set_cursor(bb.buffer());
-        return bb;
-    }
-    */
 
 private:
     zmq_msg_t _zmg;
@@ -139,10 +128,13 @@ struct Request;
  * higher level message package
  */
 struct Package : public VirtualObject {
-    explicit Package() { };
+    explicit Package() { 
+        if(zlib == -1) zlib = global_config().get_config("zlib").to_int32();
+    }
     Package(Request&);
     Message meta;
     Message cont;
+    static int zlib;
 
     std::string status() {
         using namespace std;
@@ -153,26 +145,46 @@ struct Package : public VirtualObject {
     }   
 };
 
+int Package::zlib = -1;
+
 
 struct Request {
 
     typedef std::function<void(std::shared_ptr<Request>)> response_call_back_t;
+    static int zlib;
 
-    explicit Request() { }
+    explicit Request() { 
+        if(zlib == -1) zlib = global_config().get_config("zlib").to_int32();
+    }
     Request(const Request&) = delete;
 
     Request(Package &&pkg) {
+        if(zlib == -1) zlib = global_config().get_config("zlib").to_int32();
         //LOG(INFO) << "int Request pkg.status:\t" << pkg.status();
         CHECK(pkg.meta.size() == sizeof(MetaMessage));
         // TODO avoid this memory copy
         memcpy(&meta, &pkg.meta.zmg(), sizeof(MetaMessage));
         // copy content
         CHECK(cont.size() == 0);
-        cont.set(pkg.cont.buffer(), pkg.cont.size());
-        //pkg.cont.moveTo(cont);
+        unsigned char* comp = NULL;
+        // uncompress cont
+        size_t len_comp = meta.zlib;
+        if(zlib > 0 && len_comp > 0) {
+            //LOG(INFO) << "uncompress len_comp:\t" << len_comp;
+            len_comp += 2000;
+            comp = new unsigned char[len_comp];
+            CHECK_EQ(uncompress(comp, &len_comp, (unsigned char*)pkg.cont.buffer(), pkg.cont.size()), Z_OK) 
+                << "pkg.size:\t" << pkg.cont.size();
+            cont.set((char*)comp, len_comp);
+            if(comp != NULL) delete comp;
+
+        } else {
+            cont.set(pkg.cont.buffer(), pkg.cont.size());
+        }
     }
 
     Request(Request &&other) {
+        if(zlib == -1) zlib = global_config().get_config("zlib").to_int32();
         meta = std::move(other.meta);
         cont = std::move(other.cont);
         call_back_handler = std::move(other.call_back_handler);
@@ -219,17 +231,29 @@ struct Request {
     response_call_back_t call_back_handler;
 };
 
+int Request::zlib = -1;
+
 /*
  * zmq network package
  */
 Package::Package(Request& request) {
+    // TODO make memory malloc outside
+    unsigned long comp_len =  3 * request.cont.size();
+    unsigned char* comp = NULL;
+    
+    if(zlib > 0 && comp_len > 0) {
+        comp = new unsigned char[comp_len];
+        CHECK_EQ( compress2(comp, &comp_len, (unsigned char*)request.cont.buffer(), request.cont.size(), zlib), Z_OK) 
+            << "cont.size:\t" << request.cont.size();
+        request.meta.zlib = request.cont.size();
+        cont.assign((char*)comp, comp_len);
+        if(comp != NULL) delete comp;
+        //LOG(INFO) << "compress source/compress:\t" << request.cont.size() << "\t" << comp_len;
+
+    } else cont.assign(request.cont.buffer(), request.cont.size());
+
     meta.assign((char*)&request.meta, sizeof(MetaMessage));
-    cont.assign(request.cont.buffer(), request.cont.size());
 }
-
-
-
-
 
 };  // end namespace swift_snails
 #endif

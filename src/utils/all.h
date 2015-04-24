@@ -17,4 +17,5 @@
 #include "DaemonThread.h"
 #include "file.h"
 #include "vec1.h"
+#include "zlib.h"
 //#include "random.h"
