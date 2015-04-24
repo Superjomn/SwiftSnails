@@ -1,5 +1,7 @@
 #pragma once
 #include "../../utils/all.h"
+#include "../transfer/transfer.h"
+#include "../system/ServerWorkerRoute.h"
 #include "../system/message_classes.h"
 #include "hashfrag.h"
 #include "global_param_cache.h"
