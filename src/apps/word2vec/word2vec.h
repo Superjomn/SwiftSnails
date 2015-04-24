@@ -4,10 +4,11 @@
 #include <string.h>
 #include <math.h>
 #include <pthread.h>
-#include "../../utils/all.h"
+//#include "../../utils/all.h"
+#include "../../swiftsnails.h"
 #include "./param.h"
 #include "./access_method.h"
-#include "../../core/parameter/global_param_cache.h"
+//#include "../../core/parameter/global_param_cache.h"
 
 #define MAX_STRING 100
 #define EXP_TABLE_SIZE 1000

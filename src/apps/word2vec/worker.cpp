@@ -1,4 +1,4 @@
-#include "../../core/framework/SwiftWorker.h"
+#include "../../swiftsnails.h"
 #include "word2vec.h"
 using namespace swift_snails;
 using namespace fms;

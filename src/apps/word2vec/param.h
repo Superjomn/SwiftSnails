@@ -1,5 +1,6 @@
 #pragma once
-#include "../../utils/all.h"
+//#include "../../utils/all.h"
+#include "../../swiftsnails.h"
 using namespace swift_snails;
 /*
  * adagrad support

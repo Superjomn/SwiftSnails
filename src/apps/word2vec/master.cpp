@@ -1,4 +1,5 @@
-#include "../../core/framework/SwiftMaster.h"
+//#include "../../core/framework/SwiftMaster.h"
+#include "../../swiftsnails.h"
 using namespace swift_snails;
 using namespace std;
 using namespace fms;
