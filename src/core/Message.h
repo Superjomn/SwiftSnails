@@ -161,7 +161,8 @@ struct Request {
     Request(Package &&pkg) {
         if(zlib == -1) zlib = global_config().get_config("zlib").to_int32();
         //LOG(INFO) << "int Request pkg.status:\t" << pkg.status();
-        CHECK(pkg.meta.size() == sizeof(MetaMessage));
+        //LOG(INFO) << "meta.size:\t" << pkg.meta.size() << "\tMeta:\t" << sizeof(MetaMessage);
+        CHECK(pkg.meta.size() == sizeof(MetaMessage)) << "meta.size:\t" << pkg.meta.size() << "\t" << sizeof(MetaMessage);
         // TODO avoid this memory copy
         memcpy(&meta, &pkg.meta.zmg(), sizeof(MetaMessage));
         // copy content
@@ -177,7 +178,6 @@ struct Request {
                 << "pkg.size:\t" << pkg.cont.size();
             cont.set((char*)comp, len_comp);
             if(comp != NULL) delete comp;
-
         } else {
             cont.set(pkg.cont.buffer(), pkg.cont.size());
         }
