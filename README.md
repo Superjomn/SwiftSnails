@@ -1,43 +1,9 @@
 SwiftSnails
 ===========
 
-*2015-01-03*
+*2015-05-03*
 
-目标
------
-SS的目标是实现一个适用于大规模机器学习的分布式的并行参数服务器。 
+SwiftSnails是一个小型的参数服务器。
 
-项目的最终成品应该是一个组织良好，文档充足的参数服务器框架，以及分布式的word2vec作为demo。
+文档： http://superjom.duapp.com/big-data/swiftsnails.html
 
-服务器将使用类似Node.js的服务机制，以key-value的方式支撑大规模的参数。
-包含中央Master服务器，及worker节点。
-以Hadoop map的方式分发数据和分配集群节点。
-支持冗余容错和错误恢复（map节点的修改）
-
-预计的基本特性：
-
-1. 支持key/value 分布式参数表
-2. 异步及并行
-3. 任务监控
-
-如果顺利的话，会添加一定的附加特性，比如：
-
-1. 容错
-2. 恢复
-3. 参数依赖
-
-最终会包含一个word2vec的demo。
-
-本描述会随着项目进展不断更新
-
-核心依赖库
------------
-C++11 
-glog
-google-sparsehash
-Eigen
-
-开发&&测试
-------------
-gtest
-valgrind
