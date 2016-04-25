@@ -25,114 +25,107 @@ namespace swift_snails {
 class ConfigParser : VirtualObject {
 
 public:
-    struct Item {
-        std::string value;
-        Item(const std::string &value) : value(value){ }
-        int to_int32() const {
-            CHECK(!value.empty());
-            return std::move(stoi(value));
-        }
-        float to_float() const {
-            CHECK(!value.empty());
-            return std::move(stof(value));
-        }
-        std::string to_string() const {
-            return value;
-        }
-        bool to_bool() const {
-            CHECK(!value.empty());
-            CHECK(value == "true" || value == "false");
-            if(value == "true") return true;
-            return false;
-        }
-    };
-    
-    explicit ConfigParser(const std::string &conf_path): _conf_path(conf_path) {
+  struct Item {
+    std::string value;
+    Item(const std::string &value) : value(value) {}
+    int to_int32() const {
+      CHECK(!value.empty());
+      return std::move(stoi(value));
     }
+    float to_float() const {
+      CHECK(!value.empty());
+      return std::move(stof(value));
+    }
+    std::string to_string() const { return value; }
+    bool to_bool() const {
+      CHECK(!value.empty());
+      CHECK(value == "true" || value == "false");
+      if (value == "true")
+        return true;
+      return false;
+    }
+  };
 
-    explicit ConfigParser() {
-    }
-    void load_conf(const std::string path) {
-        _conf_path = path;
-    }
+  explicit ConfigParser(const std::string &conf_path) : _conf_path(conf_path) {}
 
-    void parse() {
-        LOG(WARNING) << "load conf from\t" << _conf_path;
-        parse_conf(_conf_path);
-    }
+  explicit ConfigParser() {}
+  void load_conf(const std::string path) { _conf_path = path; }
 
-    void clear() {
-        _dic.clear();
-    }
-    /*
-    void register_config(const std::string &key, const std::string &value = "") {
-        CHECK(!key.empty());
-        CHECK(_dic.count(key) == 0) << "multi key:\t" << key << "is registered";
-        _dic.insert({std::move(key), Item(value)});
-    }
-    */
+  void parse() {
+    LOG(WARNING) << "load conf from\t" << _conf_path;
+    parse_conf(_conf_path);
+  }
 
-    // to_int32()
-    // to_string()
-    // to_bool()
-    const Item& get_config(const std::string &key) {
-        auto p = _dic.find(key);
-        CHECK(p != _dic.end()) << "no such key:\t" << key;
-        return p->second;
-    }
+  void clear() { _dic.clear(); }
+  /*
+  void register_config(const std::string &key, const std::string &value = "") {
+      CHECK(!key.empty());
+      CHECK(_dic.count(key) == 0) << "multi key:\t" << key << "is registered";
+      _dic.insert({std::move(key), Item(value)});
+  }
+  */
 
-    friend std::ostream& operator<< (std::ostream& os, const ConfigParser &other) {
-        os << "conf:" << std::endl;
-        for(auto kv : other._dic) {
-            os << kv.first << "\t" << kv.second.value << std::endl;
-        }
-        os << "end conf" << std::endl;
-        return os;
+  // to_int32()
+  // to_string()
+  // to_bool()
+  const Item &get_config(const std::string &key) {
+    auto p = _dic.find(key);
+    CHECK(p != _dic.end()) << "no such key:\t" << key;
+    return p->second;
+  }
+
+  friend std::ostream &operator<<(std::ostream &os, const ConfigParser &other) {
+    os << "conf:" << std::endl;
+    for (auto kv : other._dic) {
+      os << kv.first << "\t" << kv.second.value << std::endl;
     }
+    os << "end conf" << std::endl;
+    return os;
+  }
 
 private:
-
-    void parse_conf(const std::string &path) {
-        //LOG(INFO) << "parsing conf:\t" << path;
-        typedef std::pair<std::string, std::string> key_value_t;
-        std::ifstream file(path);
-        PCHECK(file) << "conf can not open:\t" << path;
-        std::string line;
-        while(getline(file, line)) {
-            trim(line);
-            if(line.empty()) continue;
-            if(headswith(line, "#")) continue;  // skip comments
-            // import path
-            if(headswith(line, "import")) {
-                std::pair<std::string, std::string> kv = key_value_split(line, " ");
-                CHECK(kv.second != path);   // 
-                parse_conf(kv.second);
-                continue;
-            }
-            key_value_t kv = std::move(key_value_split(line, ":"));
-            set_config(trim(kv.first), trim(kv.second));
-        }
-        file.close();
+  void parse_conf(const std::string &path) {
+    // LOG(INFO) << "parsing conf:\t" << path;
+    typedef std::pair<std::string, std::string> key_value_t;
+    std::ifstream file(path);
+    PCHECK(file) << "conf can not open:\t" << path;
+    std::string line;
+    while (getline(file, line)) {
+      trim(line);
+      if (line.empty())
+        continue;
+      if (headswith(line, "#"))
+        continue; // skip comments
+      // import path
+      if (headswith(line, "import")) {
+        std::pair<std::string, std::string> kv = key_value_split(line, " ");
+        CHECK(kv.second != path); //
+        parse_conf(kv.second);
+        continue;
+      }
+      key_value_t kv = std::move(key_value_split(line, ":"));
+      set_config(trim(kv.first), trim(kv.second));
     }
+    file.close();
+  }
 
-    void set_config(const std::string &key, const std::string &value) {
-        /*
-        auto p = _dic.find(key);
-        CHECK(p != _dic.end()) << "read unregistered key:\t" << key;
-        p->second.value = value;
-        */
-        _dic.insert({key, Item(value)});
-    }
+  void set_config(const std::string &key, const std::string &value) {
+    /*
+    auto p = _dic.find(key);
+    CHECK(p != _dic.end()) << "read unregistered key:\t" << key;
+    p->second.value = value;
+    */
+    _dic.insert({key, Item(value)});
+  }
 
-    std::map<std::string, Item> _dic;
-    std::string _conf_path;
-};  // end class ConfigParser
-
+  std::map<std::string, Item> _dic;
+  std::string _conf_path;
+}; // end class ConfigParser
 
 // global_config need to be inited
-ConfigParser& global_config() {
-    static ConfigParser config;
-    return config;
+ConfigParser &global_config() {
+  static ConfigParser config;
+  return config;
 }
 
 /*

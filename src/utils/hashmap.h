@@ -12,18 +12,16 @@
 #include <sparsehash/sparse_hash_map>
 #include <sparsehash/dense_hash_map>
 #include "common.h"
-//using std::hash; 
+// using std::hash;
 using google::sparse_hash_map;
 using google::dense_hash_map;
 
 namespace swift_snails {
 
-struct _eqstr
-{
-    bool operator()(const char* s1, const char* s2) const
-    {
-        return (s1 == s2) || (s1 && s2 && strcmp(s1, s2) == 0);
-    }
+struct _eqstr {
+  bool operator()(const char *s1, const char *s2) const {
+    return (s1 == s2) || (s1 && s2 && strcmp(s1, s2) == 0);
+  }
 };
 
 /*
@@ -38,70 +36,54 @@ struct _eqstr
  *  map[1] = 1000;
  *  map[2] = 2000;
  */
-template<typename K, typename V>
-class SparseHashMap {
+template <typename K, typename V> class SparseHashMap {
 public:
-    using map_t = sparse_hash_map<K, V, std::hash<K>>;
-    map_t& get_map() {
-        return map;
-    }
+  using map_t = sparse_hash_map<K, V, std::hash<K>>;
+  map_t &get_map() { return map; }
 
 private:
-    sparse_hash_map<K, V, std::hash<K>> map;
+  sparse_hash_map<K, V, std::hash<K>> map;
 };
 /*
  * a specification wrapper for SparseHashMap<const char*, V>
  *
  * call `get_map()` to get the sparse_hash_map
  */
-template<typename V>
-class SparseHashMap<const char*, V> {
+template <typename V> class SparseHashMap<const char *, V> {
 
 public:
-    using map_t =  sparse_hash_map<const char*, V, std::hash<const char*>, _eqstr>;
+  using map_t =
+      sparse_hash_map<const char *, V, std::hash<const char *>, _eqstr>;
 
-    map_t& get_map() {
-        return map;
-    }
+  map_t &get_map() { return map; }
 
 private:
-    map_t map;
+  map_t map;
 };
 
-
-template<typename K, typename V>
-class DenseHashMap {
+template <typename K, typename V> class DenseHashMap {
 public:
-    using map_t = dense_hash_map<K, V, std::hash<K>>;
+  using map_t = dense_hash_map<K, V, std::hash<K>>;
 
-    explicit DenseHashMap() {
-        map.set_empty_key(0);
-    }
+  explicit DenseHashMap() { map.set_empty_key(0); }
 
-    map_t& get_map() {
-        return map;
-    }
-
-private: 
-    map_t map;
-};
-
-template<typename V>
-class DenseHashMap<const char*, V> {
-public:
-    using map_t = dense_hash_map<const char*, V, std::hash<const char*>, _eqstr>;
-
-    explicit DenseHashMap() {
-        map.set_empty_key(NULL);
-    }
-
-    map_t& get_map() {
-        return map;
-    }
+  map_t &get_map() { return map; }
 
 private:
-    map_t map;
+  map_t map;
+};
 
+template <typename V> class DenseHashMap<const char *, V> {
+public:
+  using map_t =
+      dense_hash_map<const char *, V, std::hash<const char *>, _eqstr>;
+
+  explicit DenseHashMap() { map.set_empty_key(NULL); }
+
+  map_t &get_map() { return map; }
+
+private:
+  map_t map;
 };
 
 }; // end namespace swift_snails

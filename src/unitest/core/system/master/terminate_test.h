@@ -5,5 +5,5 @@ using namespace std;
 using namespace swift_snails;
 
 TEST(master_terminate, init) {
-    //MasterTerminate terminate;
+  // MasterTerminate terminate;
 }

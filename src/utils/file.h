@@ -11,30 +11,25 @@
 
 namespace swift_snails {
 // thread-safe
-void scan_file_by_line (
-        FILE *file, 
-        std::mutex& file_mut, 
-        std::function<void(const std::string &line)> &&handler
-    )
-{
-    LineFileReader line_reader;
-    for(;;) {
+void scan_file_by_line(FILE *file, std::mutex &file_mut,
+                       std::function<void(const std::string &line)> &&handler) {
+  LineFileReader line_reader;
+  for (;;) {
 
-        file_mut.lock();
-        char* res = line_reader.getline(file);
+    file_mut.lock();
+    char *res = line_reader.getline(file);
 
-        if(res != NULL) {
-            std::string line = line_reader.get();
-            file_mut.unlock();
-            // gather keys
-            handler(line);
+    if (res != NULL) {
+      std::string line = line_reader.get();
+      file_mut.unlock();
+      // gather keys
+      handler(line);
 
-        } else {
-            file_mut.unlock();
-            return;
-        }
+    } else {
+      file_mut.unlock();
+      return;
     }
+  }
 }
 
-};  // end namespace swift_snails
-    
+}; // end namespace swift_snails
